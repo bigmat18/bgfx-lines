@@ -1,10 +1,15 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(hello_world VERSION 1.0
-                    PROJECT_DESCRIPTION "BGFX Lines"
-                    LANGUAGE CXX)
+project(bgfx-lines)
 
-include_directories(${PROJECT_SOURCE_DIR})
-add_library(applib D foo.cpp)
-add_executable(app main.cpp)
-target_link_libraries(app applib)
+set (CMAKE_CXX_STANDARD 17)
+
+set(SRC_DIR src)
+set(INCLUDE_DIR include)
+
+include_directories(${INCLUDE_DIR})
+
+add_subdirectory(external/bgfx.cmake)
+add_executable(app ${SRC_DIR}/main.cpp)
+
+target_link_libraries(app bgfx example-common)
