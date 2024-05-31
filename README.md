@@ -1,1 +1,2 @@
 # BGFX lines
+This is the code for my bachelor degree final exam. It's an implementation of algorithms to draw lines in different shape a size without using any primitive in API. This project use bgfx library.
