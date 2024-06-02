@@ -207,7 +207,7 @@ public:
 			);
 
 		// Create program from shaders.
-		m_program = loadProgram("vs_cubes", "fs_cubes");
+		m_program = loadProgram("vs_base", "fs_base");
 
 		m_timeOffset = bx::getHPCounter();
 
