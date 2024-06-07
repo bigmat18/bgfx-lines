@@ -5,6 +5,7 @@
 #define ENTRY_CONFIG_IMPLEMENT_MAIN 1
 #include <bx/uint32_t.h>
 #include <common.h>
+#include <camera.h>
 #include <bgfx_utils.h>
 #include <imgui/imgui.h>
 #include "utils.h"
@@ -32,14 +33,10 @@ namespace {
 
     static PosColorVertex s_squareVertices[] =
     {
-        {-1.0f,  1.0f,  1.0f, 0xff000000 }, // 0
-        { 1.0f,  1.0f,  1.0f, 0xff0000ff }, // 1
-        {-1.0f, -1.0f,  1.0f, 0xff00ff00 }, // 2
-        { 1.0f, -1.0f,  1.0f, 0xff00ffff }, // 3
-        {-1.0f,  1.0f, -1.0f, 0xffff0000 }, // 4
-        { 1.0f,  1.0f, -1.0f, 0xffff00ff }, // 5
-        {-1.0f, -1.0f, -1.0f, 0xffffff00 }, // 6
-        { 1.0f, -1.0f, -1.0f, 0xffffffff }, // 7
+        {-1.0f,  1.0f,  0.0f, 0xff000000 }, // 0
+        { 1.0f,  1.0f,  0.0f, 0xff0000ff }, // 1
+        {-1.0f, -1.0f,  0.0f, 0xff00ff00 }, // 2
+        { 1.0f, -1.0f,  0.0f, 0xff00ffff }, // 3
     };
     
 
@@ -47,16 +44,6 @@ namespace {
     {
         0, 1, 2,
         1, 3, 2,
-        4, 6, 5,
-        5, 6, 7,
-        0, 2, 4,
-        4, 2, 6,
-        1, 5, 3,
-        5, 7, 3,
-        0, 4, 1,
-        4, 5, 1,
-        2, 3, 6,
-        6, 3, 7,
     };
 
     class TestWindow : public entry::AppI {
@@ -101,6 +88,7 @@ namespace {
                 m_program = loadProgram("vs_base", "fs_base");
                 m_timeOffset = bx::getHPCounter();
 
+                cameraCreate();
                 imguiCreate();
             }
 
@@ -112,6 +100,7 @@ namespace {
                 bgfx::destroy(m_program);
 
                 bgfx::shutdown();
+                cameraDestroy();
                 return 0;
             }
 
@@ -136,13 +125,12 @@ namespace {
                     imguiEndFrame();
 
                     float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
-
-                    const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-                    const bx::Vec3 eye = {0.0f, 0.0f, -20.0f};
+                    m_timeOffset = bx::getHPCounter();
 
                     {
+                        cameraUpdate(time * 0.1f, m_mouseState);
                         float view[16];
-                        bx::mtxLookAt(view, eye, at);
+                        cameraGetViewMtx(view);
 
                         float proj[16];
                         bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
@@ -151,14 +139,27 @@ namespace {
                         bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                     }
 
-                    // bgfx::touch(0);
+                    bgfx::touch(0);
+
+                    uint64_t state = 0
+                        | BGFX_STATE_WRITE_R
+                        | BGFX_STATE_WRITE_G
+                        | BGFX_STATE_WRITE_B
+                        | BGFX_STATE_WRITE_A
+                        | BGFX_STATE_WRITE_Z
+                        | BGFX_STATE_DEPTH_TEST_ALWAYS
+                        | BGFX_STATE_CULL_MASK
+                        | BGFX_STATE_MSAA
+                        | BGFX_STATE_PT_TRISTRIP;
 
                     float mtx[16];
-                    bx::mtxRotateX(mtx, time);
+                    bx::mtxRotateXYZ(mtx, 0.0f, 0.0f, 0.0f);
                     bgfx::setTransform(mtx);
 
                     bgfx::setVertexBuffer(0, m_vbh);
                     bgfx::setIndexBuffer(m_ibh);
+
+                    bgfx::setState(state);
 
                     bgfx::submit(0, m_program);
 
