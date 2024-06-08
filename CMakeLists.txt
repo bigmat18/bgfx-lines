@@ -13,14 +13,20 @@ message(STATUS "bgfx.cmake external library")
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/bgfx.cmake)
 
 set(CMAKE_CXX_STANDARD 17)
-add_executable(main src/main.cpp)
+
+file(GLOB SOURCES "src/*.cpp")
+add_library(bgfx-lines ${SOURCES})
+target_include_directories(bgfx-lines PUBLIC include)
+target_link_libraries(bgfx-lines bx bgfx example-common)
+
+add_executable(main examples/main.cpp)
 
 target_include_directories(main PUBLIC include)
-target_link_libraries(main bgfx example-common)
+target_link_libraries(main bgfx example-common bgfx-lines)
 
 set(SHADERS
-    shaders/vs_base.sc
-    shaders/fs_base.sc
+    shaders/vs_lines.sc
+    shaders/fs_lines.sc
     shaders/varying.def.sc)
 
 target_add_bgfx_shaders(
