@@ -48,9 +48,9 @@ namespace {
 
                 m_timeOffset = bx::getHPCounter();
 
-                Lines::SetResolution(m_width, m_height / 2.0f);
-                Lines::SetThickness(0.2f);
-                Lines::SetAntialis(0.1f);
+                Lines::SetResolution(m_width, m_height);
+                Lines::SetThickness(0.005f);
+                Lines::SetAntialis(0.005f);
             }
 
             virtual int shutdown() override {
@@ -111,7 +111,7 @@ namespace {
                         | BGFX_STATE_MSAA
                         | BGFX_STATE_PT_TRISTRIP;
                     bgfx::setState(state);
-                    Lines::RenderLines(0, 0, 0, 0);
+                    Lines::RenderLines(-0.5f, 0.0f, 0.5f, 0.35f);
                     bgfx::frame();
 
                     return true;

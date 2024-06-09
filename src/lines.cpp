@@ -18,10 +18,10 @@ bgfx::UniformHandle         Lines::u_p1;
 bgfx::VertexLayout          Lines::s_layout;
 
 const float                 Lines::s_vertices[] = {
-                                0.0f, 1.0f, 0.0f,
-                                0.0f, 0.0f, 0.0f,
-                                1.0f, 1.0f, 0.0f,
-                                1.0f, 0.0f, 0.0f,
+                                0.0f, 1.0f, 0.0f, // A1
+                                0.0f, 0.0f, 0.0f, // A2
+                                1.0f, 1.0f, 0.0f, // B1
+                                1.0f, 0.0f, 0.0f, // B2
                             };
 
 const uint32_t              Lines::s_indices[] = {
@@ -51,10 +51,6 @@ void Lines::Init() {
 
     u_p0 = bgfx::createUniform("u_p0", bgfx::UniformType::Vec4);
     u_p1 = bgfx::createUniform("u_p1", bgfx::UniformType::Vec4);
-
-    SetResolution(0.0f, 0.0f);
-    SetAntialis(0.0f);
-    SetThickness(0.0f);
 }
 
 void Lines::Shutdown() {
