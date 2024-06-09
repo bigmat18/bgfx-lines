@@ -5,9 +5,25 @@
 
 class Lines {
     public:
+        typedef struct {
+            float resolution[2];
+            float antialias;
+            float thickness;
+        } LinesData;
+
+    public:
         static void Init();
         static void Shutdown();
         static void RenderLines(float x0, float y0, float x1, float y1);
+
+        static void SetResolution(float width, float height) {
+            s_data.resolution[0] = width; 
+            s_data.resolution[1] = height; 
+        }
+        
+        static void SetAntialis(float antialis) { s_data.antialias = antialis; }
+
+        static void SetThickness(float thickness) { s_data.thickness = thickness; }
 
     private:
         static bgfx::ProgramHandle LoadProgram(const char* vs_name, const char* fs_name);
@@ -18,4 +34,17 @@ class Lines {
 
         static const char* vs_name;
         static const char* fs_name;
+
+        static bgfx::VertexLayout s_layout;
+        static const float s_vertices[];
+        static const uint32_t s_indices[];
+
+        static bgfx::UniformHandle u_resolution;
+        static bgfx::UniformHandle u_antialias;
+        static bgfx::UniformHandle u_thickness;
+
+        static bgfx::UniformHandle u_p0;
+        static bgfx::UniformHandle u_p1;
+
+        static LinesData s_data;
 };

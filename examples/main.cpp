@@ -46,8 +46,11 @@ namespace {
                 cameraSetPosition({0.0f, 0.0f, -5.0f});
                 imguiCreate();
 
-                m_timeOffset = 0;
-                m_time = 0;
+                m_timeOffset = bx::getHPCounter();
+
+                Lines::SetResolution(m_width, m_height / 2.0f);
+                Lines::SetThickness(0.2f);
+                Lines::SetAntialis(0.1f);
             }
 
             virtual int shutdown() override {
@@ -77,14 +80,14 @@ namespace {
                     
                     imguiEndFrame();
 
-                    float deltaTime = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
-                    m_timeOffset = bx::getHPCounter();
-                    m_time += deltaTime;
+                    float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+
+                    const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
+                    const bx::Vec3 eye = {0.0f, 0.0f, -5.0f};
 
                     {
-                        cameraUpdate(deltaTime * 0.1f, m_mouseState);
                         float view[16];
-                        cameraGetViewMtx(view);
+                        bx::mtxLookAt(view, eye, at);
 
                         float proj[16];
                         bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
@@ -93,9 +96,8 @@ namespace {
                         bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                     }
 
-                    bgfx::touch(0);
-                    float mtx[16];
-                    bx::mtxRotateY(mtx, m_time);
+                    //bgfx::touch(0);
+                    float mtx[16] = MTX_BASE;
                     bgfx::setTransform(mtx);
 
                     uint64_t state = 0
@@ -104,12 +106,11 @@ namespace {
                         | BGFX_STATE_WRITE_B
                         | BGFX_STATE_WRITE_A
                         | BGFX_STATE_WRITE_Z
-                        | BGFX_STATE_DEPTH_TEST_ALWAYS
-                        | BGFX_STATE_CULL_CW
+                        | BGFX_STATE_DEPTH_TEST_LESS
+                        | BGFX_STATE_CULL_MASK
                         | BGFX_STATE_MSAA
                         | BGFX_STATE_PT_TRISTRIP;
                     bgfx::setState(state);
-
                     Lines::RenderLines(0, 0, 0, 0);
                     bgfx::frame();
 
