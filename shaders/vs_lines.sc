@@ -1,5 +1,5 @@
 $input a_position
-$output v_color0
+$output v_color0, v_p
 
 #include <bgfx_shader.sh>
 
@@ -25,4 +25,9 @@ void main() {
 
     gl_Position = vec4(p.xyz, 1.0);
     v_color0 = vec4(1.0, 1.0, 0.0, 1.0);
+
+    T = vec4(1.0, 0.0, 0.0, 0.0);
+    O = vec4(0.0, 1.0, 0.0, 0.0);
+    p = (a_position.x * T * l) + (u * T * t) + (v * O * t);
+    v_p = vec4(p.xyz, 1.0);
 }
