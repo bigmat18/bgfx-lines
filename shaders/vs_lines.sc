@@ -11,7 +11,6 @@ uniform vec4 u_p0;
 uniform vec4 u_p1;
 
 void main() {
-    vec4 resolution = normalize(u_resolution);
     float t = u_thickness.x / 2.0 + u_antialias.x;
     float l = length(u_p1 - u_p0);
 
@@ -23,7 +22,9 @@ void main() {
 
     vec4 p = u_p0 + (a_position.x * T * l) + (u * T * t) + (v * O * t);
 
-    gl_Position = vec4(p.xyz, 1.0);
+    p = p / u_resolution;
+    gl_Position = vec4(p.xy, 0.0, 1.0);
+
     v_color0 = vec4(1.0, 1.0, 0.0, 1.0);
 
     T = vec4(1.0, 0.0, 0.0, 0.0);

@@ -1,7 +1,3 @@
-/*
- * Copyright 2011-2024 Branimir Karadzic. All rights reserved.
- * License: https://github.com/bkaradzic/bgfx/blob/master/LICENSE
- */
 #define ENTRY_CONFIG_IMPLEMENT_MAIN 1
 #include <bx/uint32_t.h>
 #include <common.h>
@@ -49,8 +45,8 @@ namespace {
                 m_timeOffset = bx::getHPCounter();
 
                 Lines::SetResolution(m_width, m_height);
-                Lines::SetThickness(0.005f);
-                Lines::SetAntialis(0.005f);
+                Lines::SetThickness(6);
+                Lines::SetAntialis(5);
             }
 
             virtual int shutdown() override {
@@ -96,9 +92,10 @@ namespace {
                         bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                     }
 
-                    //bgfx::touch(0);
+                    bgfx::touch(0);
                     float mtx[16] = MTX_BASE;
                     bgfx::setTransform(mtx);
+
 
                     uint64_t state = 0
                         | BGFX_STATE_WRITE_R
@@ -109,9 +106,12 @@ namespace {
                         | BGFX_STATE_DEPTH_TEST_LESS
                         | BGFX_STATE_CULL_MASK
                         | BGFX_STATE_MSAA
-                        | BGFX_STATE_PT_TRISTRIP;
+                        | BGFX_STATE_PT_TRISTRIP
+                        | BGFX_STATE_BLEND_ALPHA;
+
+
                     bgfx::setState(state);
-                    Lines::RenderLines(-0.5f, 0.0f, 0.5f, 0.35f);
+                    Lines::RenderLines(0.0f, 0.0f, m_width - 50, m_height - 50);
                     bgfx::frame();
 
                     return true;
