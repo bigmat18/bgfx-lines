@@ -5,7 +5,7 @@
 #include <bgfx_utils.h>
 #include <imgui/imgui.h>
 #include <lines.h>
-
+#include <math.h>
 
 namespace {
 
@@ -45,8 +45,9 @@ namespace {
                 m_timeOffset = bx::getHPCounter();
 
                 Lines::SetResolution(m_width, m_height);
-                Lines::SetThickness(6);
-                Lines::SetAntialis(5);
+                Lines::SetThickness(10);
+                Lines::SetAntialis(100);
+                Lines::SetAlpha(1);
             }
 
             virtual int shutdown() override {
@@ -109,9 +110,9 @@ namespace {
                         | BGFX_STATE_PT_TRISTRIP
                         | BGFX_STATE_BLEND_ALPHA;
 
-
                     bgfx::setState(state);
-                    Lines::RenderLines(0.0f, 0.0f, m_width - 50, m_height - 50);
+                    // Lines::RenderLines(0.0f, 0.0f, cosf(time) * (m_width / 2), sinf(time) * (m_height / 2));
+                    Lines::RenderLines(0.0f, 0.0f, m_width - 100, m_height - 100);
                     bgfx::frame();
 
                     return true;

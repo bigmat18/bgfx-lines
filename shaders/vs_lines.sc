@@ -30,5 +30,6 @@ void main() {
     T = vec4(1.0, 0.0, 0.0, 0.0);
     O = vec4(0.0, 1.0, 0.0, 0.0);
     p = (a_position.x * T * l) + (u * T * t) + (v * O * t);
+
     v_p = vec4(p.xyz, 1.0);
 }

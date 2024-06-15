@@ -13,6 +13,7 @@ const char*                 Lines::fs_name = "fs_lines";
 bgfx::UniformHandle         Lines::u_resolution;
 bgfx::UniformHandle         Lines::u_antialias;
 bgfx::UniformHandle         Lines::u_thickness;
+bgfx::UniformHandle         Lines::u_alpha;
 bgfx::UniformHandle         Lines::u_p0;
 bgfx::UniformHandle         Lines::u_p1;
 bgfx::VertexLayout          Lines::s_layout;
@@ -48,6 +49,7 @@ void Lines::Init() {
     u_resolution = bgfx::createUniform("u_resolution", bgfx::UniformType::Vec4);
     u_antialias = bgfx::createUniform("u_antialias", bgfx::UniformType::Vec4);
     u_thickness = bgfx::createUniform("u_thickness", bgfx::UniformType::Vec4);
+    u_alpha = bgfx::createUniform("u_alpha", bgfx::UniformType::Vec4);
 
     u_p0 = bgfx::createUniform("u_p0", bgfx::UniformType::Vec4);
     u_p1 = bgfx::createUniform("u_p1", bgfx::UniformType::Vec4);
@@ -68,6 +70,9 @@ void Lines::RenderLines(float x0, float y0, float x1, float y1) {
 
     float thickness[] = {s_data.thickness, 0.0f, 0.0f, 0.0f};
     bgfx::setUniform(u_thickness, thickness);
+    
+    float alpha[] = {s_data.alpha, y1, 0.0f, 0.0f};
+    bgfx::setUniform(u_alpha, alpha);
 
     float p0[] = {x0, y0, 0.0f, 0.0f};
     bgfx::setUniform(u_p0, p0);
