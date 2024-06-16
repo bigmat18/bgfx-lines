@@ -20,7 +20,7 @@ void main() {
 	if(d < 0) {
 		gl_FragColor = vec4(u_color.xyz, u_color.w);
 	} else {
-		d = exp(-d);
+		d = exp(-d); 
 		gl_FragColor = vec4(u_color.xyz, d * u_color.w);
 	}
 }

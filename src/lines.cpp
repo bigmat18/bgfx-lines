@@ -61,7 +61,7 @@ void Lines::Shutdown() {
     bgfx::destroy(s_program);
 }
 
-void Lines::RenderLines(float x0, float y0, float x1, float y1) {
+void Lines::RenderLines(float x0, float y0, float x1, float y1, uint64_t state) {
     float resolution[] = {s_data.resolution[0], s_data.resolution[1], 0.0f, 0.0f};
     bgfx::setUniform(u_resolution, resolution);
 
@@ -81,6 +81,8 @@ void Lines::RenderLines(float x0, float y0, float x1, float y1) {
 
     bgfx::setVertexBuffer(0, s_vbh);
     bgfx::setIndexBuffer(s_ibh);
+    bgfx::setState(state);
+
     bgfx::submit(0, s_program);
 }
 

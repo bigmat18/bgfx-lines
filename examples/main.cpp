@@ -45,8 +45,8 @@ namespace {
                 m_timeOffset = bx::getHPCounter();
 
                 Lines::SetResolution(m_width, m_height);
-                Lines::SetThickness(10);
-                Lines::SetAntialis(100);
+                Lines::SetThickness(5);
+                Lines::SetAntialis(4);
                 Lines::SetColor(1.0, 0.0, 1.0, 1.0);
             }
 
@@ -104,20 +104,18 @@ namespace {
                         | BGFX_STATE_WRITE_B
                         | BGFX_STATE_WRITE_A
                         | BGFX_STATE_WRITE_Z
-                        | BGFX_STATE_DEPTH_TEST_LESS
+                        | BGFX_STATE_DEPTH_TEST_ALWAYS
                         | BGFX_STATE_CULL_MASK
                         | BGFX_STATE_MSAA
                         | BGFX_STATE_PT_TRISTRIP
                         | BGFX_STATE_BLEND_ALPHA;
 
-                    bgfx::setState(state);
-                    // Lines::RenderLines(0.0f, 0.0f, cosf(time) * (m_width / 2), sinf(time) * (m_height / 2));
-                    // for(float i = 0; i < 5; i++) {
-                    //     Lines::RenderLines((i * 50.0) + 50.0, m_height * 0.25, (i * 50.0) + 300.0, m_height * 0.75);
-                    // }
 
-                    Lines::RenderLines(-1000.0, 0.0, m_width - 100.0, m_height - 100.0);
-                    // Lines::RenderLines(100.0, m_height * 0.25, 400.0, m_height * 0.75);
+                    // Lines::RenderLines(0.0f, 0.0f, cosf(time) * (m_width / 2), sinf(time) * (m_height / 2));
+                    for(float i = 0; i < 10; i++) {
+                        Lines::SetThickness(i + 1);
+                        Lines::RenderLines((i * 100.0) + 50.0, m_height * 0.25, (i * 100.0) + 300.0, m_height * 0.75, state);
+                    }
 
                     bgfx::frame();
 

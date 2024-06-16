@@ -15,7 +15,7 @@ class Lines {
     public:
         static void Init();
         static void Shutdown();
-        static void RenderLines(float x0, float y0, float x1, float y1);
+        static void RenderLines(float x0, float y0, float x1, float y1, uint64_t state);
 
         static void SetResolution(float width, float height) {
             s_data.resolution[0] = width; 

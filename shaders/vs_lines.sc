@@ -22,7 +22,7 @@ void main() {
 
     vec4 p = u_p0 + (a_position.x * T * l) + (u * T * t) + (v * O * t);
 
-    p = p / u_resolution;
+    p = (2*p / u_resolution) - 1;
     gl_Position = vec4(p.xy, 0.0, 1.0);
 
     T = vec4(1.0, 0.0, 0.0, 0.0);
