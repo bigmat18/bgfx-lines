@@ -9,7 +9,7 @@ class Lines {
             float resolution[2];
             float antialias;
             float thickness;
-            float alpha;
+            float color[4];
         } LinesData;
 
     public:
@@ -26,7 +26,12 @@ class Lines {
 
         static void SetThickness(float thickness) { s_data.thickness = thickness; }
 
-        static void SetAlpha(float alpha) { s_data.alpha = alpha; }
+        static void SetColor(float r, float g, float b, float alpha) { 
+            s_data.color[0] = r;
+            s_data.color[1] = g;
+            s_data.color[2] = b;
+            s_data.color[3] = alpha;
+        }
 
     private:
         static bgfx::ProgramHandle LoadProgram(const char* vs_name, const char* fs_name);
@@ -45,7 +50,7 @@ class Lines {
         static bgfx::UniformHandle u_resolution;
         static bgfx::UniformHandle u_antialias;
         static bgfx::UniformHandle u_thickness;
-        static bgfx::UniformHandle u_alpha;
+        static bgfx::UniformHandle u_color;
 
         static bgfx::UniformHandle u_p0;
         static bgfx::UniformHandle u_p1;

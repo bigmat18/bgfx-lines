@@ -47,7 +47,7 @@ namespace {
                 Lines::SetResolution(m_width, m_height);
                 Lines::SetThickness(10);
                 Lines::SetAntialis(100);
-                Lines::SetAlpha(1);
+                Lines::SetColor(1.0, 0.0, 1.0, 1.0);
             }
 
             virtual int shutdown() override {
@@ -112,7 +112,13 @@ namespace {
 
                     bgfx::setState(state);
                     // Lines::RenderLines(0.0f, 0.0f, cosf(time) * (m_width / 2), sinf(time) * (m_height / 2));
-                    Lines::RenderLines(0.0f, 0.0f, m_width - 100, m_height - 100);
+                    // for(float i = 0; i < 5; i++) {
+                    //     Lines::RenderLines((i * 50.0) + 50.0, m_height * 0.25, (i * 50.0) + 300.0, m_height * 0.75);
+                    // }
+
+                    Lines::RenderLines(-1000.0, 0.0, m_width - 100.0, m_height - 100.0);
+                    // Lines::RenderLines(100.0, m_height * 0.25, 400.0, m_height * 0.75);
+
                     bgfx::frame();
 
                     return true;
