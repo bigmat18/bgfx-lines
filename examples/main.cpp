@@ -77,14 +77,19 @@ namespace {
                     
                     imguiEndFrame();
 
-                    float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+                    int64_t now = bx::getHPCounter();
+                    static int64_t last = now;
+                    const int64_t frameTime = now - last;
+                    last = now;
+                    const double freq = double(bx::getHPFrequency());
+                    const float time = (float)((now - m_timeOffset) / double(bx::getHPFrequency()));
+                    const float deltaTime = float(frameTime / freq);
 
-                    const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-                    const bx::Vec3 eye = {0.0f, 0.0f, -5.0f};
+                    cameraUpdate(deltaTime * 0.1, m_mouseState);
 
                     {
                         float view[16];
-                        bx::mtxLookAt(view, eye, at);
+                        cameraGetViewMtx(view);
 
                         float proj[16];
                         bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
@@ -132,7 +137,6 @@ namespace {
             uint32_t m_debug;
             uint32_t m_reset;
             uint64_t m_timeOffset;
-            uint64_t m_time;
     };
 }
 
