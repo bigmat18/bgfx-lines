@@ -37,9 +37,19 @@ namespace {
                 bgfx::setDebug(m_debug);
                 bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 
+                horizontal_rotation = 0.0f;
+                vertical_rotation = 0.0f;
+
+                lastX = horizontal_rotation;
+                lastY = vertical_rotation; 
+
                 Lines::Init();
                 cameraCreate();
                 cameraSetPosition({0.0f, 0.0f, -5.0f});
+
+                cameraSetHorizontalAngle(horizontal_rotation);
+                cameraSetVerticalAngle(vertical_rotation);
+                
                 imguiCreate();
 
                 m_timeOffset = bx::getHPCounter();
@@ -74,7 +84,7 @@ namespace {
                         ImVec2(m_width - m_width / 5.0f - 10.0f, 10.0f), ImGuiCond_FirstUseEver);
                     ImGui::SetNextWindowSize(
                         ImVec2(m_width / 5.0f, m_height / 3.5f), ImGuiCond_FirstUseEver);
-                    
+
                     imguiEndFrame();
 
                     int64_t now = bx::getHPCounter();
@@ -84,6 +94,21 @@ namespace {
                     const double freq = double(bx::getHPFrequency());
                     const float time = (float)((now - m_timeOffset) / double(bx::getHPFrequency()));
                     const float deltaTime = float(frameTime / freq);
+
+                    float nowX = FROM_PX_TO_NORM(m_mouseState.m_mx, m_width);
+                    float nowY = FROM_PX_TO_NORM(m_mouseState.m_my, m_height);
+
+                    float offsetX = nowX  - lastX;
+                    float offsetY = lastY - nowY;
+
+                    lastX = nowX;
+                    lastY = nowY;
+
+                    horizontal_rotation += offsetX * 0.1;
+                    vertical_rotation += offsetY * 0.1;
+
+                    cameraSetHorizontalAngle(horizontal_rotation);
+                    cameraSetVerticalAngle(vertical_rotation);
 
                     cameraUpdate(deltaTime * 0.1, m_mouseState);
 
@@ -137,6 +162,12 @@ namespace {
             uint32_t m_debug;
             uint32_t m_reset;
             uint64_t m_timeOffset;
+
+            float horizontal_rotation; // pitch
+            float vertical_rotation; // yaw
+
+            float lastX;
+            float lastY;
     };
 }
 
