@@ -147,7 +147,13 @@ namespace {
                     // Lines::RenderLines(0.0f, 0.0f, cosf(time) * (m_width / 2), sinf(time) * (m_height / 2));
                     for(float i = 0; i < 10; i++) {
                         Lines::SetThickness(i + 1);
-                        Lines::RenderLines((i * 100.0) + 50.0, m_height * 0.25, (i * 100.0) + 300.0, m_height * 0.75, state);
+                        Lines::RenderLines((i * 100.0) + 50.0,    //x0
+                                            m_height * 0.25,      // y0
+                                            i,                 // z0
+                                            (i * 100.0) + 300.0,  // x1
+                                            m_height * 0.75,      // y0
+                                            0.0f,                 // z1
+                                            state);
                     }
 
                     bgfx::frame();

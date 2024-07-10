@@ -10,9 +10,7 @@ bgfx::IndexBufferHandle     Lines::s_ibh;
 const char*                 Lines::vs_name = "vs_lines";
 const char*                 Lines::fs_name = "fs_lines";
 
-bgfx::UniformHandle         Lines::u_resolution;
-bgfx::UniformHandle         Lines::u_antialias;
-bgfx::UniformHandle         Lines::u_thickness;
+bgfx::UniformHandle         Lines::u_data;
 bgfx::UniformHandle         Lines::u_color;
 bgfx::UniformHandle         Lines::u_p0;
 bgfx::UniformHandle         Lines::u_p1;
@@ -46,9 +44,7 @@ void Lines::Init() {
     );
     s_program = Lines::LoadProgram(vs_name, fs_name);
 
-    u_resolution = bgfx::createUniform("u_resolution", bgfx::UniformType::Vec4);
-    u_antialias = bgfx::createUniform("u_antialias", bgfx::UniformType::Vec4);
-    u_thickness = bgfx::createUniform("u_thickness", bgfx::UniformType::Vec4);
+    u_data = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
     u_color = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
 
     u_p0 = bgfx::createUniform("u_p0", bgfx::UniformType::Vec4);
@@ -61,22 +57,15 @@ void Lines::Shutdown() {
     bgfx::destroy(s_program);
 }
 
-void Lines::RenderLines(float x0, float y0, float x1, float y1, uint64_t state) {
-    float resolution[] = {s_data.resolution[0], s_data.resolution[1], 0.0f, 0.0f};
-    bgfx::setUniform(u_resolution, resolution);
-
-    float antialis[] = {s_data.antialias, 0.0f, 0.0f, 0.0f};
-    bgfx::setUniform(u_antialias, antialis);
-
-    float thickness[] = {s_data.thickness, 0.0f, 0.0f, 0.0f};
-    bgfx::setUniform(u_thickness, thickness);
-    
+void Lines::RenderLines(float x0, float y0, float z0, float x1, float y1, float z1, uint64_t state) {
+    float data[] = {s_data.resolution[0], s_data.resolution[1], s_data.antialias, s_data.thickness};
+    bgfx::setUniform(u_data, data);
     bgfx::setUniform(u_color, s_data.color);
 
-    float p0[] = {x0, y0, 0.0f, 0.0f};
+    float p0[] = {x0, y0, z0, 0.0f};
     bgfx::setUniform(u_p0, p0);
 
-    float p1[] = {x1, y1, 0.0f, 0.0f};
+    float p1[] = {x1, y1, z1, 0.0f};
     bgfx::setUniform(u_p1, p1);
 
     bgfx::setVertexBuffer(0, s_vbh);

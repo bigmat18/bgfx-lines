@@ -15,7 +15,7 @@ class Lines {
     public:
         static void Init();
         static void Shutdown();
-        static void RenderLines(float x0, float y0, float x1, float y1, uint64_t state);
+        static void RenderLines(float x0, float y0, float z0, float x1, float y1, float z1, uint64_t state);
 
         static void SetResolution(float width, float height) {
             s_data.resolution[0] = width; 
@@ -47,9 +47,7 @@ class Lines {
         static const float s_vertices[];
         static const uint32_t s_indices[];
 
-        static bgfx::UniformHandle u_resolution;
-        static bgfx::UniformHandle u_antialias;
-        static bgfx::UniformHandle u_thickness;
+        static bgfx::UniformHandle u_data;
         static bgfx::UniformHandle u_color;
 
         static bgfx::UniformHandle u_p0;
