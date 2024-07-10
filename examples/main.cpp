@@ -95,8 +95,11 @@ namespace {
                     const float time = (float)((now - m_timeOffset) / double(bx::getHPFrequency()));
                     const float deltaTime = float(frameTime / freq);
 
-                    float nowX = FROM_PX_TO_NORM(m_mouseState.m_mx, m_width);
-                    float nowY = FROM_PX_TO_NORM(m_mouseState.m_my, m_height);
+                    float nowX = ((2.0f * m_mouseState.m_mx / m_width) - 1.0f);
+                    float nowY = ((2.0f * m_mouseState.m_my / m_height) - 1.0f);
+
+                    // bx::debugPrintf("(%d, %d)", m_mouseState.m_mx, m_mouseState.m_my);
+                    // bx::debugPrintf("(%f, %f)", nowX, nowY);
 
                     float offsetX = nowX  - lastX;
                     float offsetY = lastY - nowY;
@@ -104,8 +107,8 @@ namespace {
                     lastX = nowX;
                     lastY = nowY;
 
-                    horizontal_rotation += offsetX * 0.1;
-                    vertical_rotation += offsetY * 0.1;
+                    horizontal_rotation += offsetX * 2.0f;
+                    vertical_rotation += offsetY * 2.0f;
 
                     cameraSetHorizontalAngle(horizontal_rotation);
                     cameraSetVerticalAngle(vertical_rotation);
