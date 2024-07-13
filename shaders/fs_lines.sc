@@ -1,4 +1,4 @@
-$input v_p, v_p0, v_p1
+$input v_p, v_p0, v_p1, v_color
 #include <bgfx_shader.sh>
 
 uniform vec4 u_color;
@@ -18,9 +18,9 @@ void main() {
 	}
 
 	if(d < 0) {
-		gl_FragColor = vec4(u_color.xyz, u_color.w);
+		gl_FragColor = vec4(v_color.xyz, v_color.w);
 	} else {
 		d = exp(-d); 
-		gl_FragColor = vec4(u_color.xyz, d * u_color.w);
+		gl_FragColor = vec4(v_color.xyz, d * v_color.w);
 	}
 }

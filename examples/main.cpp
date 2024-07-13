@@ -98,9 +98,6 @@ namespace {
                     float nowX = ((2.0f * m_mouseState.m_mx / m_width) - 1.0f);
                     float nowY = ((2.0f * m_mouseState.m_my / m_height) - 1.0f);
 
-                    // bx::debugPrintf("(%d, %d)", m_mouseState.m_mx, m_mouseState.m_my);
-                    // bx::debugPrintf("(%f, %f)", nowX, nowY);
-
                     float offsetX = nowX  - lastX;
                     float offsetY = lastY - nowY;
 
@@ -114,7 +111,6 @@ namespace {
                     cameraSetVerticalAngle(vertical_rotation);
 
                     cameraUpdate(deltaTime * 0.1, m_mouseState);
-
                     {
                         float view[16];
                         cameraGetViewMtx(view);
@@ -143,13 +139,12 @@ namespace {
                         | BGFX_STATE_PT_TRISTRIP
                         | BGFX_STATE_BLEND_ALPHA;
 
-
                     // Lines::RenderLines(0.0f, 0.0f, cosf(time) * (m_width / 2), sinf(time) * (m_height / 2));
                     for(float i = 0; i < 10; i++) {
                         Lines::SetThickness(i + 1);
-                        Lines::RenderLines((i * 100.0) + 50.0,    //x0
+                        Lines::RenderLines((i * 100.0) + 50.0,    // x0
                                             m_height * 0.25,      // y0
-                                            i,                 // z0
+                                            0.0f,                 // z0
                                             (i * 100.0) + 300.0,  // x1
                                             m_height * 0.75,      // y0
                                             0.0f,                 // z1
