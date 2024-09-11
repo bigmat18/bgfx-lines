@@ -13,6 +13,7 @@ message(STATUS "bgfx.cmake external library")
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/bgfx.cmake)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB SOURCES "src/*.cpp")
 add_library(bgfx-lines ${SOURCES})

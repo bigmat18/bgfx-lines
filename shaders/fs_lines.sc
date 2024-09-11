@@ -1,9 +1,7 @@
 $input v_p, v_p0, v_p1, v_color
 #include <bgfx_shader.sh>
 
-uniform vec4 u_color;
 uniform vec4 u_data;
-
 #define u_thickness     u_data.w
 
 void main() {
