@@ -72,14 +72,12 @@ void main() {
     }
 } """
 
-window = app.Window(2 * 512, 512, color=(1, 1, 1, 1))
-
+window = app.Window(2*512, 512, color=(1,1,1,1))
 
 @window.event
 def on_resize(width, height):
     spiral["resolution"] = width, height
     star["resolution"] = width, height
-
 
 @window.event
 def on_draw(dt):
@@ -87,54 +85,63 @@ def on_draw(dt):
     spiral.draw(gl.GL_TRIANGLE_STRIP)
     star.draw(gl.GL_TRIANGLE_STRIP)
 
-
 def star(inner=0.45, outer=1.0, n=5):
-    R = np.array([inner, outer] * n)
-    T = np.linspace(0, 2 * np.pi, 2 * n, endpoint=False)
-    P = np.zeros((2 * n, 2))
-    P[:, 0] = R * np.cos(T)
-    P[:, 1] = R * np.sin(T)
+    R = np.array([inner,outer]*n)
+    T = np.linspace(0, 2*np.pi, 2*n, endpoint=False)
+    P = np.zeros((2*n,2))
+    P[:,0]= R*np.cos(T)
+    P[:,1]= R*np.sin(T)
     return P
 
-
 def bake(P, closed=False):
+    print(P, "\n===========")
     epsilon = 1e-10
     n = len(P)
-    if closed and ((P[0] - P[-1]) ** 2).sum() > epsilon:
+    if closed and ((P[0]-P[-1])**2).sum() > epsilon:
         P = np.append(P, P[0])
-        P = P.reshape(n + 1, 2)
-        n = n + 1
-    V = np.zeros(((1 + n + 1), 2, 4), dtype=np.float32)
+        P = P.reshape(n+1,2)
+        n = n+1
+    V = np.zeros(((1+n+1),2,4), dtype=np.float32)
+    print(V, "\n==============")
     V_prev, V_curr, V_next = V[:-2], V[1:-1], V[2:]
-    V_curr[..., 0] = P[:, np.newaxis, 0]
-    V_curr[..., 1] = P[:, np.newaxis, 1]
-    V_curr[..., 2] = 1, -1
-    L = np.cumsum(np.sqrt(((P[1:] - P[:-1]) ** 2).sum(axis=-1))).reshape(n - 1, 1)
-    V_curr[1:, :, 3] = L
+    print(V_prev, V_curr, V_next, "\n==============")
+
+    print(P[:,np.newaxis,0])
+    V_curr[...,0] = P[:,np.newaxis,0]
+    print(V_curr, "\n==============")
+
+    print(P[:,np.newaxis,1])
+    V_curr[...,1] = P[:,np.newaxis,1]
+    print(V_curr, "\n==============")
+    V_curr[...,2] = 1,-1
+    print(V_curr, "\n==============")
+
+    L = np.cumsum(np.sqrt(((P[1:]-P[:-1])**2).sum(axis=-1))).reshape(n-1,1)
+    V_curr[1:,:,3] = L
+    print(V_curr)
     if closed:
         V[0], V[-1] = V[-3], V[2]
     else:
         V[0], V[-1] = V[1], V[-2]
     return V_prev, V_curr, V_next, L[-1]
 
-
-n = 1024
-T = np.linspace(0, 12 * 2 * np.pi, n, dtype=np.float32)
+n = 5
+T = np.linspace(0, 12*2*np.pi, n, dtype=np.float32)
 R = np.linspace(10, 246, n, dtype=np.float32)
-P = np.dstack((256 + np.cos(T) * R, 256 + np.sin(T) * R)).squeeze()
+P = np.dstack((256+np.cos(T)*R, 256+np.sin(T)*R)).squeeze()
 V_prev, V_curr, V_next, length = bake(P)
-spiral = gloo.Program(vertex, fragment)
-spiral["prev"], spiral["curr"], spiral["next"] = V_prev, V_curr, V_next
-spiral["thickness"] = 1.0
-spiral["antialias"] = 1.5
-spiral["linelength"] = length
 
-P = (star(n=5) * 220 + (512 + 256, 256)).astype(np.float32)
-V_prev, V_curr, V_next, length = bake(P, True)
-star = gloo.Program(vertex, fragment)
-star["prev"], star["curr"], star["next"] = V_prev, V_curr, V_next
-star["thickness"] = 32.0
-star["antialias"] = 1.5
-star["linelength"] = length
+# spiral = gloo.Program(vertex, fragment)
+# spiral["prev"], spiral["curr"], spiral["next"]  = V_prev, V_curr, V_next
+# spiral["thickness"] = 1.0
+# spiral["antialias"] = 1.5
+# spiral["linelength"] = length
 
-app.run()
+# P = (star(n=5)*220 + (512+256,256)).astype(np.float32)
+# V_prev, V_curr, V_next, length = bake(P, True)
+# star = gloo.Program(vertex, fragment)
+# star["prev"], star["curr"], star["next"]  = V_prev, V_curr, V_next
+# star["thickness"] = 32.0
+# star["antialias"] = 1.5
+# star["linelength"] = length
+

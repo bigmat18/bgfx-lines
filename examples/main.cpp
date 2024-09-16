@@ -107,13 +107,18 @@ namespace {
                     horizontal_rotation += offsetX * 2.0f;
                     vertical_rotation += offsetY * 2.0f;
 
-                    cameraSetHorizontalAngle(horizontal_rotation);
-                    cameraSetVerticalAngle(vertical_rotation);
+                    //cameraSetHorizontalAngle(horizontal_rotation);
+                    //cameraSetVerticalAngle(vertical_rotation);
 
-                    cameraUpdate(deltaTime * 0.1, m_mouseState);
+                    //cameraUpdate(deltaTime * 0.1, m_mouseState);
+                    const bx::Vec3 at  = { 0.0f, 0.0f,   0.0f };
+			        const bx::Vec3 eye = { 0.0f, 0.0f, -3.0f };
+
                     {
                         float view[16];
-                        cameraGetViewMtx(view);
+                        bx::mtxLookAt(view, eye, at);
+
+                        //cameraGetViewMtx(view);
 
                         float proj[16];
                         bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
