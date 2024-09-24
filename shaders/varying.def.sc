@@ -1,6 +1,6 @@
-vec4 v_p          : POSITION;
-vec4 v_p0         : POSITION;
-vec4 v_p1         : POSITION;
+vec4 v_uv         : POSITION;
 vec4 v_color      : COLOR0;
 
-vec3 a_position   : POSITION;
+vec4 a_color0       : COLOR0;
+vec4 a_color1       : COLOR1;
+vec4 a_color2       : COLOR2;

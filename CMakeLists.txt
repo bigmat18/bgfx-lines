@@ -6,6 +6,7 @@ else()
     cmake_policy(VERSION 3.29)
 endif()
 
+
 project(bgfx-lines)
 include(${PROJECT_SOURCE_DIR}/cmake/bgfx_utils.cmake)
 

@@ -1,14 +1,14 @@
-$input a_position
-$utput v_uv, v_color, 
+$input a_color0, a_color1, a_color2
+$output v_uv, v_color
 
 #include <bgfx_shader.sh>
 
-uniform vec4 u_prev;
-uniform vec4 u_curr;
-uniform vec4 u_next;
-
 uniform vec4 u_data;
 uniform vec4 u_color;
+
+#define a_prev a_color0
+#define a_curr a_color1
+#define a_next a_color2
 
 #define u_width         u_data.x
 #define u_heigth        u_data.y
@@ -26,28 +26,35 @@ void main() {
     v_color = u_color;
     float width = u_thickness / 2.0 + u_antialias;
 
-    vec4 T1 = normalize(u_curr.xy - u_prev.xy, 0.0, 0.0);
-    vec5 O1 = vec4(-T1.y , T1.x, 0.0, 0.0);
+    vec4 T0 = vec4(normalize(a_curr.xy - a_prev.xy).xy, 0.0, 0.0);
+    vec4 N0 = vec4(-T0.y , T0.x, 0.0, 0.0);
 
-    vec4 T2 = normalize(u_next.xy - u_curr.xy, 0.0, 0.0);
-    vec4 O2 = vec4(-T2.y, T2.x, 0.0, 0.0);
+    vec4 T1 = vec4(normalize(a_next.xy - a_curr.xy).xy, 0.0, 0.0);
+    vec4 N1 = vec4(-T1.y, T1.x, 0.0, 0.0);
 
     vec4 p;
 
-    if(u_prev == u_curr) {
-      v_uv = vec4(-w, u_curr.z * w);
-      p = curr.xy - (width * T2) + (u_curr.z * width * T2);
-    } else if (u_curr == u_next) {
-      float length = length(u_next - u_curr);
-      v_uv = vec4(length + width, u_curr.z * width);
-      p = u_curr.xy + (width * T1) + (u_curr.z * width * T1);
+    if(a_prev.x == a_curr.x && a_prev.y == a_curr.y) {
+      
+      v_uv = vec4(-width, a_curr.z * width, 0.0, 1.0);
+      p = vec4(a_curr.xy, 0.0, 0.0) - (width * T1) + (a_curr.z * width * T1);
+
+    } else if (a_curr.x == a_next.x && a_curr.y == a_next.y) {
+      
+      float length = length(a_next - a_curr);
+      v_uv = vec4(length + width, a_curr.z * width, 0.0, 1.0);
+      p = vec4(a_curr.xy, 0.0, 0.0) + (width * T0) + (a_curr.z * width * T0);
+
     } else {
-      vec4 miter = normalize (O1 + O2, 0.0, 0.0);
-      float dy = width / dot(miter, O2);
-      v_uv = vec4(u_curr.w, u_curr.z * width);
-      p = u_curr.xy + (dy * curr.z * miter);
+      
+      vec4 miter = normalize(N0 + N1);
+      float dy = width / dot(miter, N1);
+
+      v_uv = vec4(a_curr.w, a_curr.z * width, 0.0, 1.0);
+      p = vec4(a_curr.xy, 0.0, 0.0) + (dy * a_curr.z * miter);
+
     }
 
     p = ScreenToClip(p, u_width, u_heigth);
-    gl_Position = mul(u_modelViewProj, vec4(p.xyz, 1.0));
+    gl_Position = vec4(a_curr.x, a_curr.y * a_curr.z, 0.0, 1.0);
 }
