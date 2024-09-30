@@ -31,9 +31,9 @@ std::vector<uint32_t>       Lines::s_indices;
 void Lines::Init() {
     s_layout
         .begin()
-        .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Float, false)
-        .add(bgfx::Attrib::Color1, 4, bgfx::AttribType::Float, false)
-        .add(bgfx::Attrib::Color2, 4, bgfx::AttribType::Float, false)
+        .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::TexCoord0, 4, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
         .end();
 
     s_program = Lines::LoadProgram(vs_name, fs_name);
@@ -57,8 +57,6 @@ void Lines::BeginLine(const float antialias, const float thickness) {
 
     Lines::SetAntialis(antialias);
     Lines::SetThickness(thickness);
-
-    std::cout << s_data.antialias << s_data.thickness << std::endl;
 }
 
 void Lines::AddPoint(const Lines::Point& point) {
@@ -70,14 +68,12 @@ void Lines::EndLine() {
     std::vector<std::array<std::array<float, 4>, 2>> curr(s_Points.size());
     std::vector<std::array<std::array<float, 4>, 2>> next(s_Points.size());
 
-    float length = 0;
-
     for(uint32_t i = 0; i < s_Points.size(); i++) {
-        length += CalculateDistance(s_Points[i-1 != -1 ? i-1 : 0], s_Points[i]);
+        s_data.length += CalculateDistance(s_Points[i-1 != -1 ? i-1 : 0], s_Points[i]);
 
         std::array<std::array<float, 4>, 2> element = {{
-            {s_Points[i].x, s_Points[i].y, 1.0, length},
-            {s_Points[i].x, s_Points[i].y, -1.0, length}
+            {s_Points[i].x, s_Points[i].y, 1.0, s_data.length},
+            {s_Points[i].x, s_Points[i].y, -1.0, s_data.length}
         }};
 
         curr[i] = element;
@@ -98,25 +94,11 @@ void Lines::EndLine() {
             }};
         }
     }
-    float dataLength[] = {length, 0.0, 0.0, 0.0};
-    bgfx::setUniform(u_length,dataLength);
 
     for(uint32_t i = 0; i < curr.size(); i++) {
-        std::cout << "prev0: " << prev[i][0][0] << ", " << prev[i][0][1] << ", " << prev[i][0][2] << ", "<<prev[i][0][3] << std::endl;
-        std::cout << "prev1: " << prev[i][1][0] << ", " << prev[i][1][1] << ", " << prev[i][1][2] << ", "<<prev[i][1][3] << std::endl << std::endl;
-
-
-        std::cout << "curr0: " << curr[i][0][0] << ", " << curr[i][0][1] << ", " << curr[i][0][2] << ", "<<curr[i][0][3] << std::endl;
-        std::cout << "curr1: " << curr[i][1][0] << ", " << curr[i][1][1] << ", " << curr[i][1][2] << ", "<<curr[i][1][3] << std::endl << std::endl;
-
-        std::cout << "next0: " << next[i][0][0] << ", " << next[i][0][1] << ", " << next[i][0][2] << ", "<<next[i][0][3] << std::endl;
-        std::cout << "next1: " << next[i][1][0] << ", " << next[i][1][1] << ", " << next[i][1][2] << ", "<<next[i][1][3] << std::endl << std::endl;
     
         s_vertices.push_back(prev[i][0][0]);
         s_vertices.push_back(prev[i][0][1]);
-        s_vertices.push_back(prev[i][0][2]);
-        s_vertices.push_back(prev[i][0][3]);
-
 
         s_vertices.push_back(curr[i][0][0]);
         s_vertices.push_back(curr[i][0][1]);
@@ -125,15 +107,10 @@ void Lines::EndLine() {
 
         s_vertices.push_back(next[i][0][0]);
         s_vertices.push_back(next[i][0][1]);
-        s_vertices.push_back(next[i][0][2]);
-        s_vertices.push_back(next[i][0][3]);
-
 
 
         s_vertices.push_back(prev[i][0][0]);
         s_vertices.push_back(prev[i][0][1]);
-        s_vertices.push_back(prev[i][0][2]);
-        s_vertices.push_back(prev[i][0][3]);
 
         s_vertices.push_back(curr[i][1][0]);
         s_vertices.push_back(curr[i][1][1]);
@@ -142,14 +119,7 @@ void Lines::EndLine() {
 
         s_vertices.push_back(next[i][0][0]);
         s_vertices.push_back(next[i][0][1]);
-        s_vertices.push_back(next[i][0][2]);
-        s_vertices.push_back(next[i][0][3]);
     }
-
-    s_vbh = bgfx::createVertexBuffer(
-        bgfx::makeRef(s_vertices.data(), sizeof(float) * s_vertices.size()),
-        s_layout
-    );
 
     for(uint32_t i = 0; i < s_Points.size(); i+=2) {
         s_indices.push_back(i);
@@ -161,28 +131,36 @@ void Lines::EndLine() {
         s_indices.push_back(i+2);
     }
 
-    s_ibh = bgfx::createIndexBuffer(
-        bgfx::makeRef(s_indices.data(), sizeof(uint32_t) * s_indices.size())
+    s_vbh = bgfx::createVertexBuffer(
+        bgfx::makeRef(&s_vertices[0], sizeof(float) * s_vertices.size()),
+        s_layout
     );
 
-    for(int i = 0; i < s_vertices.size(); i+=12) {
-        std::cout << s_vertices[i] << " " << s_vertices[i+1] << " " << s_vertices[i+2] << " " << s_vertices[i+3] << std::endl;
-        std::cout << s_vertices[i+4] << " " << s_vertices[i+5] << " " << s_vertices[i+6] << " " << s_vertices[i+7] << std::endl;
-        std::cout << s_vertices[i+8] << " " << s_vertices[i+9] << " " << s_vertices[i+10] << " " << s_vertices[i+11] << std::endl << std::endl;
-    }
-        
-    for(int i = 0; i < s_indices.size(); i+=3)
-        std::cout << s_indices[i] << " " << s_indices[i+1] << " " << s_indices[i+2] << " " << std::endl;
+    s_ibh = bgfx::createIndexBuffer(
+        bgfx::makeRef(&s_indices[0], sizeof(uint32_t) * s_indices.size()),
+        BGFX_BUFFER_INDEX32
+    );
 
-    //std::cout << s_data.antialias << " " << s_data.thickness << std::endl;
-    //std::cout << s_data.color[0] << " " << s_data.color[1] << " " << s_data.color[2] << " " << s_data.color[3] << std::endl;
+    #ifdef DEBUGGING
+        for(int i = 0; i < s_vertices.size(); i+=8) {
+            std::cout << s_vertices[i] << " " << s_vertices[i+1] << std::endl;
+            std::cout << s_vertices[i+2] << " " << s_vertices[i+3] << " " << s_vertices[i+4] << " " << s_vertices[i+5] << std::endl;
+            std::cout << s_vertices[i+6] << " " << s_vertices[i+7] << std::endl << std::endl;
+        }
+            
+        for(int i = 0; i < s_indices.size(); i+=3)
+            std::cout << s_indices[i] << " " << s_indices[i+1] << " " << s_indices[i+2] << std::endl;
+    #endif
 }
 
 void Lines::RenderLine(uint64_t state) {
     float data[] = {s_data.resolution[0], s_data.resolution[1], s_data.antialias, s_data.thickness};
     bgfx::setUniform(u_data, data);
     bgfx::setUniform(u_color, s_data.color);
- 
+
+    float dataLength[] = {s_data.length, 0.0, 0.0, 0.0};
+    bgfx::setUniform(u_length, dataLength);
+
     bgfx::setVertexBuffer(0, s_vbh);
     bgfx::setIndexBuffer(s_ibh);
     bgfx::setState(state);

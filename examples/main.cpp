@@ -1,4 +1,7 @@
 #define ENTRY_CONFIG_IMPLEMENT_MAIN 1
+#define ENTRY_DEFAULT_WIDTH 1024
+#define ENTRY_DEFAULT_HEIGHT 1024
+
 #include <bx/uint32_t.h>
 #include <common.h>
 #include <camera.h>
@@ -17,7 +20,7 @@ namespace {
 
             void init(int32_t _argc, const char *const *_argv, uint32_t _width, uint32_t _height) override {
                 Args args(_argc, _argv);
-
+                
                 m_width = _width;
                 m_height = _height;
                 m_debug = BGFX_DEBUG_TEXT;
@@ -49,7 +52,7 @@ namespace {
 
                 cameraSetHorizontalAngle(horizontal_rotation);
                 cameraSetVerticalAngle(vertical_rotation);
-                
+
                 imguiCreate();
 
                 m_timeOffset = bx::getHPCounter();
@@ -60,9 +63,23 @@ namespace {
                 float antialis = 4;
                 float thickness = 2;
                 Lines::BeginLine(antialis, thickness);
-                Lines::AddPoint(Lines::Point({0.5, 0.5}));
-                Lines::AddPoint(Lines::Point({0.75, 0.5}));
-                Lines::AddPoint(Lines::Point({0.95, 0.35}));
+
+                float a = 0.0;          // Raggio iniziale
+                float b = 3;            // Fattore di crescita della spirale
+                int numPoints = 1000;    // Numero di punti da generare
+                float angleStep = 0.1;    // Incremento dell'angolo tra un punto e l'altro (in radianti)
+
+                for(int i = 0; i < numPoints; ++i) {
+                    float theta = i * angleStep; // Angolo corrente
+                    float r = a + b * theta;     // Raggio corrispondente
+                    float x = r * cos(theta);    // Coordinate cartesiane
+                    float y = r * sin(theta);
+
+                    Lines::AddPoint(Lines::Point({x + (m_width/2), y + (m_height/2)}));
+                }
+                // Lines::AddPoint(Lines::Point({100, 100}));
+                // Lines::AddPoint(Lines::Point({150, 150}));
+                // Lines::AddPoint(Lines::Point({200, 150}));
                 Lines::EndLine();
             }
 
@@ -132,17 +149,16 @@ namespace {
                     float mtx[16] = MTX_BASE;
                     bgfx::setTransform(mtx);
 
-
                     uint64_t state = 0
                         | BGFX_STATE_WRITE_R
                         | BGFX_STATE_WRITE_G
                         | BGFX_STATE_WRITE_B
                         | BGFX_STATE_WRITE_A
                         | BGFX_STATE_WRITE_Z
-                        | BGFX_STATE_DEPTH_TEST_ALWAYS
-                        | BGFX_STATE_CULL_MASK
+                        | BGFX_STATE_DEPTH_TEST_LESS
+                        | BGFX_STATE_CULL_CW
                         | BGFX_STATE_MSAA
-                        | BGFX_STATE_PT_TRISTRIP
+                        | UINT64_C(0)
                         | BGFX_STATE_BLEND_ALPHA;
 
                     Lines::RenderLine(state);

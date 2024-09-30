@@ -12,6 +12,7 @@ class Lines {
             float antialias;
             float thickness;
             float color[4];
+            float length;
         } LinesData;
 
         typedef struct {
