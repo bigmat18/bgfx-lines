@@ -8,6 +8,8 @@
 #include <ostream>
 #include <vector>
 
+#define DEBUGGING 1
+
 Lines::LinesData            Lines::s_data;
 std::vector<Lines::Point>   Lines::s_Points; 
 
@@ -31,9 +33,10 @@ std::vector<uint32_t>       Lines::s_indices;
 void Lines::Init() {
     s_layout
         .begin()
-        .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
-        .add(bgfx::Attrib::TexCoord0, 4, bgfx::AttribType::Float)
-        .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
         .end();
 
     s_program = Lines::LoadProgram(vs_name, fs_name);
@@ -64,61 +67,43 @@ void Lines::AddPoint(const Lines::Point& point) {
 }
 
 void Lines::EndLine() {
-    std::vector<std::array<std::array<float, 4>, 2>> prev(s_Points.size());
-    std::vector<std::array<std::array<float, 4>, 2>> curr(s_Points.size());
-    std::vector<std::array<std::array<float, 4>, 2>> next(s_Points.size());
+    std::vector<std::array<float, 4>> prev(s_Points.size());
+    std::vector<std::array<float, 4>> curr(s_Points.size());
+    std::vector<std::array<float, 4>> next(s_Points.size());
 
     for(uint32_t i = 0; i < s_Points.size(); i++) {
         s_data.length += CalculateDistance(s_Points[i-1 != -1 ? i-1 : 0], s_Points[i]);
-
-        std::array<std::array<float, 4>, 2> element = {{
-            {s_Points[i].x, s_Points[i].y, 1.0, s_data.length},
-            {s_Points[i].x, s_Points[i].y, -1.0, s_data.length}
-        }};
+        std::array<float, 4> element = {s_Points[i].x, s_Points[i].y, s_Points[i].z, s_data.length};
 
         curr[i] = element;
 
         if (i == 0) prev[i] = element;
-        else {
-            prev[i] = {{
-                {s_Points[i-1].x, s_Points[i-1].y, 1.0f, curr[i-1][0][3]}, 
-                {s_Points[i-1].x, s_Points[i-1].y, -1.0f, curr[i-1][0][3]}, 
-            }};
-        }
+        else prev[i] = {s_Points[i - 1].x, s_Points[i - 1].y, s_Points[i - 1].z, 0.0f};
 
         if (i == s_Points.size() - 1) next[i] = element;
-        else {
-            next[i] = {{
-                {s_Points[i+1].x, s_Points[i+1].y, 1.0f, curr[i][0][3] + CalculateDistance(s_Points[i], s_Points[i+1])}, 
-                {s_Points[i+1].x, s_Points[i+1].y, -1.0f, curr[i][0][3] + CalculateDistance(s_Points[i], s_Points[i+1])}, 
-            }};
-        }
+        else next[i] = {s_Points[i+1].x, s_Points[i+1].y, s_Points[i+1].z, 0.0f};
     }
 
-    for(uint32_t i = 0; i < curr.size(); i++) {
+    for(uint32_t i = 0; i < curr.size() * 2; i++) {
     
-        s_vertices.push_back(prev[i][0][0]);
-        s_vertices.push_back(prev[i][0][1]);
+        // a_position ==> prev(x,y,z)
+        s_vertices.push_back(prev[i/2][0]);
+        s_vertices.push_back(prev[i/2][1]);
+        s_vertices.push_back(prev[i/2][2]);
 
-        s_vertices.push_back(curr[i][0][0]);
-        s_vertices.push_back(curr[i][0][1]);
-        s_vertices.push_back(curr[i][0][2]);
-        s_vertices.push_back(curr[i][0][3]);
+        // a_texcoord0 ==> curr(x,y,z)
+        s_vertices.push_back(curr[i/2][0]);
+        s_vertices.push_back(curr[i/2][1]);
+        s_vertices.push_back(curr[i/2][2]);
 
-        s_vertices.push_back(next[i][0][0]);
-        s_vertices.push_back(next[i][0][1]);
+        // a_texcoord1 ==> next(x,y,z)
+        s_vertices.push_back(next[i/2][0]);
+        s_vertices.push_back(next[i/2][1]);
+        s_vertices.push_back(next[i/2][2]);
 
-
-        s_vertices.push_back(prev[i][0][0]);
-        s_vertices.push_back(prev[i][0][1]);
-
-        s_vertices.push_back(curr[i][1][0]);
-        s_vertices.push_back(curr[i][1][1]);
-        s_vertices.push_back(curr[i][1][2]);
-        s_vertices.push_back(curr[i][1][3]);
-
-        s_vertices.push_back(next[i][0][0]);
-        s_vertices.push_back(next[i][0][1]);
+        // a_texcoord2 ==> uv(up/low, distance)
+        s_vertices.push_back(i % 2 == 0 ? 1.0 : -1.0);
+        s_vertices.push_back(curr[i/2][3]);
     }
 
     for(uint32_t i = 0; i < s_Points.size(); i+=2) {
@@ -141,15 +126,23 @@ void Lines::EndLine() {
         BGFX_BUFFER_INDEX32
     );
 
-    #ifdef DEBUGGING
-        for(int i = 0; i < s_vertices.size(); i+=8) {
-            std::cout << s_vertices[i] << " " << s_vertices[i+1] << std::endl;
-            std::cout << s_vertices[i+2] << " " << s_vertices[i+3] << " " << s_vertices[i+4] << " " << s_vertices[i+5] << std::endl;
-            std::cout << s_vertices[i+6] << " " << s_vertices[i+7] << std::endl << std::endl;
+
+    #if DEBUGGING
+        for(int i = 0; i < s_vertices.size(); i+=11) {
+            std::cout << "Vertex buffer element " << i / 11 << std::endl;
+            std::cout << "Prev coord: " << s_vertices[i]     << " " << s_vertices[i + 1] << " " << s_vertices[i + 2] << std::endl;
+            std::cout << "Curr coord: " << s_vertices[i + 3] << " " << s_vertices[i + 4] << " " << s_vertices[i + 5] << std::endl;
+            std::cout << "Next coord: " << s_vertices[i + 6] << " " << s_vertices[i + 7] << " " << s_vertices[i + 8] << std::endl;
+            std::cout << "UV coord: "   << s_vertices[i + 9] << " " << s_vertices[i + 10] << " " << std::endl << std::endl;
         }
             
         for(int i = 0; i < s_indices.size(); i+=3)
             std::cout << s_indices[i] << " " << s_indices[i+1] << " " << s_indices[i+2] << std::endl;
+
+        std::cout << std::endl << "Line length: " << s_data.length << std::endl;
+        std::cout << "Thickness: " << s_data.thickness << std::endl;
+        std::cout << "Antialias: " << s_data.antialias << std::endl;
+        std::cout << "Screen size: (" << s_data.resolution[0] << ", " << s_data.resolution[1] << ")" << std::endl;
     #endif
 }
 

@@ -7,39 +7,49 @@
 import sys
 import ctypes
 import numpy as np
-from glumpy import app, gloo, gl
+from glumpy import app, gloo, gl, glm
 
 vertex = """
-uniform vec2 resolution;
-uniform float antialias;
-uniform float thickness;
-uniform float linelength;
-attribute vec4 prev, curr, next;
+uniform vec2 viewport;
+uniform mat4 model, view, projection;
+uniform float antialias, thickness, linelength;
+attribute vec3 prev, curr, next;
+attribute vec2 uv;
 varying vec2 v_uv;
 void main() {
+
+    // Normalized device coordinates
+    vec4 NDC_prev = projection * view * model * vec4(prev.xyz, 1.0);
+    vec4 NDC_curr = projection * view * model * vec4(curr.xyz, 1.0);
+    vec4 NDC_next = projection * view * model * vec4(next.xyz, 1.0);
+
+    // Viewport (screen) coordinates
+    vec2 screen_prev = viewport * ((NDC_prev.xy/NDC_prev.w) + 1.0)/2.0;
+    vec2 screen_curr = viewport * ((NDC_curr.xy/NDC_curr.w) + 1.0)/2.0;
+    vec2 screen_next = viewport * ((NDC_next.xy/NDC_next.w) + 1.0)/2.0;
+
+    vec2 position;
     float w = thickness/2.0 + antialias;
-    vec2 p;
+    vec2 t0 = normalize(screen_curr.xy - screen_prev.xy);
+    vec2 n0 = vec2(-t0.y, t0.x);
+    vec2 t1 = normalize(screen_next.xy - screen_curr.xy);
+    vec2 n1 = vec2(-t1.y, t1.x);
+    v_uv = vec2(uv.x, uv.y*w);
     if (prev.xy == curr.xy) {
-        vec2 t1 = normalize(next.xy - curr.xy);
-        vec2 n1 = vec2(-t1.y, t1.x);
-        v_uv = vec2(-w, curr.z*w);
-        p = curr.xy - w*t1 + curr.z*w*n1;
+        v_uv.x = -w;
+        position = screen_curr.xy - w*t1 + uv.y*w*n1;
     } else if (curr.xy == next.xy) {
-        vec2 t0 = normalize(curr.xy - prev.xy);
-        vec2 n0 = vec2(-t0.y, t0.x);
-        v_uv = vec2(linelength+w, curr.z*w);
-        p = curr.xy + w*t0 + curr.z*w*n0;
+        v_uv.x = linelength+w;
+        position = screen_curr.xy + w*t0 + uv.y*w*n0;
     } else {
-        vec2 t0 = normalize(curr.xy - prev.xy);
-        vec2 t1 = normalize(next.xy - curr.xy);
-        vec2 n0 = vec2(-t0.y, t0.x);
-        vec2 n1 = vec2(-t1.y, t1.x);
         vec2 miter = normalize(n0 + n1);
-        float dy = w / dot(miter, n1);
-        v_uv = vec2(curr.w, curr.z*w);
-        p = curr.xy + dy*curr.z*miter;
+        // The max operator avoid glitches when miter is too large
+        float dy = w / max(dot(miter, n1), 1.0);
+        position = screen_curr.xy + dy*uv.y*miter;
     }
-    gl_Position = vec4(2.0*p/resolution-1.0, 0.0, 1.0);
+
+    // Back to NDC coordinates
+    gl_Position = vec4(2.0*position/viewport-1.0, NDC_curr.z/NDC_curr.w, 1.0);
 } """
 
 fragment = """
@@ -47,101 +57,111 @@ uniform float antialias;
 uniform float thickness;
 uniform float linelength;
 varying vec2 v_uv;
-
 void main() {
     float d = 0;
     float w = thickness/2.0 - antialias;
 
+    vec3 color = vec3(0.0, 0.0, 0.0);
+
     // Cap at start
     if (v_uv.x < 0)
         d = length(v_uv) - w;
-
     // Cap at end
     else if (v_uv.x >= linelength)
         d = length(v_uv - vec2(linelength,0)) - w;
-
     // Body
     else
         d = abs(v_uv.y) - w;
-
     if( d < 0) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(color, 1.0);
     } else {
         d /= antialias;
-        gl_FragColor = vec4(0.0, 0.0, 0.0, exp(-d*d));
+        gl_FragColor = vec4(color, exp(-d*d));
     }
 } """
 
-window = app.Window(2*512, 512, color=(1,1,1,1))
+window = app.Window(512, 512, color=(1, 1, 1, 1))
+
 
 @window.event
 def on_resize(width, height):
-    spiral["resolution"] = width, height
-    star["resolution"] = width, height
+    spiral["projection"] = glm.perspective(30.0, width / float(height), 2.0, 100.0)
+    spiral["viewport"] = width, height
+
 
 @window.event
 def on_draw(dt):
+    global phi, theta, duration
     window.clear()
+    gl.glDepthMask(gl.GL_FALSE)
     spiral.draw(gl.GL_TRIANGLE_STRIP)
-    star.draw(gl.GL_TRIANGLE_STRIP)
+    theta += 1  # degrees
+    phi += 2  # degrees
+    model = np.eye(4, dtype=np.float32)
+    glm.rotate(model, theta, 0, 1, 0)
+    glm.rotate(model, phi, 1, 0, 0)
+    spiral["model"] = model
 
-def star(inner=0.45, outer=1.0, n=5):
-    R = np.array([inner,outer]*n)
-    T = np.linspace(0, 2*np.pi, 2*n, endpoint=False)
-    P = np.zeros((2*n,2))
-    P[:,0]= R*np.cos(T)
-    P[:,1]= R*np.sin(T)
-    return P
 
 def bake(P, closed=False):
-    print(P, "\n===========")
     epsilon = 1e-10
     n = len(P)
-    if closed and ((P[0]-P[-1])**2).sum() > epsilon:
+    if closed and ((P[0] - P[-1]) ** 2).sum() > epsilon:
         P = np.append(P, P[0])
-        P = P.reshape(n+1,2)
-        n = n+1
-    V = np.zeros(((1+n+1),2,4), dtype=np.float32)
-    print(V, "\n==============")
+        P = P.reshape(n + 1, 3)
+        n = n + 1
+    V = np.zeros(((1 + n + 1), 2, 3), dtype=np.float32)
+    UV = np.zeros((n, 2, 2), dtype=np.float32)
     V_prev, V_curr, V_next = V[:-2], V[1:-1], V[2:]
-    print(V_prev, V_curr, V_next, "\n==============")
-
-    print(P[:,np.newaxis,0])
-    V_curr[...,0] = P[:,np.newaxis,0]
-    print(V_curr, "\n==============")
-
-    print(P[:,np.newaxis,1])
-    V_curr[...,1] = P[:,np.newaxis,1]
-    print(V_curr, "\n==============")
-    V_curr[...,2] = 1,-1
-    print(V_curr, "\n==============")
-
-    L = np.cumsum(np.sqrt(((P[1:]-P[:-1])**2).sum(axis=-1))).reshape(n-1,1)
-    V_curr[1:,:,3] = L
-    print(V_curr)
+    V_curr[..., 0] = P[:, np.newaxis, 0]
+    V_curr[..., 1] = P[:, np.newaxis, 1]
+    V_curr[..., 2] = P[:, np.newaxis, 2]
+    L = np.cumsum(np.sqrt(((P[1:] - P[:-1]) ** 2).sum(axis=-1))).reshape(n - 1, 1)
+    UV[1:, :, 0] = L
+    UV[..., 1] = 1, -1
     if closed:
         V[0], V[-1] = V[-3], V[2]
     else:
         V[0], V[-1] = V[1], V[-2]
-    return V_prev, V_curr, V_next, L[-1]
+        
+    print(P)
+    print("---------------")
+        
+    print(V_prev)
+    print("---------------")
+    
+    print(V_curr)
+    print("---------------")
+    
+    print(V_next)
+    print("---------------")
+    
+    print(UV)
+    print("---------------")
+    
+    print(L)
+    return V_prev, V_curr, V_next, UV, L[-1]
 
-n = 5
-T = np.linspace(0, 12*2*np.pi, n, dtype=np.float32)
-R = np.linspace(10, 246, n, dtype=np.float32)
-P = np.dstack((256+np.cos(T)*R, 256+np.sin(T)*R)).squeeze()
-V_prev, V_curr, V_next, length = bake(P)
 
+n = 20
+T = np.linspace(0, 20 * 2 * np.pi, n, dtype=np.float32)
+R = np.linspace(0.1, np.pi - 0.1, n, dtype=np.float32)
+X = np.cos(T) * np.sin(R)
+Y = np.sin(T) * np.sin(R)
+Z = np.cos(R)
+P = np.dstack((X, Y, Z)).squeeze()
+
+print(P)
+
+# V_prev, V_curr, V_next, UV, length = bake(P)
 # spiral = gloo.Program(vertex, fragment)
-# spiral["prev"], spiral["curr"], spiral["next"]  = V_prev, V_curr, V_next
-# spiral["thickness"] = 1.0
+# spiral["prev"], spiral["curr"], spiral["next"] = V_prev, V_curr, V_next
+# spiral["uv"] = UV
+# spiral["thickness"] = 5.0
 # spiral["antialias"] = 1.5
 # spiral["linelength"] = length
+# spiral["model"] = np.eye(4, dtype=np.float32)
+# spiral["view"] = glm.translation(0, 0, -5)
+# phi, theta = 0, 0
 
-# P = (star(n=5)*220 + (512+256,256)).astype(np.float32)
-# V_prev, V_curr, V_next, length = bake(P, True)
-# star = gloo.Program(vertex, fragment)
-# star["prev"], star["curr"], star["next"]  = V_prev, V_curr, V_next
-# star["thickness"] = 32.0
-# star["antialias"] = 1.5
-# star["linelength"] = length
-
+# app.run(framerate=60, framecount=360)
