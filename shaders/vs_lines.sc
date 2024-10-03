@@ -27,20 +27,24 @@ vec4 ScreenToClip(vec4 coordinate, float width, float height) {
 
 void main() {
 
+    //vec4 prev = ScreenToClip(a_prev, u_width, u_heigth);
+    //vec4 curr = ScreenToClip(a_curr, u_width, u_heigth);
+    //vec4 next = ScreenToClip(a_next, u_width, u_heigth);
+
     vec4 NDC_prev = u_modelViewProj * vec4(a_prev.xyz, 1.0);
     vec4 NDC_curr = u_modelViewProj * vec4(a_curr.xyz, 1.0);
     vec4 NDC_next = u_modelViewProj * vec4(a_next.xyz, 1.0);
 
-    vec4 screen_prev = vec4(u_width * (((NDC_prev.x / NDC_prev.w) + 1.0) / 2.0),
-                            u_heigth * (((NDC_prev.y / NDC_prev.w) + 1.0) / 2.0),
+    vec4 screen_prev = vec4(u_width * ((NDC_prev.x / NDC_prev.w) + 1.0) / 2.0,
+                            u_heigth * ((NDC_prev.y / NDC_prev.w) + 1.0) / 2.0,
                             0, 0);
 
-    vec4 screen_curr = vec4(u_width * (((NDC_curr.x / NDC_curr.w) + 1.0) / 2.0),
-                            u_heigth * (((NDC_curr.y / NDC_curr.w) + 1.0) / 2.0),
+    vec4 screen_curr = vec4(u_width * ((NDC_curr.x / NDC_curr.w) + 1.0) / 2.0,
+                            u_heigth * ((NDC_curr.y / NDC_curr.w) + 1.0) / 2.0,
                             0, 0);
                           
-    vec4 screen_next = vec4(u_width * (((NDC_next.x / NDC_next.w) + 1.0) / 2.0),
-                            u_heigth * (((NDC_next.y / NDC_next.w) + 1.0) / 2.0),
+    vec4 screen_next = vec4(u_width * ((NDC_next.x / NDC_next.w) + 1.0) / 2.0,
+                            u_heigth * ((NDC_next.y / NDC_next.w) + 1.0) / 2.0,
                             0, 0);
 
     float width = u_thickness / 2.0 + u_antialias;
@@ -57,23 +61,21 @@ void main() {
     if(a_prev.x == a_curr.x && a_prev.y == a_curr.y) {
       
       v_uv.x = -width;
-      p = vec4(screen_curr.xy, 0.0, 0.0) - (width * T1) + (a_uv.x * width * N1);
+      p = screen_curr - (width * T1) + (a_uv.x * width * N1);
 
     } else if (a_curr.x == a_next.x && a_curr.y == a_next.y) { 
 
       v_uv.x = u_linelength + width;
-      p = vec4(screen_curr.xy, 0.0, 0.0) + (width * T0) + (a_uv.x  * width * N0);
+      p = screen_curr + (width * T0) + (a_uv.x  * width * N0);
 
     } else {
       
       vec4 miter = normalize(N0 + N1);
       float dy = width / max(dot(miter, N1), 1.0);
+      p = screen_curr + (dy * a_uv.x * miter);    
+    } 
 
-      p = vec4(a_curr.xy, 0.0, 0.0) + (dy * a_uv.x * miter);
-    
-    }
-
-    p = ScreenToClip(p, u_width, u_heigth);
     v_color = u_color;
+    p = ScreenToClip(p, u_width, u_heigth);
     gl_Position = vec4(p.xy, NDC_curr.z / NDC_curr.w, 1.0);
 }

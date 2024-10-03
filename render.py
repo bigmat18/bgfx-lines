@@ -143,9 +143,11 @@ def bake(P, closed=False):
     return V_prev, V_curr, V_next, UV, L[-1]
 
 
-n = 20
+n = 5
 T = np.linspace(0, 20 * 2 * np.pi, n, dtype=np.float32)
+print(T)
 R = np.linspace(0.1, np.pi - 0.1, n, dtype=np.float32)
+print(R)
 X = np.cos(T) * np.sin(R)
 Y = np.sin(T) * np.sin(R)
 Z = np.cos(R)

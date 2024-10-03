@@ -1,6 +1,4 @@
 #define ENTRY_CONFIG_IMPLEMENT_MAIN 1
-#define ENTRY_DEFAULT_WIDTH 1024
-#define ENTRY_DEFAULT_HEIGHT 1024
 
 #include <bx/uint32_t.h>
 #include <iostream>
@@ -9,9 +7,8 @@
 #include <bgfx_utils.h>
 #include <imgui/imgui.h>
 #include <math.h>
-
-#define DEBUGGING 1
 #include <lines.h>
+#include <vector>
 
 namespace {
 
@@ -20,9 +17,19 @@ namespace {
             std::cout << mtx[i] << " " << mtx[i + 4] << " " << mtx[i + 8] << " " << mtx[i + 12] << std::endl;
     }
 
-    class BGFXLines : public entry::AppI {
+    inline std::vector<float> linespace(int n, float start, float stop) {
+        std::vector<float> T(n);
+        float step = (stop - start) / (n - 1);
+
+        for (int i = 0; i < n; ++i)
+            T[i] = start + i * step;
+
+        return T;
+    }
+
+    class ProLines : public entry::AppI {
         public:
-            BGFXLines(const char *_name, const char *_description, const char *_url)
+            ProLines(const char *_name, const char *_description, const char *_url)
                 : entry::AppI(_name, _description, _url)
             {}
 
@@ -56,7 +63,7 @@ namespace {
                 lastY = vertical_rotation; 
 
                 cameraCreate();
-                cameraSetPosition({0.0f, 0.0f, -2.0f});
+                cameraSetPosition({0.0f, 0.0f, -5.0f});
                 cameraSetHorizontalAngle(horizontal_rotation);
                 cameraSetVerticalAngle(vertical_rotation);
 
@@ -76,11 +83,47 @@ namespace {
                 float thickness = 5.0;
                 Lines::BeginLine(antialis, thickness);
 
-                Lines::AddPoint(Lines::Point({0.2, 0, 0}));
-                Lines::AddPoint(Lines::Point({0.5, 0.5, -1.0}));
-                // Lines::AddPoint(Lines::Point({0.7, 0.5, 0}));
+                #define SPIRAL 1
+                #if SPIRAL
+                    int n = 1000;
+                    std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
+                    std::vector<float> R = linespace(n, 0.1, M_PI - 0.1);
+
+                    for(int i = 0; i< n; i++) {
+                        float X = cosf(T[i]) * R[i];
+                        float Y = sinf(T[i]) * R[i];
+                        Lines::AddPoint(Lines::Point({X, Y, 0.0}));
+                    }
+                #endif
+
+                #define SPHERE 0
+                #if SPHERE
+                    int n = 1000;
+
+                    std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
+                    std::vector<float> R = linespace(n, 0.1, M_PI - 0.1);
+
+                    for(int i = 0; i < n; i++) {
+                        float X = cosf(T[i]) * sinf(R[i]);
+                        float Y = sinf(T[i]) * sinf(R[i]);
+                        float Z = cosf(R[i]);
+
+                        Lines::AddPoint(Lines::Point({float(X), float(Y), float(Z)}));
+                    }
+                #endif
+
+                #define LINE 0
+                #if LINE
+                    Lines::AddPoint(Lines::Point({-0.5, 0.0, -1.0}));
+                    Lines::AddPoint(Lines::Point({0.0, 0.0, 0.0}));
+                    Lines::AddPoint(Lines::Point({0.5, 0.0, 1.0}));
+                #endif
+
+
                 Lines::EndLine();
                 // ======= Lines setup ======
+
+                m_angle = 0.0f;
             }
 
             virtual int shutdown() override {
@@ -96,20 +139,22 @@ namespace {
 
                     this->imguiRender();
                     this->cameraCoordinatesUpdate();
+                    
+                    float model[16] = MTX_BASE;
+                    float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+                    bx::mtxRotateY(model, time);
+
+                    m_angle += 0.1f;
 
                     float view[16];
                     cameraGetViewMtx(view);
 
-
                     float proj[16];
                     bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
+                    
                     bgfx::setViewTransform(0, view, proj);
-
                     bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
-
                     bgfx::touch(0);
-                    float model[16] = MTX_BASE;
-                    bgfx::setTransform(model);
 
 
                     #if 0
@@ -147,6 +192,7 @@ namespace {
                         | UINT64_C(0)
                         | BGFX_STATE_BLEND_ALPHA;
 
+                    bgfx::setTransform(model);
                     Lines::RenderLine(state);
 
                     bgfx::frame();
@@ -198,7 +244,7 @@ namespace {
                 ImGui::SetNextWindowPos(ImVec2({0,0}));
                 ImGui::SetNextWindowSize(ImVec2({400, 200}));
 
-                #if DEBUGGING
+                #if 1
                     ImGui::Begin("Custom debugging params", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
                     bx::Vec3 position = cameraGetPosition();
                     ImGui::Text("Camera Position: (%f, %f, %f)", position.x, position.y, position.z);
@@ -221,12 +267,14 @@ namespace {
 
             float lastX;
             float lastY;
+
+            float m_angle;
     };
 }
 
 ENTRY_IMPLEMENT_MAIN(
-    BGFXLines, 
-    "BGFX Lines window", 
-    "BGFX lines", 
-    "BGFX lines"
+    ProLines,
+    "Pro lines window",
+    "Pro lines",
+    "Pro lines"
 );

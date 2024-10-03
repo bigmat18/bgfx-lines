@@ -21,7 +21,7 @@ add_library(bgfx-lines ${SOURCES})
 target_include_directories(bgfx-lines PUBLIC include)
 target_link_libraries(bgfx-lines bx bgfx example-common)
 
-add_executable(main examples/main.cpp)
+add_executable(main examples/pro_lines.cpp)
 
 target_include_directories(main PUBLIC include)
 target_link_libraries(main bgfx example-common bgfx-lines)

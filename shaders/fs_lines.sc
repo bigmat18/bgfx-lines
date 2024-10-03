@@ -29,7 +29,7 @@ void main() {
 
 
 	if(d < 0) {
-  		gl_FragColor = vec4(v_color.xyz, v_color.w);
+  		gl_FragColor = v_color;
 	} else {
       d /= u_antialias;
 		  d = exp(-d * d); 
