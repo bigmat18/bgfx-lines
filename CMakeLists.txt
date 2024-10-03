@@ -11,7 +11,7 @@ project(bgfx-lines)
 include(${PROJECT_SOURCE_DIR}/cmake/bgfx_utils.cmake)
 
 message(STATUS "bgfx.cmake external library")
-add_subdirectory(${PROJECT_SOURCE_DIR}/external/bgfx.cmake)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/bgfx.cmake)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -21,7 +21,7 @@ add_library(bgfx-lines ${SOURCES})
 target_include_directories(bgfx-lines PUBLIC include)
 target_link_libraries(bgfx-lines bx bgfx example-common)
 
-add_executable(main examples/pro_lines.cpp)
+add_executable(main main.cpp)
 
 target_include_directories(main PUBLIC include)
 target_link_libraries(main bgfx example-common bgfx-lines)

@@ -83,7 +83,7 @@ namespace {
                 float thickness = 5.0;
                 Lines::BeginLine(antialis, thickness);
 
-                #define SPIRAL 1
+                #define SPIRAL 0
                 #if SPIRAL
                     int n = 1000;
                     std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
@@ -96,7 +96,7 @@ namespace {
                     }
                 #endif
 
-                #define SPHERE 0
+                #define SPHERE 1
                 #if SPHERE
                     int n = 1000;
 
