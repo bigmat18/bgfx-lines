@@ -20,7 +20,7 @@
 #* (https://www.mozilla.org/en-US/MPL/2.0/) for more details.                *
 #****************************************************************************/
 
-include(external/bgfx.cmake/cmake/bgfxToolUtils.cmake)
+include(libs/bgfx.cmake/cmake/bgfxToolUtils.cmake)
 
 set(GLSL_PROFILE 140)
 set(GLSL_COMPUTE_PROFILE 300)

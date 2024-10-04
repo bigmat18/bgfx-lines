@@ -4,6 +4,11 @@
         "vector": "cpp",
         "iostream": "cpp",
         "*.hpp11": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "__locale": "cpp",
+        "regex": "cpp",
+        "locale": "cpp"
     }
 }

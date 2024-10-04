@@ -7,10 +7,21 @@
 #include <bgfx_utils.h>
 #include <imgui/imgui.h>
 #include <math.h>
-#include <lines.h>
 #include <vector>
+#include <lines.hpp>
 
 namespace {
+
+    #define DEBUG_PRINT() bx::debugPrintf("%s - %d", __FILE__, __LINE__)
+    #define FROM_PX_TO_NORM(value, resolution) ((2.0f * value / resolution) - 1.0f)
+
+    #define MTX_BASE    \
+    {                   \
+        1, 0, 0, 0,     \
+        0, 1, 0, 0,     \
+        0, 0, 1, 0,     \
+        0, 0, 0, 1      \
+    }
 
     inline void printMatrix(float* mtx) {
         for (uint32_t i = 0; i < 4; i++)
@@ -27,9 +38,9 @@ namespace {
         return T;
     }
 
-    class ProLines : public entry::AppI {
+    class Main : public entry::AppI {
         public:
-            ProLines(const char *_name, const char *_description, const char *_url)
+            Main(const char *_name, const char *_description, const char *_url)
                 : entry::AppI(_name, _description, _url)
             {}
 
@@ -75,14 +86,20 @@ namespace {
 
 
                 // ======= Lines setup ======
-                Lines::Init();
-                Lines::SetResolution(m_width, m_height);
-                Lines::SetColor(1.0, 0.0, 1.0, 1.0);
+                Lines::TriangulatedLinesHandler *lines = dynamic_cast<Lines::TriangulatedLinesHandler*>(
+                                                            Lines::LinesFactory::CreateHandler(Lines::LinesType::TRIANGULATED_LINES)
+                                                        );
                 
                 float antialis = 1.5;
                 float thickness = 5.0;
-                Lines::BeginLine(antialis, thickness);
 
+                lines->SetResolution(m_width, m_height);
+                lines->SetColor(1.0, 0.0, 1.0, 1.0);
+                lines->SetAntialis(antialis);
+                lines->SetThickness(thickness);
+
+
+                lines->BeginLine();
                 #define SPIRAL 0
                 #if SPIRAL
                     int n = 1000;
@@ -92,11 +109,11 @@ namespace {
                     for(int i = 0; i< n; i++) {
                         float X = cosf(T[i]) * R[i];
                         float Y = sinf(T[i]) * R[i];
-                        Lines::AddPoint(Lines::Point({X, Y, 0.0}));
+                        lines->AddPoint(Lines::LinesPoint(X, Y, 0.0));
                     }
                 #endif
 
-                #define SPHERE 1
+                #define SPHERE 0
                 #if SPHERE
                     int n = 1000;
 
@@ -108,19 +125,19 @@ namespace {
                         float Y = sinf(T[i]) * sinf(R[i]);
                         float Z = cosf(R[i]);
 
-                        Lines::AddPoint(Lines::Point({float(X), float(Y), float(Z)}));
+                        lines->AddPoint(Lines::LinesPoint(float(X), float(Y), float(Z)));
                     }
                 #endif
 
-                #define LINE 0
+                #define LINE 1
                 #if LINE
-                    Lines::AddPoint(Lines::Point({-0.5, 0.0, -1.0}));
-                    Lines::AddPoint(Lines::Point({0.0, 0.0, 0.0}));
-                    Lines::AddPoint(Lines::Point({0.5, 0.0, 1.0}));
+                    lines->AddPoint(Lines::LinesPoint(-0.5, 0.0, -1.0));
+                    lines->AddPoint(Lines::LinesPoint(0.0, 0.0, 0.0));
+                    lines->AddPoint(Lines::LinesPoint(0.5, 0.0, 1.0));
                 #endif
 
 
-                Lines::EndLine();
+                lines->EndLine();
                 // ======= Lines setup ======
 
                 m_angle = 0.0f;
@@ -129,7 +146,7 @@ namespace {
             virtual int shutdown() override {
                 imguiDestroy();
                 cameraDestroy();
-                Lines::Shutdown();
+                Lines::LinesFactory::Shutdown();
                 bgfx::shutdown();
                 return 0;
             }
@@ -193,7 +210,7 @@ namespace {
                         | BGFX_STATE_BLEND_ALPHA;
 
                     bgfx::setTransform(model);
-                    Lines::RenderLine(state);
+                    Lines::LinesFactory::Render(state);
 
                     bgfx::frame();
 
@@ -273,8 +290,8 @@ namespace {
 }
 
 ENTRY_IMPLEMENT_MAIN(
-    ProLines,
-    "Pro lines window",
-    "Pro lines",
-    "Pro lines"
+    Main,
+    "Main window",
+    "Main",
+    "Main"
 );
