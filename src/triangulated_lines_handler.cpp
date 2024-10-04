@@ -13,8 +13,6 @@ namespace Lines {
             .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
             .end();
 
-        m_program = LoadProgram(vs_name, fs_name);
-
         m_UniformData = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
         m_UniformColor = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
         m_UniformLength = bgfx::createUniform("u_length", bgfx::UniformType::Vec4);
@@ -22,20 +20,9 @@ namespace Lines {
     }
 
     TriangulatedLinesHandler::~TriangulatedLinesHandler() {
-        bgfx::destroy(m_ibh);
-        bgfx::destroy(m_vbh),
-        bgfx::destroy(m_program);
         bgfx::destroy(m_UniformData);
         bgfx::destroy(m_UniformColor);
         bgfx::destroy(m_UniformLength);
-    }
-
-    void TriangulatedLinesHandler::BeginLine() {
-        m_Points.clear();
-    }
-
-    void TriangulatedLinesHandler::AddPoint(const LinesPoint &point) {
-        m_Points.push_back(point);
     }
 
     void TriangulatedLinesHandler::EndLine() {
@@ -99,7 +86,7 @@ namespace Lines {
         );
 
 
-        #if DEBUGGING
+        #if 0
             for(int i = 0; i < m_vertices.size(); i+=11) {
                 std::cout << "Vertex buffer element " << i / 11 << std::endl;
                 std::cout << "Prev coord: " << m_vertices[i]     << " " << m_vertices[i + 1] << " " << m_vertices[i + 2] << std::endl;

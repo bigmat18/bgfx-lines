@@ -18,20 +18,17 @@ namespace Lines {
         friend class LinesFactory;
 
         public:
-            virtual void BeginLine() = 0;
-            virtual void AddPoint(const LinesPoint &point) = 0;
+            void BeginLine();
+            void AddPoint(const LinesPoint &point);
+            
             virtual void EndLine() = 0;
             virtual void Render(uint64_t state) = 0;
 
         protected:
-            LinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name) : 
-                m_RenderState(state), vs_name(vs_name), fs_name(fs_name) {}
-            
-            virtual ~LinesHandler() = default;
+            LinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name);
+            virtual ~LinesHandler();
 
-            bgfx::ProgramHandle LoadProgram(const std::string vs_name, const std::string fs_name) {
-                return loadProgram(vs_name.c_str(), fs_name.c_str());
-            }
+            bgfx::ProgramHandle LoadProgram(const std::string vs_name, const std::string fs_name);
 
             bgfx::ProgramHandle m_program;
             bgfx::VertexBufferHandle m_vbh;

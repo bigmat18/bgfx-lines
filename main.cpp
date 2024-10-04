@@ -87,8 +87,7 @@ namespace {
 
                 // ======= Lines setup ======
                 Lines::TriangulatedLinesHandler *lines = dynamic_cast<Lines::TriangulatedLinesHandler*>(
-                                                            Lines::LinesFactory::CreateHandler(Lines::LinesType::TRIANGULATED_LINES)
-                                                        );
+                                                            Lines::LinesFactory::CreateHandler(Lines::LinesType::TRIANGULATED_LINES));
                 
                 float antialis = 1.5;
                 float thickness = 5.0;

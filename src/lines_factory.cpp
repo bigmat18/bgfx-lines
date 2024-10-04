@@ -12,13 +12,13 @@ namespace Lines {
         switch (type) {
             case Lines::LinesType::TRIANGULATED_LINES: {
                 uint64_t state = 0 | UINT64_C(0);
-                TriangulatedLinesHandler *line = new TriangulatedLinesHandler(state, "vs_lines", "fs_lines");
+                TriangulatedLinesHandler *line = new TriangulatedLinesHandler(state, "vs_triangulated_lines", "fs_triangulated_lines");
                 s_lines.push_back(line);
                 return line;
             }
             case Lines::LinesType::PRIMITIVE_LINES: {
                 uint64_t state = 0 | BGFX_STATE_PT_LINES;
-                PrimitiveLinesHandler *line = new PrimitiveLinesHandler(state, "vs_lines", "fs_lines");
+                PrimitiveLinesHandler *line = new PrimitiveLinesHandler(state, "vs_primitive_lines", "fs_primitive_lines");
                 s_lines.push_back(line);
                 return line;
             }

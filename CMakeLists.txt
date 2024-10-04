@@ -27,9 +27,9 @@ target_include_directories(main PUBLIC include)
 target_link_libraries(main bgfx example-common bgfx-lines)
 
 set(SHADERS
-    shaders/vs_lines.sc
-    shaders/fs_lines.sc
-    shaders/varying.def.sc)
+    shaders/vs_triangulated_lines.sc
+    shaders/fs_triangulated_lines.sc
+    shaders/triangulated_varying.def.sc)
 
 target_add_bgfx_shaders(
   main

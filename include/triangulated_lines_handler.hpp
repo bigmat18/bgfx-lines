@@ -8,8 +8,6 @@ namespace Lines {
         friend class LinesFactory;
             
         public: 
-            void BeginLine() override;
-            void AddPoint(const LinesPoint &point) override;
             void EndLine() override;
             void Render(uint64_t state) override;
 
@@ -35,7 +33,8 @@ namespace Lines {
 
         private:
             TriangulatedLinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name);
-            virtual ~TriangulatedLinesHandler();
+            ~TriangulatedLinesHandler();
+            
             float CalculateDistance(const LinesPoint &p1, const LinesPoint &p2);
 
             bgfx::UniformHandle m_UniformData;
