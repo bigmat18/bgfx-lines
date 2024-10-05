@@ -6,7 +6,6 @@ else()
     cmake_policy(VERSION 3.29)
 endif()
 
-
 project(bgfx-lines)
 include(${PROJECT_SOURCE_DIR}/cmake/bgfx_utils.cmake)
 
@@ -26,12 +25,18 @@ add_executable(main main.cpp)
 target_include_directories(main PUBLIC include)
 target_link_libraries(main bgfx example-common bgfx-lines)
 
-set(SHADERS
-    shaders/vs_triangulated_lines.sc
-    shaders/fs_triangulated_lines.sc
-    shaders/triangulated_varying.def.sc)
+
+set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders")
+file(GLOB ABSOLUTE_SHADERS_FILES "${SHADERS_DIR}/*.sc")
+set(RELATIVE_SHADERS_FILES "")
+
+foreach(file ${ABSOLUTE_SHADERS_FILES})
+    file(RELATIVE_PATH relative_file ${CMAKE_SOURCE_DIR} ${file})
+    list(APPEND RELATIVE_SHADERS_FILES ${relative_file})
+endforeach()
+
 
 target_add_bgfx_shaders(
   main
-  ${SHADERS}
+  ${RELATIVE_SHADERS_FILES}
 )

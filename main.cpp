@@ -87,7 +87,8 @@ namespace {
 
                 // ======= Lines setup ======
                 Lines::TriangulatedLinesHandler *lines = dynamic_cast<Lines::TriangulatedLinesHandler*>(
-                                                            Lines::LinesFactory::CreateHandler(Lines::LinesType::TRIANGULATED_LINES));
+                                                            Lines::LinesFactory::CreateHandler(Lines::LinesType::TRIANGULATED_LINES)
+                                                         );
                 
                 float antialis = 1.5;
                 float thickness = 5.0;
@@ -112,7 +113,7 @@ namespace {
                     }
                 #endif
 
-                #define SPHERE 0
+                #define SPHERE 1
                 #if SPHERE
                     int n = 1000;
 
@@ -128,7 +129,7 @@ namespace {
                     }
                 #endif
 
-                #define LINE 1
+                #define LINE 0
                 #if LINE
                     lines->AddPoint(Lines::LinesPoint(-0.5, 0.0, -1.0));
                     lines->AddPoint(Lines::LinesPoint(0.0, 0.0, 0.0));
@@ -158,7 +159,7 @@ namespace {
                     
                     float model[16] = MTX_BASE;
                     float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
-                    bx::mtxRotateY(model, time);
+                    bx::mtxRotateZ(model, time);
 
                     m_angle += 0.1f;
 

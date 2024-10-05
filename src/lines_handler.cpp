@@ -23,7 +23,7 @@ namespace Lines {
         m_Points.push_back(point);
     }
 
-    bgfx::ProgramHandle LoadProgram(const std::string vs_name, const std::string fs_name) {
+    bgfx::ProgramHandle LinesHandler::LoadProgram(const std::string vs_name, const std::string fs_name) {
         return loadProgram(vs_name.c_str(), fs_name.c_str());
     }
 }

@@ -2,7 +2,6 @@ $input v_uv, v_color
 #include <bgfx_shader.sh>
 
 uniform vec4 u_data;
-uniform vec4 u_color;
 uniform vec4 u_length;
 
 #define u_linelength    u_length.x
