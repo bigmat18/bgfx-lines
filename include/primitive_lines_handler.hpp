@@ -1,28 +1,37 @@
 #pragma once
+#include "lines.hpp"
 #include "lines_handler.hpp"
 
-namespace Lines {
+namespace Lines
+{
 
-    class PrimitiveLinesHandler : public LinesHandler {
-        friend class LinesFactory;
+    class PrimitiveLinesHandler : public LinesHandler
+    {
 
-        public:
-            void EndLine() override;
-            void Render(uint64_t state) override;
+        friend LinesHandler *CreateHandler(LinesType type, const std::string name);
+        friend void DestroyHandler(LinesHandler* handler);
 
-            void SetColor(float r, float g, float b, float alpha)
-            {
-                m_color[0] = r;
-                m_color[1] = g;
-                m_color[2] = b;
-                m_color[3] = alpha;
-            }
+    public:
+        void EndLine() override;
+        void Render(uint64_t state) override;
 
-        private:
-            PrimitiveLinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name, const std::string name = "");
-            ~PrimitiveLinesHandler() = default;
+        void SetColor(float r, float g, float b, float alpha)
+        {
+            m_color[0] = r;
+            m_color[1] = g;
+            m_color[2] = b;
+            m_color[3] = alpha;
+        }
 
-            float m_color[4];
-            bgfx::UniformHandle m_UniformColor;
+        ~PrimitiveLinesHandler() = default;
+
+    private:
+        PrimitiveLinesHandler(uint64_t state, 
+                              const std::string vs_name, 
+                              const std::string fs_name, 
+                              const std::string name = "");
+
+        float m_color[4];
+        bgfx::UniformHandle m_UniformColor;
     };
 }

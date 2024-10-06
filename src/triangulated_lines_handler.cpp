@@ -96,7 +96,7 @@ namespace Lines {
 
         bgfx::setVertexBuffer(0, m_vbh);
         bgfx::setIndexBuffer(m_ibh);
-        bgfx::setState(state |= this->m_renderState);
+        bgfx::setState(state |= m_state);
         bgfx::submit(0, m_program);
     }
 

@@ -2,7 +2,7 @@
 
 namespace Lines {
     LinesHandler::LinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name, const std::string name) : 
-        m_renderState(state), vs_name(vs_name), fs_name(fs_name), m_renderActive(true), m_name(name)
+        m_state(state), vs_name(vs_name), fs_name(fs_name), m_active(true), m_name(name)
     {
         m_program = LoadProgram(vs_name, fs_name);
     }

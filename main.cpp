@@ -8,7 +8,10 @@
 #include <imgui/imgui.h>
 #include <math.h>
 #include <vector>
+
 #include <lines.hpp>
+#include <triangulated_lines_handler.hpp>
+#include <primitive_lines_handler.hpp>
 
 namespace {
 
@@ -67,16 +70,8 @@ namespace {
                 bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 
                 // ======= Camera setup ======
-                horizontal_rotation = 0.0f;
-                vertical_rotation = 0.0f;
-
-                lastX = horizontal_rotation;
-                lastY = vertical_rotation; 
-
                 cameraCreate();
                 cameraSetPosition({0.0f, 0.0f, -5.0f});
-                cameraSetHorizontalAngle(horizontal_rotation);
-                cameraSetVerticalAngle(vertical_rotation);
 
                 m_timeOffset = bx::getHPCounter();
                 // ======= Camera setup ======
@@ -87,24 +82,25 @@ namespace {
 
                 // ======= Lines setup ======
                 Lines::TriangulatedLinesHandler *triangulated_line = dynamic_cast<Lines::TriangulatedLinesHandler*>(
-                    Lines::LinesFactory::CreateHandler(Lines::LinesType::TRIANGULATED_LINES, "Triangulate line")
+                    Lines::CreateHandler(Lines::LinesType::TRIANGULATED_LINES, "Triangulate line")
                 );
                 triangulated_line->SetColor(1.0, 0.0, 1.0, 1.0);
                 triangulated_line->SetResolution(m_width, m_height);
                 triangulated_line->SetAntialis(1.5f);
                 triangulated_line->SetThickness(5.0f);
-                triangulated_line->SetRenderActive(false);
+                triangulated_line->SetActive(false);
 
                 Lines::PrimitiveLinesHandler *primitive_line = dynamic_cast<Lines::PrimitiveLinesHandler *>(
-                    Lines::LinesFactory::CreateHandler(Lines::LinesType::PRIMITIVE_LINES, "Primitive line")
+                    Lines::CreateHandler(Lines::LinesType::PRIMITIVE_LINES, "Primitive line")
                 );
 
                 primitive_line->SetColor(1.0, 0.0, 1.0, 1.0);
-                primitive_line->SetRenderActive(false);
+                primitive_line->SetActive(false);
 
                 triangulated_line->BeginLine();
                 primitive_line->BeginLine();
-                #define SPIRAL 1
+
+                #define SPIRAL 0
                 #if SPIRAL
                     int n = 1000;
                     std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
@@ -119,7 +115,7 @@ namespace {
                     }
                 #endif
 
-                #define SPHERE 0
+                #define SPHERE 1
                 #if SPHERE
                     int n = 1000;
 
@@ -159,7 +155,7 @@ namespace {
             virtual int shutdown() override {
                 imguiDestroy();
                 cameraDestroy();
-                Lines::LinesFactory::Shutdown();
+                Lines::Shutdown();
                 bgfx::shutdown();
                 return 0;
             }
@@ -224,7 +220,7 @@ namespace {
                         | BGFX_STATE_BLEND_ALPHA;
 
                     bgfx::setTransform(model);
-                    Lines::LinesFactory::Render(state);
+                    Lines::Render(state);
 
                     bgfx::frame();
 
@@ -258,7 +254,7 @@ namespace {
                                 uint16_t(m_width),
                                 uint16_t(m_height));
 
-                Lines::LinesFactory::DebugMenu();
+                Lines::DebugMenu();
 
                 #if 1
                     float win_width = 350, win_heigth = 100;

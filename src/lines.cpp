@@ -1,61 +1,66 @@
-#include <lines_factory.hpp>
+#include <lines.hpp>
 #include <triangulated_lines_handler.hpp>
 #include <primitive_lines_handler.hpp>
 #include <imgui/imgui.h>
+
 #include <cassert>
 #include <iostream>
 #include <iomanip>
+#include <memory>
 
 namespace Lines {
+    std::vector<LinesHandler*> s_lines;
 
-    std::vector<LinesHandler *> LinesFactory::s_lines;
-
-    LinesHandler *LinesFactory::CreateHandler(Lines::LinesType type, const std::string name)
+    LinesHandler* CreateHandler(Lines::LinesType type, const std::string name)
     {
         switch (type) {
             case Lines::LinesType::TRIANGULATED_LINES: {
                 uint64_t state = 0 | UINT64_C(0);
 
-                TriangulatedLinesHandler *line = new TriangulatedLinesHandler(
+                TriangulatedLinesHandler* line = new TriangulatedLinesHandler(
                     state, "vs_triangulated_lines", "fs_triangulated_lines", name
                 );
 
-                s_lines.push_back(line);
+                s_lines.push_back(std::move(line));
                 return line;
             }
             case Lines::LinesType::PRIMITIVE_LINES: {
                 uint64_t state = 0 | BGFX_STATE_PT_LINES;
 
-                PrimitiveLinesHandler *line = new PrimitiveLinesHandler(    
+                PrimitiveLinesHandler* line = new PrimitiveLinesHandler(
                     state, "vs_primitive_lines", "fs_primitive_lines", name
                 );
 
-                s_lines.push_back(line);
+                s_lines.push_back(std::move(line));
                 return line;
             }
             default:
                 assert((void("Lines type is incorrect"), true));
                 break;
         }
-        return nullptr;
+        assert((void("Lines type is incorrect"), true));
     }
 
-    void LinesFactory::Render(uint64_t state) {
+    void DestroyHandler(LinesHandler* hanlder)
+    {
+    }
+
+    void Render(uint64_t state) {
         state &= 0xFFF0FFFFFFFFFFFF;
 
         for(auto& line : s_lines)
-            if(line->m_renderActive)
+            if (line->IsActive())
                 line->Render(state);
     }
 
-    void LinesFactory::Shutdown() {
+    void Shutdown() {
         for(auto &line : s_lines)
             delete line;
 
         s_lines.clear();
     }
 
-    void LinesFactory::DebugMenu() {
+    void DebugMenu() {
 
         const bgfx::Stats *stats = bgfx::getStats();
         ImGui::SetNextWindowPos(ImVec2({0, 0}));
@@ -68,7 +73,7 @@ namespace Lines {
                 uint16_t vertex_size = line->m_layout.getStride() / ((uint16_t)sizeof(float));
 
                 ImGui::Text("Vertex number: %zu", line->m_vertices.size() / vertex_size);
-                ImGui::Text("Index number: %zu", line->m_renderState == UINT64_C(0) ? line->m_indices.size() / 3 : line->m_indices.size() / 2);
+                ImGui::Text("Index number: %zu", line->GetState() == UINT64_C(0) ? line->m_indices.size() / 3 : line->m_indices.size() / 2);
                 ImGui::Text("VBO size: %lu", line->m_vertices.size() * sizeof(line->m_vertices[0]));
                 ImGui::Text("IBO size: %lu", line->m_indices.size() * sizeof(line->m_indices[0]));
 
@@ -102,7 +107,7 @@ namespace Lines {
                     }
                 }
                 if (ImGui::CollapsingHeader("Index buffer")) {
-                    switch (line->m_renderState) {
+                    switch (line->GetState()) {
                         case UINT64_C(0): {
                             for(uint32_t i = 0; i < line->m_indices.size(); i+= 3) 
                             {
@@ -125,7 +130,7 @@ namespace Lines {
                     
                     }
                 }
-                ImGui::Checkbox("Render line", &line->m_renderActive);
+                ImGui::Checkbox("Render line", &line->m_active);
             }
         }
 
