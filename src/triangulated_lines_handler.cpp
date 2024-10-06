@@ -2,8 +2,8 @@
 
 namespace Lines {
 
-    TriangulatedLinesHandler::TriangulatedLinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name) : 
-        LinesHandler(state, vs_name, fs_name) 
+    TriangulatedLinesHandler::TriangulatedLinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name, const std::string name) : 
+        LinesHandler(state, vs_name, fs_name, name)
     {
         m_layout
             .begin()
@@ -84,25 +84,6 @@ namespace Lines {
             bgfx::makeRef(&m_indices[0], sizeof(uint32_t) * m_indices.size()),
             BGFX_BUFFER_INDEX32
         );
-
-
-        #if 0
-            for(int i = 0; i < m_vertices.size(); i+=11) {
-                std::cout << "Vertex buffer element " << i / 11 << std::endl;
-                std::cout << "Prev coord: " << m_vertices[i]     << " " << m_vertices[i + 1] << " " << m_vertices[i + 2] << std::endl;
-                std::cout << "Curr coord: " << m_vertices[i + 3] << " " << m_vertices[i + 4] << " " << m_vertices[i + 5] << std::endl;
-                std::cout << "Next coord: " << m_vertices[i + 6] << " " << m_vertices[i + 7] << " " << m_vertices[i + 8] << std::endl;
-                std::cout << "UV coord: "   << m_vertices[i + 9] << " " << m_vertices[i + 10] << " " << std::endl << std::endl;
-            }
-                
-            for(int i = 0; i < m_indices.size(); i+=3)
-                std::cout << "Triangle " << i << " : " << m_indices[i] << " " << m_indices[i+1] << " " << m_indices[i+2] << std::endl;
-
-            std::cout << std::endl << "Line length: " << m_UniformData.length << std::endl;
-            std::cout << "Thickness: " << m_UniformData.thickness << std::endl;
-            std::cout << "Antialias: " << m_UniformData.antialias << std::endl;
-            std::cout << "Screen size: (" << m_UniformData.resolution[0] << ", " << m_UniformData.resolution[1] << ")" << std::endl;
-        #endif
     }
 
     void TriangulatedLinesHandler::Render(uint64_t state) {
@@ -115,7 +96,7 @@ namespace Lines {
 
         bgfx::setVertexBuffer(0, m_vbh);
         bgfx::setIndexBuffer(m_ibh);
-        bgfx::setState(state |= this->m_RenderState);
+        bgfx::setState(state |= this->m_renderState);
         bgfx::submit(0, m_program);
     }
 

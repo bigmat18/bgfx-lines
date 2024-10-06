@@ -86,21 +86,25 @@ namespace {
 
 
                 // ======= Lines setup ======
-                Lines::TriangulatedLinesHandler *lines = dynamic_cast<Lines::TriangulatedLinesHandler*>(
-                                                            Lines::LinesFactory::CreateHandler(Lines::LinesType::TRIANGULATED_LINES)
-                                                         );
-                
-                float antialis = 1.5;
-                float thickness = 5.0;
+                Lines::TriangulatedLinesHandler *triangulated_line = dynamic_cast<Lines::TriangulatedLinesHandler*>(
+                    Lines::LinesFactory::CreateHandler(Lines::LinesType::TRIANGULATED_LINES, "Triangulate line")
+                );
+                triangulated_line->SetColor(1.0, 0.0, 1.0, 1.0);
+                triangulated_line->SetResolution(m_width, m_height);
+                triangulated_line->SetAntialis(1.5f);
+                triangulated_line->SetThickness(5.0f);
+                triangulated_line->SetRenderActive(false);
 
-                lines->SetResolution(m_width, m_height);
-                lines->SetColor(1.0, 0.0, 1.0, 1.0);
-                lines->SetAntialis(antialis);
-                lines->SetThickness(thickness);
+                Lines::PrimitiveLinesHandler *primitive_line = dynamic_cast<Lines::PrimitiveLinesHandler *>(
+                    Lines::LinesFactory::CreateHandler(Lines::LinesType::PRIMITIVE_LINES, "Primitive line")
+                );
 
+                primitive_line->SetColor(1.0, 0.0, 1.0, 1.0);
+                primitive_line->SetRenderActive(false);
 
-                lines->BeginLine();
-                #define SPIRAL 0
+                triangulated_line->BeginLine();
+                primitive_line->BeginLine();
+                #define SPIRAL 1
                 #if SPIRAL
                     int n = 1000;
                     std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
@@ -109,11 +113,13 @@ namespace {
                     for(int i = 0; i< n; i++) {
                         float X = cosf(T[i]) * R[i];
                         float Y = sinf(T[i]) * R[i];
-                        lines->AddPoint(Lines::LinesPoint(X, Y, 0.0));
+
+                        triangulated_line->AddPoint(Lines::LinesPoint(X, Y, 0.0));
+                        primitive_line->AddPoint(Lines::LinesPoint(X, Y, 0.0));
                     }
                 #endif
 
-                #define SPHERE 1
+                #define SPHERE 0
                 #if SPHERE
                     int n = 1000;
 
@@ -123,21 +129,28 @@ namespace {
                     for(int i = 0; i < n; i++) {
                         float X = cosf(T[i]) * sinf(R[i]);
                         float Y = sinf(T[i]) * sinf(R[i]);
-                        float Z = cosf(R[i]);
+                        float Z = -100.0 + cosf(R[i]);
 
-                        lines->AddPoint(Lines::LinesPoint(float(X), float(Y), float(Z)));
+                        triangulated_line->AddPoint(Lines::LinesPoint(float(X), float(Y), float(Z)));
+                        primitive_line->AddPoint(Lines::LinesPoint(float(X), float(Y), float(Z)));
                     }
                 #endif
 
                 #define LINE 0
                 #if LINE
-                    lines->AddPoint(Lines::LinesPoint(-0.5, 0.0, -1.0));
-                    lines->AddPoint(Lines::LinesPoint(0.0, 0.0, 0.0));
-                    lines->AddPoint(Lines::LinesPoint(0.5, 0.0, 1.0));
+                    primitive_line->AddPoint(Lines::LinesPoint(-0.25, -0.25, 0.0));
+                    primitive_line->AddPoint(Lines::LinesPoint(0.25, -0.25, 0.0));
+                    primitive_line->AddPoint(Lines::LinesPoint(0.0, 0.25, 0.0));
+                    primitive_line->AddPoint(Lines::LinesPoint(-0.45, -0.25, 0.0));
+
+                    triangulated_line->AddPoint(Lines::LinesPoint(-0.25, -0.25, 0.0));
+                    triangulated_line->AddPoint(Lines::LinesPoint(0.25, -0.25, 0.0));
+                    triangulated_line->AddPoint(Lines::LinesPoint(0.0, 0.25, 0.0));
+                    triangulated_line->AddPoint(Lines::LinesPoint(-0.45, -0.25, 0.0));
                 #endif
 
-
-                lines->EndLine();
+                triangulated_line->EndLine();
+                primitive_line->EndLine();
                 // ======= Lines setup ======
 
                 m_angle = 0.0f;
@@ -167,8 +180,9 @@ namespace {
                     cameraGetViewMtx(view);
 
                     float proj[16];
-                    bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
-                    
+                    // bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
+                    bx::mtxOrtho(proj, -1.0f, 1, -1.0f, 1, 0.1f, 100.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
+
                     bgfx::setViewTransform(0, view, proj);
                     bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                     bgfx::touch(0);
@@ -203,7 +217,7 @@ namespace {
                         | BGFX_STATE_WRITE_B
                         | BGFX_STATE_WRITE_A
                         | BGFX_STATE_WRITE_Z
-                        | BGFX_STATE_DEPTH_TEST_LESS
+                        | BGFX_STATE_DEPTH_TEST_ALWAYS
                         | BGFX_STATE_CULL_CW
                         | BGFX_STATE_MSAA
                         | UINT64_C(0)
@@ -231,20 +245,6 @@ namespace {
                 const float time = (float)((now - m_timeOffset) / double(bx::getHPFrequency()));
                 const float deltaTime = float(frameTime / freq);
 
-                float nowX = ((2.0f * m_mouseState.m_mx / m_width) - 1.0f);
-                float nowY = ((2.0f * m_mouseState.m_my / m_height) - 1.0f);
-
-                float offsetX = nowX - lastX;
-                float offsetY = lastY - nowY;
-
-                lastX = nowX;
-                lastY = nowY;
-
-                horizontal_rotation += offsetX * 2.0f;
-                vertical_rotation += offsetY * 2.0f;
-
-                // cameraSetHorizontalAngle(horizontal_rotation);
-                // cameraSetVerticalAngle(vertical_rotation);
                 cameraUpdate(deltaTime * 0.1, m_mouseState);
             }
 
@@ -258,10 +258,12 @@ namespace {
                                 uint16_t(m_width),
                                 uint16_t(m_height));
 
-                ImGui::SetNextWindowPos(ImVec2({0,0}));
-                ImGui::SetNextWindowSize(ImVec2({400, 200}));
+                Lines::LinesFactory::DebugMenu();
 
                 #if 1
+                    float win_width = 350, win_heigth = 100;
+                    ImGui::SetNextWindowPos(ImVec2({static_cast<float>(m_width) - win_width, 0}));
+                    ImGui::SetNextWindowSize(ImVec2({win_width, win_heigth}));
                     ImGui::Begin("Custom debugging params", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
                     bx::Vec3 position = cameraGetPosition();
                     ImGui::Text("Camera Position: (%f, %f, %f)", position.x, position.y, position.z);
@@ -278,12 +280,6 @@ namespace {
             uint32_t m_debug;
             uint32_t m_reset;
             uint64_t m_timeOffset;
-
-            float horizontal_rotation; // pitch
-            float vertical_rotation; // yaw
-
-            float lastX;
-            float lastY;
 
             float m_angle;
     };

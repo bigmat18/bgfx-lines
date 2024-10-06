@@ -19,7 +19,7 @@ namespace Lines {
             }
 
         private:
-            PrimitiveLinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name);
+            PrimitiveLinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name, const std::string name = "");
             ~PrimitiveLinesHandler() = default;
 
             float m_color[4];

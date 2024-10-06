@@ -1,8 +1,8 @@
 #include <lines_handler.hpp>
 
 namespace Lines {
-    LinesHandler::LinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name) : 
-        m_RenderState(state), vs_name(vs_name), fs_name(fs_name)
+    LinesHandler::LinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name, const std::string name) : 
+        m_renderState(state), vs_name(vs_name), fs_name(fs_name), m_renderActive(true), m_name(name)
     {
         m_program = LoadProgram(vs_name, fs_name);
     }

@@ -24,8 +24,15 @@ namespace Lines {
             virtual void EndLine() = 0;
             virtual void Render(uint64_t state) = 0;
 
+            void SetRenderActive(bool active) { m_renderActive = active; }
+            std::string GetName() const { return m_name; }
+
         protected:
-            LinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name);
+            LinesHandler(uint64_t state,
+                         const std::string vs_name,
+                         const std::string fs_name,
+                         const std::string name);
+
             virtual ~LinesHandler();
 
             bgfx::ProgramHandle LoadProgram(const std::string vs_name, const std::string fs_name);
@@ -41,7 +48,10 @@ namespace Lines {
             const std::string vs_name;
             const std::string fs_name;
 
-            std::vector<LinesPoint> m_Points;       
-            uint64_t m_RenderState;     
+            std::vector<LinesPoint> m_Points;
+
+            uint64_t m_renderState;
+            bool m_renderActive;
+            std::string m_name;
     };
 }

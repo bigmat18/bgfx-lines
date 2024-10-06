@@ -32,7 +32,7 @@ namespace Lines {
             }
 
         private:
-            TriangulatedLinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name);
+            TriangulatedLinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name, const std::string name = "");
             ~TriangulatedLinesHandler();
             
             float CalculateDistance(const LinesPoint &p1, const LinesPoint &p2);
