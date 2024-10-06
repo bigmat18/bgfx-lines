@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <memory>
+#include <sstream>
 
 namespace Lines {
     std::vector<LinesHandler*> s_lines;
@@ -64,7 +65,7 @@ namespace Lines {
 
         const bgfx::Stats *stats = bgfx::getStats();
         ImGui::SetNextWindowPos(ImVec2({0, 0}));
-        ImGui::SetNextWindowSize(ImVec2({static_cast<float>(stats->width) / 5.0f, static_cast<float>(stats->height)}));
+        ImGui::SetNextWindowSize(ImVec2({static_cast<float>(stats->width) / 3.8f, static_cast<float>(stats->height)}));
 
         ImGui::Begin("Lines debugging", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 
@@ -97,11 +98,12 @@ namespace Lines {
                         {
                             uint32_t size = k + 1 != offsets.size() ? offsets[k + 1] - offsets[k] : vertex_size - offsets[k];
 
-                            std::string element;
+                            std::stringstream ss;
+                            
                             for (uint32_t j = 0; j < size; j++)
+                                ss << std::fixed << std::setprecision(3) <<line->m_vertices[i + j + offsets[k]] << " ";
 
-                                element += (std::to_string(line->m_vertices[i + j]) + " ");
-
+                            std::string element = "" + ss.str();
                             ImGui::BulletText("Layout element %d: %s\n", k, element.c_str());
                         }
                     }
