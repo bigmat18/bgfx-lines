@@ -20,9 +20,9 @@ namespace Lines {
             m_vertices.push_back(m_Points[i].x);
         }
 
-        for(uint32_t i = 0; i < m_Points.size(); i++) {
+        for(uint32_t i = 0; i < m_Points.size() - 1; i++) {
             m_indices.push_back(i);
-            m_indices.push_back(i+1);
+            m_indices.push_back(i + 1);
         }
 
         m_vbh = bgfx::createVertexBuffer(

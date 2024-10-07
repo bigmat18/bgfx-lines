@@ -48,8 +48,6 @@ namespace Lines
                                  const std::string fs_name, 
                                  const std::string name = "");
 
-        float CalculateDistance(const LinesPoint &p1, const LinesPoint &p2);
-
         bgfx::UniformHandle m_UniformData;
         bgfx::UniformHandle m_UniformColor;
         bgfx::UniformHandle m_UniformLength;

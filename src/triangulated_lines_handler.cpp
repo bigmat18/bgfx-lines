@@ -65,14 +65,14 @@ namespace Lines {
             m_vertices.push_back(curr[i/2][3]);
         }
 
-        for(uint32_t i = 0; i < m_Points.size(); i+=2) {
-            m_indices.push_back(i);
-            m_indices.push_back(i+1);
-            m_indices.push_back(i+2);
+        for(uint32_t i = 0, j = 0; i < m_Points.size(); i++, j+=2) {
+            m_indices.push_back(j);
+            m_indices.push_back(j+1);
+            m_indices.push_back(j+2);
 
-            m_indices.push_back(i+1);
-            m_indices.push_back(i+3);
-            m_indices.push_back(i+2);
+            m_indices.push_back(j+1);
+            m_indices.push_back(j+3);
+            m_indices.push_back(j+2);
         }
 
         m_vbh = bgfx::createVertexBuffer(
@@ -98,9 +98,5 @@ namespace Lines {
         bgfx::setIndexBuffer(m_ibh);
         bgfx::setState(state |= m_state);
         bgfx::submit(0, m_program);
-    }
-
-    float TriangulatedLinesHandler::CalculateDistance(const LinesPoint &p1, const LinesPoint &p2) {
-        return std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2));
     }
 }

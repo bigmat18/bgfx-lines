@@ -74,11 +74,11 @@ namespace Lines {
                 uint16_t vertex_size = line->m_layout.getStride() / ((uint16_t)sizeof(float));
 
                 ImGui::Text("Vertex number: %zu", line->m_vertices.size() / vertex_size);
-                ImGui::Text("Index number: %zu", line->GetState() == UINT64_C(0) ? line->m_indices.size() / 3 : line->m_indices.size() / 2);
+                ImGui::Text("Index block number: %zu", line->GetState() == UINT64_C(0) ? line->m_indices.size() / 3 : line->m_indices.size() / 2);
                 ImGui::Text("VBO size: %lu", line->m_vertices.size() * sizeof(line->m_vertices[0]));
                 ImGui::Text("IBO size: %lu", line->m_indices.size() * sizeof(line->m_indices[0]));
 
-                if (ImGui::CollapsingHeader("Vertex buffer")) {
+                if (ImGui::TreeNode("Vertex buffer")) {
                     std::vector<uint16_t> offsets;
                     for (int i = bgfx::Attrib::Position; i != bgfx::Attrib::Count; i++)
                     {
@@ -107,8 +107,9 @@ namespace Lines {
                             ImGui::BulletText("Layout element %d: %s\n", k, element.c_str());
                         }
                     }
+                    ImGui::TreePop();
                 }
-                if (ImGui::CollapsingHeader("Index buffer")) {
+                if (ImGui::TreeNode("Index buffer")) {
                     switch (line->GetState()) {
                         case UINT64_C(0): {
                             for(uint32_t i = 0; i < line->m_indices.size(); i+= 3) 
@@ -131,6 +132,7 @@ namespace Lines {
                         }
                     
                     }
+                    ImGui::TreePop();
                 }
                 ImGui::Checkbox("Render line", &line->m_active);
             }

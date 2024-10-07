@@ -21,6 +21,9 @@ namespace Lines
         virtual void EndLine() = 0;
         virtual void Render(uint64_t state) = 0;
 
+        void SetClosed(bool closed) { m_closed = closed; }
+        bool isClosed() const { return m_closed; }
+
         void SetActive(bool active) { m_active = active; }
         bool IsActive() const { return m_active; }
 
@@ -36,6 +39,7 @@ namespace Lines
                      const std::string name);
 
         bgfx::ProgramHandle LoadProgram(const std::string vs_name, const std::string fs_name);
+        float CalculateDistance(const LinesPoint &p1, const LinesPoint &p2);
 
         bgfx::ProgramHandle m_program;
         bgfx::VertexBufferHandle m_vbh;
@@ -53,5 +57,6 @@ namespace Lines
         uint64_t m_state;
         bool m_active;
         std::string m_name;
+        bool m_closed;
     };
 }

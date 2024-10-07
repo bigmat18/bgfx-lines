@@ -2,7 +2,7 @@
 
 namespace Lines {
     LinesHandler::LinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name, const std::string name) : 
-        m_state(state), vs_name(vs_name), fs_name(fs_name), m_active(true), m_name(name)
+        m_state(state), vs_name(vs_name), fs_name(fs_name), m_active(true), m_name(name), m_closed(false)
     {
         m_program = LoadProgram(vs_name, fs_name);
     }
@@ -25,5 +25,9 @@ namespace Lines {
 
     bgfx::ProgramHandle LinesHandler::LoadProgram(const std::string vs_name, const std::string fs_name) {
         return loadProgram(vs_name.c_str(), fs_name.c_str());
+    }
+
+    float LinesHandler::CalculateDistance(const LinesPoint &p1, const LinesPoint &p2) {
+        return std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2));
     }
 }
