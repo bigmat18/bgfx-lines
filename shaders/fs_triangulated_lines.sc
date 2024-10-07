@@ -1,12 +1,10 @@
-$input v_uv, v_color
+$input v_uv, v_color, v_normal, v_thickness
 #include <bgfx_shader.sh>
 
 uniform vec4 u_data;
 uniform vec4 u_length;
 
 #define u_linelength    u_length.x
-#define u_width         u_data.x
-#define u_heigth        u_data.y
 #define u_antialias     u_data.z
 #define u_thickness     u_data.w
 
@@ -14,6 +12,13 @@ uniform vec4 u_length;
 void main() {
 	float d = 0;
   float width = u_thickness / 2.0 - u_antialias;
+
+  vec4 color = v_color;
+
+/*
+  if (v_normal.z < 0)
+    color = 0.75*vec4(pow(abs(v_normal.z),0.5), 1.0, 1.0, 1.0);
+*/
 
   if(v_uv.x < 0) {
     d = length(v_uv) - width;
@@ -28,10 +33,10 @@ void main() {
 
 
 	if(d < 0) {
-  		gl_FragColor = v_color;
+  		gl_FragColor = color;
 	} else {
       d /= u_antialias;
 		  d = exp(-d * d); 
-		  gl_FragColor = vec4(v_color.xyz, d * v_color.w);
+		  gl_FragColor = vec4(color.xyz, d);
 	}
 }

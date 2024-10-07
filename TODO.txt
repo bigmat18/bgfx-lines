@@ -1,0 +1,6 @@
+- Spiral in triangulate (orto)
+- Spiral in primitive (perspective / orto)
+- Sphere in triangulate (perspective)
+- Sphere in primitive (perspective / orto)
+- Triangle in triangulate (orto)
+- Triangle in primitive (orto)

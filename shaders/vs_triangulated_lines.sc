@@ -1,5 +1,5 @@
 $input a_position, a_texcoord0, a_texcoord1, a_texcoord2
-$output v_uv, v_color
+$output v_uv, v_normal, v_thickness, v_color
 
 #include <bgfx_shader.sh>
 
@@ -46,6 +46,15 @@ void main() {
     vec4 screen_next = vec4(u_width * ((NDC_next.x / NDC_next.w) + 1.0) / 2.0,
                             u_heigth * ((NDC_next.y / NDC_next.w) + 1.0) / 2.0,
                             0, 0);
+
+/*
+    vec4 normal = u_model * vec4(a_curr.xyz, 1.0);
+    v_normal = normal;
+    if(normal.z < 0) 
+      v_thickness = vec4(u_thickness / 2.0, 0.0, 0.0, 0.0);
+    else 
+      v_thickness = vec4(u_thickness*(pow(normal.z, 0.5) + 1 ) / 2.0, 0.0, 0.0, 0.0);
+*/
 
     float width = u_thickness / 2.0 + u_antialias;
 

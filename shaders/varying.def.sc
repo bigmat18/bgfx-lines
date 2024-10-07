@@ -1,4 +1,6 @@
 vec4 v_uv         : POSITION;
+vec4 v_normal     : NORMAL;
+vec4 v_thickness  : TANGENT;
 vec4 v_color      : COLOR0;
 
 vec4 a_position         : POSITION;

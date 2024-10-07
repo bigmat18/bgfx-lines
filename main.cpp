@@ -106,7 +106,21 @@ namespace {
                     
                     float model[16] = MTX_BASE;
                     float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
-                    bx::mtxRotateZ(model, time);
+
+                    if(rotationX)
+                        bx::mtxRotateX(model, time);
+
+                    if(rotationY)
+                        bx::mtxRotateY(model, time);
+
+                    if (rotationZ)
+                        bx::mtxRotateZ(model, time);
+
+                    if(rotationX && rotationY)
+                        bx::mtxRotateXY(model, time, time);
+
+                    if(rotationX && rotationY && rotationZ)
+                        bx::mtxRotateXYZ(model, time, time, time);
 
                     m_angle += 0.1f;
 
@@ -117,7 +131,7 @@ namespace {
                     if(usePerspective)
                         bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
                     else 
-                        bx::mtxOrtho(proj, -1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
+                        bx::mtxOrtho(proj, left, right, bottom, top, nearPlane, farPlane, 0.0f, bgfx::getCaps()->homogeneousDepth);
 
                     bgfx::setViewTransform(0, view, proj);
                     bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
@@ -159,7 +173,7 @@ namespace {
                         | UINT64_C(0)
                         | BGFX_STATE_BLEND_ALPHA;
 
-                    // bgfx::setTransform(model);
+                    bgfx::setTransform(model);
                     Lines::Render(state);
 
                     bgfx::frame();
@@ -197,7 +211,7 @@ namespace {
                 Lines::DebugMenu();
 
                 #if 1
-                    float win_width = 350, win_heigth = 100;
+                    float win_width = 350, win_heigth = 400;
                     ImGui::SetNextWindowPos(ImVec2({static_cast<float>(m_width) - win_width, 0}));
                     ImGui::SetNextWindowSize(ImVec2({win_width, win_heigth}));
                     ImGui::Begin("Custom debugging params", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
@@ -211,6 +225,19 @@ namespace {
                     if (ImGui::RadioButton("Orthographic", !usePerspective)) {
                         usePerspective = false;
                     }
+
+                    if(ImGui::CollapsingHeader("Orthogonal Matrix settings")) {
+                        ImGui::SliderFloat("Left", &left, -100.0f, 100.0f);
+                        ImGui::SliderFloat("Right", &right, -100.0f, 100.0f);
+                        ImGui::SliderFloat("Bottom", &bottom, -100.0f, 100.0f);
+                        ImGui::SliderFloat("Top", &top, -100.0f, 100.0f);
+                        ImGui::SliderFloat("Near", &nearPlane, -100.0f, 100.0f);
+                        ImGui::SliderFloat("Far", &farPlane, -100.0f, 100.0f);
+                    }
+
+                    ImGui::Checkbox("Rotation X", &rotationX);
+                    ImGui::Checkbox("Rotation Y", &rotationY);
+                    ImGui::Checkbox("Rotation Z", &rotationZ);
 
                     ImGui::End();
                 #endif
@@ -286,7 +313,7 @@ namespace {
                 {
                     float X = cosf(T[i]) * sinf(R[i]);
                     float Y = sinf(T[i]) * sinf(R[i]);
-                    float Z = -100.0 + cosf(R[i]);
+                    float Z = cosf(R[i]);
 
                     triangulated_line->AddPoint(Lines::LinesPoint(float(X), float(Y), float(Z)));
                     primitive_line->AddPoint(Lines::LinesPoint(float(X), float(Y), float(Z)));
@@ -342,6 +369,17 @@ namespace {
 
             float m_angle;
             bool usePerspective;
+
+            float left = -10.0f;
+            float right = 10.0f;
+            float bottom = -10.0f;
+            float top = 10.0f;
+            float nearPlane = -10.0f;
+            float farPlane = 10.0f;
+
+            bool rotationX = false;
+            bool rotationY = false;
+            bool rotationZ = false;
     };
 }
 
