@@ -25,6 +25,11 @@ namespace Lines {
             m_indices.push_back(i + 1);
         }
 
+        if(isClosed()) {
+            m_indices.push_back(0);
+            m_indices.push_back(m_Points.size() - 1);
+        }
+
         m_vbh = bgfx::createVertexBuffer(
             bgfx::makeRef(&m_vertices[0], sizeof(float) * m_vertices.size()),
             m_layout

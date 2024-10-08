@@ -1,4 +1,4 @@
-$input v_uv, v_color, v_normal, v_thickness
+$input v_uv, v_color
 #include <bgfx_shader.sh>
 
 uniform vec4 u_data;
@@ -14,11 +14,6 @@ void main() {
   float width = u_thickness / 2.0 - u_antialias;
 
   vec4 color = v_color;
-
-/*
-  if (v_normal.z < 0)
-    color = 0.75*vec4(pow(abs(v_normal.z),0.5), 1.0, 1.0, 1.0);
-*/
 
   if(v_uv.x < 0) {
     d = length(v_uv) - width;

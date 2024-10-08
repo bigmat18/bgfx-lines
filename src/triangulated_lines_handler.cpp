@@ -65,7 +65,8 @@ namespace Lines {
             m_vertices.push_back(curr[i/2][3]);
         }
 
-        for(uint32_t i = 0, j = 0; i < m_Points.size(); i++, j+=2) {
+        uint32_t j = 0;
+        for(uint32_t i = 0; i < m_Points.size() - 1; i++, j+=2) {
             m_indices.push_back(j);
             m_indices.push_back(j+1);
             m_indices.push_back(j+2);
@@ -73,6 +74,16 @@ namespace Lines {
             m_indices.push_back(j+1);
             m_indices.push_back(j+3);
             m_indices.push_back(j+2);
+        }
+
+        if(isClosed()) {
+            m_indices.push_back(0);
+            m_indices.push_back(1);
+            m_indices.push_back(j);
+
+            m_indices.push_back(1);
+            m_indices.push_back(j+1);
+            m_indices.push_back(j);
         }
 
         m_vbh = bgfx::createVertexBuffer(

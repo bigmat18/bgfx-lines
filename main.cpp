@@ -122,6 +122,10 @@ namespace {
                     if(rotationX && rotationY && rotationZ)
                         bx::mtxRotateXYZ(model, time, time, time);
 
+                    model[12] = 0.0f;
+                    model[13] = 0.0f;
+                    model[14] = 0.0f;
+
                     m_angle += 0.1f;
 
                     float view[16];
@@ -131,8 +135,8 @@ namespace {
                     if(usePerspective)
                         bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
                     else 
-                        bx::mtxOrtho(proj, left, right, bottom, top, nearPlane, farPlane, 0.0f, bgfx::getCaps()->homogeneousDepth);
-
+                        bx::mtxOrtho(proj, left, right, bottom, top, nearPlane, farPlane, 0.0f, false);
+                    
                     bgfx::setViewTransform(0, view, proj);
                     bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                     bgfx::touch(0);
@@ -251,8 +255,8 @@ namespace {
                 );
                 triangulated_line->SetColor(1.0, 0.0, 1.0, 1.0);
                 triangulated_line->SetResolution(m_width, m_height);
-                triangulated_line->SetAntialis(1.5f);
-                triangulated_line->SetThickness(5.0f);
+                triangulated_line->SetAntialis(0.01f);
+                triangulated_line->SetThickness(0.01f);
                 triangulated_line->SetActive(false);
 
                 Lines::PrimitiveLinesHandler *primitive_line = dynamic_cast<Lines::PrimitiveLinesHandler *>(
@@ -266,7 +270,7 @@ namespace {
                 triangulated_line->BeginLine();
                 primitive_line->BeginLine();
 
-                int n = 1000;
+                int n = 2048;
                 std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
                 std::vector<float> R = linespace(n, 0.1, M_PI - 0.1);
 
@@ -275,8 +279,8 @@ namespace {
                     float X = cosf(T[i]) * R[i];
                     float Y = sinf(T[i]) * R[i];
 
-                    triangulated_line->AddPoint(Lines::LinesPoint(X, Y, 0.0));
-                    primitive_line->AddPoint(Lines::LinesPoint(X, Y, 0.0));
+                    triangulated_line->AddPoint(Lines::LinesPoint(X, Y, -3.0));
+                    primitive_line->AddPoint(Lines::LinesPoint(X, Y, -3.0));
                 }
 
                 triangulated_line->EndLine();
@@ -290,8 +294,8 @@ namespace {
                 ;
                 triangulated_line->SetColor(1.0, 0.0, 1.0, 1.0);
                 triangulated_line->SetResolution(m_width, m_height);
-                triangulated_line->SetAntialis(1.5f);
-                triangulated_line->SetThickness(5.0f);
+                triangulated_line->SetAntialis(0.001f);
+                triangulated_line->SetThickness(0.007f);
                 triangulated_line->SetActive(false);
 
                 Lines::PrimitiveLinesHandler *primitive_line = dynamic_cast<Lines::PrimitiveLinesHandler *>(
@@ -304,7 +308,7 @@ namespace {
                 triangulated_line->BeginLine();
                 primitive_line->BeginLine();
 
-                int n = 1000;
+                int n = 2048;
 
                 std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
                 std::vector<float> R = linespace(n, 0.1, M_PI - 0.1);
@@ -315,8 +319,8 @@ namespace {
                     float Y = sinf(T[i]) * sinf(R[i]);
                     float Z = cosf(R[i]);
 
-                    triangulated_line->AddPoint(Lines::LinesPoint(float(X), float(Y), float(Z)));
-                    primitive_line->AddPoint(Lines::LinesPoint(float(X), float(Y), float(Z)));
+                    triangulated_line->AddPoint(Lines::LinesPoint(X, Y, -3.0f + Z));
+                    primitive_line->AddPoint(Lines::LinesPoint(X, Y, Z));
                 }
 
                 triangulated_line->EndLine();
@@ -330,8 +334,8 @@ namespace {
 
                 triangulated_line->SetColor(1.0, 0.0, 1.0, 1.0);
                 triangulated_line->SetResolution(m_width, m_height);
-                triangulated_line->SetAntialis(1.5f);
-                triangulated_line->SetThickness(5.0f);
+                triangulated_line->SetAntialis(0.01f);
+                triangulated_line->SetThickness(0.01f);
                 triangulated_line->SetActive(false);
 
                 Lines::PrimitiveLinesHandler *primitive_line = dynamic_cast<Lines::PrimitiveLinesHandler *>(
@@ -348,12 +352,11 @@ namespace {
                 primitive_line->AddPoint(Lines::LinesPoint(-0.25f, -0.25f, 0.0f));
                 primitive_line->AddPoint(Lines::LinesPoint(0.25f, -0.25f, 0.0f));
                 primitive_line->AddPoint(Lines::LinesPoint(0.0f, 0.25f, 0.0f));
-                primitive_line->AddPoint(Lines::LinesPoint(-0.25f, -0.25f, 0.0f));
 
+                triangulated_line->SetClosed(true);
                 triangulated_line->AddPoint(Lines::LinesPoint(-0.25, -0.25, 0.0));
                 triangulated_line->AddPoint(Lines::LinesPoint(0.25, -0.25, 0.0));
                 triangulated_line->AddPoint(Lines::LinesPoint(0.0, 0.25, 0.0));
-                triangulated_line->AddPoint(Lines::LinesPoint(-0.25f, -0.25f, 0.0f));
 
                 triangulated_line->EndLine();
                 primitive_line->EndLine();
