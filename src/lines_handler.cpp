@@ -1,4 +1,5 @@
 #include <lines_handler.hpp>
+#include <vclib_bgfx/render/context/load_program.h>
 
 namespace Lines {
     LinesHandler::LinesHandler(uint64_t state, const std::string vs_name, const std::string fs_name, const std::string name) : 
@@ -24,7 +25,7 @@ namespace Lines {
     }
 
     bgfx::ProgramHandle LinesHandler::LoadProgram(const std::string vs_name, const std::string fs_name) {
-        return loadProgram(vs_name.c_str(), fs_name.c_str());
+        return vcl::loadProgram("shaders/vs_vertex_shader", "shaders/fs_fragment_shader");
     }
 
     float LinesHandler::CalculateDistance(const LinesPoint &p1, const LinesPoint &p2) {

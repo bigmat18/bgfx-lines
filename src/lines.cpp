@@ -1,7 +1,12 @@
 #include <lines.hpp>
 #include <triangulated_lines_handler.hpp>
 #include <primitive_lines_handler.hpp>
-#include <imgui/imgui.h>
+
+#define IMGUI 0
+
+#if IMGUI
+#include <imgui.h>
+#endif
 
 #include <cassert>
 #include <iostream>
@@ -63,6 +68,7 @@ namespace Lines {
 
     void DebugMenu() {
 
+        #if IMGUI
         const bgfx::Stats *stats = bgfx::getStats();
         ImGui::SetNextWindowPos(ImVec2({0, 0}));
         ImGui::SetNextWindowSize(ImVec2({static_cast<float>(stats->width) / 3.8f, static_cast<float>(stats->height)}));
@@ -139,5 +145,6 @@ namespace Lines {
         }
 
         ImGui::End();
+        #endif
     }
 }

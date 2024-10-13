@@ -1,5 +1,5 @@
 #pragma once
-#include <bgfx_utils.h>
+#include <bgfx/bgfx.h>
 #include <vector>
 #include <string>
 

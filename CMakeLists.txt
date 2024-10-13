@@ -6,24 +6,25 @@ else()
     cmake_policy(VERSION 3.29)
 endif()
 
-project(bgfx-lines)
-include(${PROJECT_SOURCE_DIR}/cmake/bgfx_utils.cmake)
-
-message(STATUS "bgfx.cmake external library")
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/bgfx.cmake)
-
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-file(GLOB SOURCES "src/*.cpp")
+project(bgfx-lines)
+include(${PROJECT_SOURCE_DIR}/cmake/bgfx_utils.cmake)
+set(VCLIB_BUILD_EXAMPLES FALSE)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/vclib-render)
+
+file(GLOB SOURCES "src/*")
 add_library(bgfx-lines ${SOURCES})
 target_include_directories(bgfx-lines PUBLIC include)
-target_link_libraries(bgfx-lines bx bgfx example-common)
+target_link_libraries(bgfx-lines vclib-render)
 
-add_executable(main main.cpp)
-
+file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/examples/*.cpp")
+message(STATUS "${CPP_SOURCES}")
+add_executable(main ${CPP_SOURCES})
 target_include_directories(main PUBLIC include)
-target_link_libraries(main bgfx example-common bgfx-lines)
+target_include_directories(main PUBLIC libs/vclib-render/include)
+target_link_libraries(main vclib-render bgfx-lines)
 
 
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders")
