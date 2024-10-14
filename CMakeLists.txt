@@ -11,7 +11,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(bgfx-lines)
 include(${PROJECT_SOURCE_DIR}/cmake/bgfx_utils.cmake)
-set(VCLIB_BUILD_EXAMPLES FALSE)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/vclib-render)
 
 file(GLOB SOURCES "src/*")
@@ -28,7 +27,7 @@ target_link_libraries(main vclib-render bgfx-lines)
 
 
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders")
-file(GLOB ABSOLUTE_SHADERS_FILES "${SHADERS_DIR}/*.sc")
+file(GLOB_RECURSE ABSOLUTE_SHADERS_FILES "${SHADERS_DIR}/*.sc")
 set(RELATIVE_SHADERS_FILES "")
 
 foreach(file ${ABSOLUTE_SHADERS_FILES})

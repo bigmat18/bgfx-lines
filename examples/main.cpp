@@ -1,14 +1,13 @@
-#include "test_lines.hpp"
+#include <vclib/ext/glfw/viewer_window.h>
 #include <iostream>
 
 int main(void) {
 
-    std::cout << "ciao" << std::endl;
-    TestLines tw = TestLines();
-    std::cout << "ciao" << std::endl;
+    vcl::glfw::ViewerWindow tw("Viewer GLFW");
+
+    tw.fitScene();
 
     tw.show();
-    std::cout << "ciao" << std::endl;
 
     return 0;
 }

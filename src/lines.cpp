@@ -1,12 +1,6 @@
 #include <lines.hpp>
-#include <triangulated_lines_handler.hpp>
-#include <primitive_lines_handler.hpp>
-
-#define IMGUI 0
-
-#if IMGUI
-#include <imgui.h>
-#endif
+#include <triangulated_drawable_lines.hpp>
+#include <primitive_drawable_lines.hpp>
 
 #include <cassert>
 #include <iostream>
@@ -15,29 +9,24 @@
 #include <sstream>
 
 namespace Lines {
-    std::vector<LinesHandler*> s_lines;
 
-    LinesHandler* CreateHandler(Lines::LinesType type, const std::string name)
+    DrawableLines* create(Lines::LinesType type, const std::string name)
     {
         switch (type) {
             case Lines::LinesType::TRIANGULATED_LINES: {
-                uint64_t state = 0 | UINT64_C(0);
 
-                TriangulatedLinesHandler* line = new TriangulatedLinesHandler(
-                    state, "vs_triangulated_lines", "fs_triangulated_lines", name
+                TriangulatedDrawableLines* line = new TriangulatedDrawableLines(
+                    "vs_triangulated_lines", "fs_triangulated_lines", name
                 );
 
-                s_lines.push_back(std::move(line));
                 return line;
             }
             case Lines::LinesType::PRIMITIVE_LINES: {
-                uint64_t state = 0 | BGFX_STATE_PT_LINES;
 
-                PrimitiveLinesHandler* line = new PrimitiveLinesHandler(
-                    state, "vs_primitive_lines", "fs_primitive_lines", name
+                PrimitiveDrawableLines* line = new PrimitiveDrawableLines(
+                    "vs_primitive_lines", "fs_primitive_lines", name
                 );
 
-                s_lines.push_back(std::move(line));
                 return line;
             }
             default:
@@ -47,28 +36,9 @@ namespace Lines {
         assert((void("Lines type is incorrect"), true));
     }
 
-    void DestroyHandler(LinesHandler* hanlder)
-    {
-    }
+#if 0
+    void debugMenu() {
 
-    void Render(uint64_t state) {
-        state &= 0xFFF0FFFFFFFFFFFF;
-
-        for(auto& line : s_lines)
-            if (line->IsActive())
-                line->Render(state);
-    }
-
-    void Shutdown() {
-        for(auto &line : s_lines)
-            delete line;
-
-        s_lines.clear();
-    }
-
-    void DebugMenu() {
-
-        #if IMGUI
         const bgfx::Stats *stats = bgfx::getStats();
         ImGui::SetNextWindowPos(ImVec2({0, 0}));
         ImGui::SetNextWindowSize(ImVec2({static_cast<float>(stats->width) / 3.8f, static_cast<float>(stats->height)}));
@@ -145,6 +115,6 @@ namespace Lines {
         }
 
         ImGui::End();
-        #endif
     }
+#endif
 }
