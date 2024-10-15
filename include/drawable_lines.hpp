@@ -13,22 +13,28 @@ namespace Lines
     {
         friend DrawableLines *create(LinesType type, const std::string name);
 
+        std::string mName = "DrawableLines";
+
+        std::string mInfo = "DrawableLines";
+
     public:
+        virtual ~DrawableLines();
+
         void beginLine();
+
         void addPoint(const LinesPoint &point);
+
         virtual void endLine() = 0;
 
         void setClosed(bool closed) { mClosed = closed; }
+        
         bool isClosed() const { return mClosed; }
-
-        virtual ~DrawableLines();
 
         vcl::Box3d boundingBox() const override { return vcl::Box3d(); }
 
         bool isVisible() const override { return true; }
 
         void setVisibility(bool vis) override {}
-
 
     protected:
         DrawableLines(const std::string vs_name,

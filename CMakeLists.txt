@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(bgfx-lines)
-include(${PROJECT_SOURCE_DIR}/cmake/bgfx_utils.cmake)
+# include(${PROJECT_SOURCE_DIR}/cmake/bgfx_utils.cmake)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/vclib-render)
 
 file(GLOB SOURCES "src/*")
@@ -18,7 +18,7 @@ add_library(bgfx-lines ${SOURCES})
 target_include_directories(bgfx-lines PUBLIC include)
 target_link_libraries(bgfx-lines vclib-render)
 
-file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/examples/*.cpp")
+file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/main.cpp")
 message(STATUS "${CPP_SOURCES}")
 add_executable(main ${CPP_SOURCES})
 target_include_directories(main PUBLIC include)
@@ -35,7 +35,7 @@ foreach(file ${ABSOLUTE_SHADERS_FILES})
     list(APPEND RELATIVE_SHADERS_FILES ${relative_file})
 endforeach()
 
-
+message(STATUS "${RELATIVE_SHADERS_FILES}")
 target_add_bgfx_shaders(
   main
   ${RELATIVE_SHADERS_FILES}

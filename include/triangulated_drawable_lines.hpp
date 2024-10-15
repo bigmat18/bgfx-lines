@@ -13,6 +13,7 @@ namespace Lines
 
     public:
         void endLine() override;
+        
         void draw(uint viewId) const override;
 
         void setResolution(float width, float height) {

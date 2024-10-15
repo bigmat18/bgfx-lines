@@ -10,21 +10,21 @@
 
 namespace Lines {
 
-    DrawableLines* create(Lines::LinesType type, const std::string name)
+    DrawableLines* create(LinesType type, const std::string name)
     {
         switch (type) {
-            case Lines::LinesType::TRIANGULATED_LINES: {
+            case LinesType::TRIANGULATED_LINES: {
 
-                TriangulatedDrawableLines* line = new TriangulatedDrawableLines(
-                    "vs_triangulated_lines", "fs_triangulated_lines", name
+                TriangulatedDrawableLines *line = new TriangulatedDrawableLines(
+                    "triangulated_lines/vs_triangulated_lines", "triangulated_lines/fs_triangulated_lines", name
                 );
 
                 return line;
             }
-            case Lines::LinesType::PRIMITIVE_LINES: {
+            case LinesType::PRIMITIVE_LINES: {
 
-                PrimitiveDrawableLines* line = new PrimitiveDrawableLines(
-                    "vs_primitive_lines", "fs_primitive_lines", name
+                PrimitiveDrawableLines *line = new PrimitiveDrawableLines(
+                    "primitive_lines/vs_primitive_lines", "primitive_lines/fs_primitive_lines", name
                 );
 
                 return line;

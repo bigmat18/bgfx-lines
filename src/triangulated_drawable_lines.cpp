@@ -117,7 +117,7 @@ namespace Lines {
             | UINT64_C(0)
             | BGFX_STATE_BLEND_ALPHA;
 
-        bgfx::setVertexBuffer(viewId, mVbh);
+        bgfx::setVertexBuffer(0, mVbh);
         bgfx::setIndexBuffer(mIbh);
         bgfx::setState(state);
         bgfx::submit(viewId, mProgram);

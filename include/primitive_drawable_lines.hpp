@@ -11,6 +11,7 @@ namespace Lines
 
     public:
         void endLine() override;
+        
         void draw(uint viewId) const override;
 
         void setColor(float r, float g, float b, float alpha)
@@ -23,7 +24,9 @@ namespace Lines
 
         ~PrimitiveDrawableLines() = default;
 
-        std::shared_ptr<vcl::DrawableObjectI> clone() const override { return std::make_shared<PrimitiveDrawableLines>(*this); }
+        std::shared_ptr<vcl::DrawableObjectI> clone() const override { 
+            return std::make_shared<PrimitiveDrawableLines>(*this); 
+        }
 
     private:
         PrimitiveDrawableLines(const std::string vs_name, 
