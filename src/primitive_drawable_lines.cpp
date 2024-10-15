@@ -45,21 +45,14 @@ namespace Lines {
         if(bgfx::isValid(mProgram)) {
             bgfx::setUniform(mUniformColor, mColor);
 
-            uint64_t state = 0
-                | BGFX_STATE_WRITE_R
-                | BGFX_STATE_WRITE_G
-                | BGFX_STATE_WRITE_B
-                | BGFX_STATE_WRITE_A
-                | BGFX_STATE_WRITE_Z
-                | BGFX_STATE_DEPTH_TEST_ALWAYS
-                | BGFX_STATE_CULL_CW
-                | BGFX_STATE_MSAA
-                | BGFX_STATE_PT_LINES
-                | BGFX_STATE_BLEND_ALPHA;
-            
             bgfx::setVertexBuffer(0, mVbh);
             bgfx::setIndexBuffer(mIbh);
-            // bgfx::setState(state);
+            bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A |
+                           BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
+                           BGFX_STATE_PT_LINES |
+                           BGFX_STATE_BLEND_FUNC(
+                               BGFX_STATE_BLEND_SRC_ALPHA,
+                               BGFX_STATE_BLEND_INV_SRC_ALPHA));
             bgfx::submit(viewId, mProgram);
 
         }

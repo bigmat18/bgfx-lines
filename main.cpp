@@ -11,7 +11,7 @@ int main(void) {
         Lines::create(Lines::LinesType::PRIMITIVE_LINES, "Spiral (triangulate version)")
     );
 
-    primitive_line->setColor(1.0, 1.0, 1.0, 1.0);
+    primitive_line->setColor(0.5, 1.0, 0.5, 1.0);
     primitive_line->setClosed(true);
 
     primitive_line->beginLine();
