@@ -1,3 +1,4 @@
-[submodule "libs/vclib-render"]
-	path = libs/vclib-render
-	url = https://github.com/bigmat18/vclib-render.git
+
+[submodule "libs/vclib"]
+	path = libs/vclib
+	url = https://github.com/cnr-isti-vclab/vclib

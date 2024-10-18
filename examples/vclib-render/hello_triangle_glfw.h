@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vclib/ext/glfw/canvas_window.h>
+#include <vclib/glfw/canvas_window.h>
 #include <primitive_drawable_lines.hpp>
 #include <triangulated_drawable_lines.hpp>
 

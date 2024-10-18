@@ -1,5 +1,5 @@
 #include <drawable_lines.hpp>
-#include <vclib_bgfx/render/context/load_program.h>
+#include <vclib/render_bgfx/context/load_program.h>
 
 namespace Lines {
     DrawableLines::DrawableLines(const std::string vs_name, const std::string fs_name, const std::string name) : 

@@ -49,5 +49,5 @@ HelloTriangleGLFW::~HelloTriangleGLFW()
 
 void HelloTriangleGLFW::draw()
 {
-    primitive_line->draw(viewId());
+    triangulated_line->draw(viewId());
 }

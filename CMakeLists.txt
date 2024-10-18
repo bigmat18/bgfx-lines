@@ -10,19 +10,21 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(bgfx-lines)
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/vclib-render)
+
+set(VCLIB_BUILD_MODULE_RENDER ON)
+set(VCLIB_BUILD_EXAMPLES OFF)
+set(VCLIB_BUILD_TESTS OFF)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/vclib)
 
 file(GLOB SOURCES "src/*")
 add_library(bgfx-lines ${SOURCES})
 target_include_directories(bgfx-lines PUBLIC include)
-target_link_libraries(bgfx-lines vclib-render)
+target_link_libraries(bgfx-lines PUBLIC vclib)
 
 file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/examples/vclib-render/*.cpp")
 message(STATUS "${CPP_SOURCES}")
 add_executable(main ${CPP_SOURCES})
-target_include_directories(main PUBLIC include)
-target_include_directories(main PUBLIC libs/vclib-render/include)
-target_link_libraries(main vclib-render bgfx-lines)
+target_link_libraries(main PUBLIC vclib bgfx-lines)
 
 
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders")
