@@ -1,14 +1,14 @@
-#ifndef HELLO_TRIANGLE_GLFW_H
-#define HELLO_TRIANGLE_GLFW_H
+#pragma once
 
 #include <vclib/ext/glfw/canvas_window.h>
 #include <primitive_drawable_lines.hpp>
+#include <triangulated_drawable_lines.hpp>
 
 
 class HelloTriangleGLFW : public vcl::glfw::CanvasWindow
 {
 public:
-    HelloTriangleGLFW();
+    HelloTriangleGLFW(uint32_t width, uint32_t heigth);
 
     ~HelloTriangleGLFW();
 
@@ -16,6 +16,5 @@ public:
 
 private:
     Lines::PrimitiveDrawableLines *primitive_line;
+    Lines::TriangulatedDrawableLines *triangulated_line;
 };
-
-#endif // HELLO_TRIANGLE_GLFW_H

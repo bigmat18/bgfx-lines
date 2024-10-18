@@ -3,10 +3,6 @@
 #include <primitive_drawable_lines.hpp>
 
 #include <cassert>
-#include <iostream>
-#include <iomanip>
-#include <memory>
-#include <sstream>
 
 namespace Lines {
 

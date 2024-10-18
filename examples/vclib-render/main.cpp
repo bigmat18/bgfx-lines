@@ -2,7 +2,9 @@
 
 int main(int argc, char** argv)
 {
-    HelloTriangleGLFW tw;
+    std::cout << "ciao\n";
+
+    HelloTriangleGLFW tw(1024, 750);
 
     tw.show();
 
