@@ -30,7 +30,7 @@ namespace Lines
         
         bool isClosed() const { return mClosed; }
 
-        vcl::Box3d boundingBox() const override { return vcl::Box3d(); }
+        vcl::Box3d boundingBox() const override { return vcl::Box3d(vcl::Point3d(-1,-1,-1), vcl::Point3d(1, 1, 1)); }
 
         bool isVisible() const override { return true; }
 

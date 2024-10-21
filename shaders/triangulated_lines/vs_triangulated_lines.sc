@@ -28,9 +28,9 @@ vec4 ScreenToClip(vec4 coordinate, float width, float height) {
 void main() {
     float aspect = u_width / u_heigth;
 
-    vec4 NDC_prev = u_modelViewProj * vec4(a_prev.xyz, 1.0);
-    vec4 NDC_curr = u_modelViewProj * vec4(a_curr.xyz, 1.0);
-    vec4 NDC_next = u_modelViewProj * vec4(a_next.xyz, 1.0);
+    vec4 NDC_prev = mul(u_modelViewProj, vec4(a_prev.xyz, 1.0));
+    vec4 NDC_curr = mul(u_modelViewProj, vec4(a_curr.xyz, 1.0));
+    vec4 NDC_next = mul(u_modelViewProj, vec4(a_next.xyz, 1.0));
 
     vec4 screen_prev = vec4(((NDC_prev.xy / NDC_prev.w) * aspect).xy, 0.0, 0.0);
     vec4 screen_curr = vec4(((NDC_curr.xy / NDC_curr.w) * aspect).xy, 0.0, 0.0);   
