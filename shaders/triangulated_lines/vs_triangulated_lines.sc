@@ -23,7 +23,7 @@ vec4 ScreenToClip(vec4 coordinate, float width, float height) {
                 (2.0 * coordinate.y/ height) - 1, 
                 coordinate.z, 
                 coordinate.w);
-} 
+}
 
 void main() {
     float aspect = u_width / u_heigth;

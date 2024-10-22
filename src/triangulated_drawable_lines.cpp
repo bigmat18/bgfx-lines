@@ -26,6 +26,9 @@ namespace Lines {
     }
 
     void TriangulatedDrawableLines::endLine() {
+        if(isClosed())
+            mPoints.push_back(mPoints[0]);
+
         std::vector<std::array<float, 4>> prev(mPoints.size());
         std::vector<std::array<float, 4>> curr(mPoints.size());
         std::vector<std::array<float, 4>> next(mPoints.size());
@@ -43,7 +46,13 @@ namespace Lines {
             else next[i] = {mPoints[i+1].x, mPoints[i+1].y, mPoints[i+1].z, 0.0f};
         }
 
-        for(uint32_t i = 0; i < curr.size() * 2; i++) {
+        if(isClosed()) {
+            prev[0] = curr[mPoints.size() - 2];
+            next[mPoints.size() - 1] = curr[1];
+        }
+
+        uint32_t i = 0;
+        for(; i < curr.size() * 2; i++) {
         
             // a_position ==> prev(x,y,z)
             mVertices.push_back(prev[i/2][0]);
@@ -74,16 +83,6 @@ namespace Lines {
             mIndices.push_back(j+1);
             mIndices.push_back(j+3);
             mIndices.push_back(j+2);
-        }
-
-        if(isClosed()) {
-            mIndices.push_back(0);
-            mIndices.push_back(1);
-            mIndices.push_back(j);
-
-            mIndices.push_back(1);
-            mIndices.push_back(j+1);
-            mIndices.push_back(j);
         }
 
         mVbh = bgfx::createVertexBuffer(
