@@ -33,7 +33,6 @@ void main() {
     d = abs(v_uv.y) - width;
   }
 
-
 	if(d < 0) {
       d = 1.0;
 	} else {

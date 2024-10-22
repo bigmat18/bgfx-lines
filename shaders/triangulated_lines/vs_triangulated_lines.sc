@@ -18,11 +18,22 @@ uniform vec4 u_length;
 #define u_antialias     u_data.z
 #define u_thickness     u_data.w
 
-vec4 ScreenToClip(vec4 coordinate, float width, float height) {
-    return vec4((2.0 * coordinate.x/ width) - 1, 
-                (2.0 * coordinate.y/ height) - 1, 
-                coordinate.z, 
-                coordinate.w);
+vec4 ScreenToClip(vec4 coordinate, float width, float heigth) {
+    return vec4(
+                  (2 * coordinate.x / width), 
+                  (2 * coordinate.y / heigth), 
+                  coordinate.z, 
+                  coordinate.w
+                );
+}
+
+vec4 ClipToScreen(vec4 coordinate, float width, float heigth) {
+    return vec4(
+                  (coordinate.x * width) / 2, 
+                  (coordinate.y * heigth) / 2, 
+                  coordinate.z, 
+                  coordinate.w
+                );
 }
 
 void main() {
@@ -36,12 +47,16 @@ void main() {
     vec4 screen_curr = vec4(((NDC_curr.xy / NDC_curr.w) * aspect).xy, 0.0, 0.0);   
     vec4 screen_next = vec4(((NDC_next.xy / NDC_next.w) * aspect).xy, 0.0, 0.0);
 
+    vec4 prev = ClipToScreen(screen_prev, u_width, u_heigth);
+    vec4 curr = ClipToScreen(screen_curr, u_width, u_heigth);
+    vec4 next = ClipToScreen(screen_next, u_width, u_heigth);
+
     float width = u_thickness / 2.0 + u_antialias;
 
-    vec4 T0 = vec4(normalize(screen_curr.xy - screen_prev.xy).xy, 0.0, 0.0);
+    vec4 T0 = vec4(normalize(curr.xy - prev.xy).xy, 0.0, 0.0);
     vec4 N0 = vec4(-T0.y , T0.x, 0.0, 0.0);
 
-    vec4 T1 = vec4(normalize(screen_next.xy - screen_curr.xy).xy, 0.0, 0.0);
+    vec4 T1 = vec4(normalize(next.xy - curr.xy).xy, 0.0, 0.0);
     vec4 N1 = vec4(-T1.y, T1.x, 0.0, 0.0);
 
     vec4 p;
@@ -50,20 +65,21 @@ void main() {
     if(a_prev.x == a_curr.x && a_prev.y == a_curr.y) {
       
       v_uv.x = -width;
-      p = screen_curr - (width * T1) + (a_uv.x * width * N1);
+      p = curr - (width * T1) + (a_uv.x * width * N1);
 
     } else if (a_curr.x == a_next.x && a_curr.y == a_next.y) { 
 
       v_uv.x = u_linelength + width;
-      p = screen_curr + (width * T0) + (a_uv.x  * width * N0);
+      p = curr + (width * T0) + (a_uv.x  * width * N0);
 
     } else {
       
       vec4 miter = normalize(N0 + N1);
       float dy = width / max(dot(miter, N1), 1.0);
-      p = screen_curr + (dy * a_uv.x * miter);    
+      p = curr + (dy * a_uv.x * miter);    
     } 
 
     v_color = u_color;
+    p = ScreenToClip(p, u_width, u_heigth);
     gl_Position = vec4(p.xy, NDC_curr.z / NDC_curr.w, 1.0);
 }

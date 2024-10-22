@@ -5,9 +5,20 @@ int main(void) {
 
     vcl::glfw::ViewerWindow tw("Lines Viewer");
 
+    #if 1
     Lines::TriangulatedDrawableLines *line = createTriangleLines(tw.width(), tw.height());
-
     tw.pushDrawableObject(*line);
+    #endif
+        
+    #if 0
+    Lines::TriangulatedDrawableLines *line = createSpiralLines(tw.width(), tw.height());
+    tw.pushDrawableObject(*line);
+    #endif
+
+    #if 0
+    Lines::TriangulatedDrawableLines *line = createSphereLines(tw.width(), tw.height());
+    tw.pushDrawableObject(*line);
+    #endif
 
     tw.fitScene();
 
