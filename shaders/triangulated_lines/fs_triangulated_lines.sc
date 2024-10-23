@@ -10,13 +10,6 @@ uniform vec4 u_length;
 #define u_antialias     u_data.z
 #define u_thickness     u_data.w
 
-vec4 ScreenToClip(vec4 coordinate, float width, float height) {
-    return vec4((2.0 * coordinate.x/ width) - 1, 
-                (2.0 * coordinate.y/ height) - 1, 
-                coordinate.z, 
-                coordinate.w);
-}
-
 void main() {
 	float d = 0;
   float width = u_thickness / 2.0 - u_antialias;
@@ -40,5 +33,13 @@ void main() {
 		  d = exp(-d * d); 
 	}
 	
-  gl_FragColor = vec4(color.xyz, d);
+  gl_FragColor = vec4(color.xyz, d * color.w);
+
+  #if 1
+    if(gl_PrimitiveID % 2 == 0) {
+      gl_FragColor = vec4(0.0, 1.0, 0.0, d * color.w);
+    } else {
+      gl_FragColor = vec4(1.0, 0.0, 1.0, d * color.w);
+    }
+  #endif
 }

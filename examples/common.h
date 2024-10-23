@@ -19,8 +19,8 @@ Lines::TriangulatedDrawableLines* createSpiralLines(float width, float heigth) {
 
     triangulated_line->setColor(0.0, 0.0, 0.0, 1.0);
     triangulated_line->setResolution(width, heigth);
-    triangulated_line->setAntialis(0.0f);
-    triangulated_line->setThickness(5.0f);
+    triangulated_line->setAntialis(2.0f);
+    triangulated_line->setThickness(3.0f);
 
     int n = 2048;
     std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
@@ -46,8 +46,8 @@ Lines::TriangulatedDrawableLines* createSphereLines(float width, float heigth) {
 
     triangulated_line->setColor(0.0, 0.0, 0.0, 1.0);
     triangulated_line->setResolution(width, heigth);
-    triangulated_line->setAntialis(0.0f);
-    triangulated_line->setThickness(5.0f);
+    triangulated_line->setAntialis(2.0f);
+    triangulated_line->setThickness(3.0f);
 
     int n = 2048;
 
@@ -75,13 +75,14 @@ Lines::TriangulatedDrawableLines* createTriangleLines(float width, float heigth)
     triangulated_line->setColor(0.0, 0.0, 0.0, 1.0);
     triangulated_line->setResolution(width, heigth);
     triangulated_line->setAntialis(0.0f);
-    triangulated_line->setThickness(5.0f);
+    triangulated_line->setThickness(8.0f);
     triangulated_line->setClosed(true);
 
     triangulated_line->beginLine();
-    triangulated_line->addPoint(Lines::LinesPoint(0.25, -0.25, 0.0));
-    triangulated_line->addPoint(Lines::LinesPoint(0.0, 0.25, 0.0));
-    triangulated_line->addPoint(Lines::LinesPoint(-0.25, -0.25, 0.0));
+    triangulated_line->addPoint(Lines::LinesPoint(1, -1, 0.0));
+    triangulated_line->addPoint(Lines::LinesPoint(0.0, 1, 0.0));
+    triangulated_line->addPoint(Lines::LinesPoint(-.5, -.5, 0.0));
+    triangulated_line->addPoint(Lines::LinesPoint(-1, -1, 0.0));
     triangulated_line->endLine();
 
     return triangulated_line;
