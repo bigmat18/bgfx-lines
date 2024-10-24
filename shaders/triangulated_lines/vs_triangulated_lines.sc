@@ -20,8 +20,8 @@ uniform vec4 u_length;
 
 vec4 ScreenToClip(vec4 coordinate, float width, float heigth) {
     return vec4(
-                  (2 * coordinate.x / width), 
-                  (2 * coordinate.y / heigth), 
+                  (2 * coordinate.x / width) - 1, 
+                  (2 * coordinate.y / heigth) - 1, 
                   coordinate.z, 
                   coordinate.w
                 );
@@ -29,23 +29,22 @@ vec4 ScreenToClip(vec4 coordinate, float width, float heigth) {
 
 vec4 ClipToScreen(vec4 coordinate, float width, float heigth) {
     return vec4(
-                  (coordinate.x * width) / 2, 
-                  (coordinate.y * heigth) / 2, 
+                  ((coordinate.x + 1) * width) / 2, 
+                  ((coordinate.y + 1) * heigth) / 2, 
                   coordinate.z, 
                   coordinate.w
                 );
 }
 
 void main() {
-    float aspect = u_width / u_heigth;
 
     vec4 NDC_prev = mul(u_modelViewProj, vec4(a_prev.xyz, 1.0));
     vec4 NDC_curr = mul(u_modelViewProj, vec4(a_curr.xyz, 1.0));
     vec4 NDC_next = mul(u_modelViewProj, vec4(a_next.xyz, 1.0));
 
-    vec4 screen_prev = vec4(((NDC_prev.xy / NDC_prev.w) * aspect).xy, 0.0, 0.0);
-    vec4 screen_curr = vec4(((NDC_curr.xy / NDC_curr.w) * aspect).xy, 0.0, 0.0);   
-    vec4 screen_next = vec4(((NDC_next.xy / NDC_next.w) * aspect).xy, 0.0, 0.0);
+    vec4 screen_prev = vec4(((NDC_prev.xy / NDC_prev.w)).xy, 0.0, 0.0);
+    vec4 screen_curr = vec4(((NDC_curr.xy / NDC_curr.w)).xy, 0.0, 0.0);   
+    vec4 screen_next = vec4(((NDC_next.xy / NDC_next.w)).xy, 0.0, 0.0);
 
     vec4 prev = ClipToScreen(screen_prev, u_width, u_heigth);
     vec4 curr = ClipToScreen(screen_curr, u_width, u_heigth);
@@ -60,6 +59,8 @@ void main() {
     vec4 N1 = vec4(-T1.y, T1.x, 0.0, 0.0);
 
     vec4 p;
+
+    // (length form previus point, -1/1 * width, 0, 0)
     v_uv = vec4(a_uv.y, a_uv.x * width, 0.0, 0.0);
 
     if(a_prev.x == a_curr.x && a_prev.y == a_curr.y) {
@@ -69,14 +70,12 @@ void main() {
 
     } else if (a_curr.x == a_next.x && a_curr.y == a_next.y) { 
 
-      v_uv.x = u_linelength + width;
+      v_uv.x += width;
       p = curr + (width * T0) + (a_uv.x  * width * N0);
 
     } else {
-      
       vec4 miter = normalize(N0 + N1);
-      float dy = width / max(dot(miter, N1), 1.0);
-      p = curr + (dy * a_uv.x * miter);    
+      p = curr + (width * a_uv.x * miter);    
     } 
 
     v_color = u_color;
