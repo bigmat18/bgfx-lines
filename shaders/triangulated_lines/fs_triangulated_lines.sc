@@ -10,26 +10,22 @@ uniform vec4 u_length;
 #define u_antialias     u_data.z
 #define u_thickness     u_data.w
 
-float rand(vec2 co){
-    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
 void main() {
 	float d = 0;
-  float width = u_thickness / 2.0 - u_antialias;
+  float line_width = u_thickness / 2.0 - u_antialias;
+  float line_lenght_px = u_linelength * u_width / 2;
+  
   vec4 color = v_color;
 
-  vec4 uv = v_uv;
+  if(v_uv.x < 0) {
+    d = length(v_uv) - line_width;
 
-  if(uv.x < 0) {
-    d = length(uv) - width;
+  } else if(v_uv.x >= line_lenght_px) {
 
-  } else if(uv.x >= u_linelength) {
-
-    d = length(uv - vec4(u_linelength, 0.0, 0.0, 0.0)) - width;
+    d = length(v_uv - vec4(line_lenght_px, 0.0, 0.0, 0.0)) - line_width;
     
   } else {
-    d = abs(uv.y) - width;
+    d = abs(v_uv.y) - line_width;
   }
 
 	if(d < 0) {
@@ -40,9 +36,8 @@ void main() {
 	}
 	
   gl_FragColor = vec4(color.xyz, d * color.w);
-  gl_FragColor = color;
-
-  #if 1
+  
+  #if 0
     if(gl_PrimitiveID % 2 == 0) {
       gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
     } else {
