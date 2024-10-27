@@ -20,6 +20,11 @@ int main(void) {
     tw.pushDrawableObject(*line3);
     #endif
 
+    #if 0
+    Lines::TriangulatedDrawableLines *line4 = createStarLines(tw.width(), tw.height());
+    tw.pushDrawableObject(*line4);
+    #endif
+
     tw.fitScene();
 
     tw.show();

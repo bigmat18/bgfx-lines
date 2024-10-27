@@ -36,7 +36,7 @@ void main() {
 	}
 	
   gl_FragColor = vec4(color.xyz, d * color.w);
-  
+
   #if 0
     if(gl_PrimitiveID % 2 == 0) {
       gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);

@@ -75,6 +75,7 @@ void main() {
 
     } else {
       vec4 miter = normalize(N0 + N1);
+      float dy = line_width / max(dot(miter, N1), 1.0);
       p = curr + (line_width * a_uv.x * miter);    
     } 
 
