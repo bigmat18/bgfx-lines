@@ -46,24 +46,22 @@ Lines::TriangulatedDrawableLines* createSphereLines(float width, float heigth) {
 
     triangulated_line->setColor(0.0, 0.0, 0.0, 1.0);
     triangulated_line->setResolution(width, heigth);
-    triangulated_line->setAntialis(3.0f);
-    triangulated_line->setThickness(10.0f);
+    triangulated_line->setAntialis(0.0f);
+    triangulated_line->setThickness(5.0f);
 
-    int n = 10;
+    int n = 2000;
 
     std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
     std::vector<float> R = linespace(n, 0.1, M_PI - 0.1);
     
     triangulated_line->beginLine();
-    // for (int i = 0; i < n; i++) {
-    //     float X = cosf(T[i]) * sinf(R[i]);
-    //     float Y = sinf(T[i]) * sinf(R[i]);
-    //     float Z = cosf(R[i]);
+    for (int i = 0; i < n; i++) {
+        float X = cosf(T[i]) * sinf(R[i]);
+        float Y = sinf(T[i]) * sinf(R[i]);
+        float Z = cosf(R[i]);
 
-    //     triangulated_line->addPoint(Lines::LinesPoint(X, Y, Z));
-    // }
-    triangulated_line->addPoint(Lines::LinesPoint(0.0, -1.5, 0.0));
-    triangulated_line->addPoint(Lines::LinesPoint(1.0, -1.0, 0.0));
+        triangulated_line->addPoint(Lines::LinesPoint(X, Y, Z));
+    }
     triangulated_line->endLine();
 
     return triangulated_line;
