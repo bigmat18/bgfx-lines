@@ -16,15 +16,15 @@ set(VCLIB_BUILD_EXAMPLES OFF)
 set(VCLIB_BUILD_TESTS OFF)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/vclib)
 
-file(GLOB SOURCES "src/*")
+file(GLOB SOURCES "src/V2/*")
 add_library(bgfx-lines ${SOURCES})
-target_include_directories(bgfx-lines PUBLIC include)
+target_include_directories(bgfx-lines PUBLIC include/V2)
 target_link_libraries(bgfx-lines PUBLIC vclib)
 
-file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/examples/*.cpp")
+file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/examples/V2*.cpp")
 message(STATUS "${CPP_SOURCES}")
 add_executable(main ${CPP_SOURCES})
-target_include_directories(main PUBLIC ${CMAKE_SOURCE_DIR}/examples)
+target_include_directories(main PUBLIC ${CMAKE_SOURCE_DIR}/examples/V2)
 target_link_libraries(main PUBLIC vclib bgfx-lines)
 
 
