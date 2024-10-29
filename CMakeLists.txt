@@ -21,7 +21,7 @@ add_library(bgfx-lines ${SOURCES})
 target_include_directories(bgfx-lines PUBLIC include/V2)
 target_link_libraries(bgfx-lines PUBLIC vclib)
 
-file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/examples/V2*.cpp")
+file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/examples/V2/*.cpp")
 message(STATUS "${CPP_SOURCES}")
 add_executable(main ${CPP_SOURCES})
 target_include_directories(main PUBLIC ${CMAKE_SOURCE_DIR}/examples/V2)
