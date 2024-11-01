@@ -20,24 +20,33 @@
  * for more details.                                                         *
  ****************************************************************************/
 
+#include "hello_triangle_glfw.h"
+
 #include "common.h"
 
-#include <vclib/glfw/viewer_window.h>
-
-int main(int argc, char** argv)
+HelloTriangleGLFW::HelloTriangleGLFW() :
+        vcl::glfw::CanvasWindow("Hello Triangle GLFW")
 {
-    vcl::glfw::ViewerWindow tw("Viewer GLFW");
+    std::vector<lines::LinePoint> vertices;
+    vcl::Color backgroundColor = vcl::Color::Black;
+    bgfx::setViewClear(
+        viewId(),
+        BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH,
+        backgroundColor.rgba(),
+        1.0f,
+        0);
+    line = lines::TriangulatedLines(vertices, 1024, 768);
+    bgfx::touch(viewId());
 
-    // load and set up a drawable mesh
-    vcl::DrawableMesh<vcl::TriMesh> drawable = getDrawableMesh();
+}
 
-    // add the drawable mesh to the scene
-    // the viewer will own **a copy** of the drawable mesh
-    tw.pushDrawableObject(drawable);
+HelloTriangleGLFW::~HelloTriangleGLFW()
+{
 
-    tw.fitScene();
+}
 
-    tw.show();
-
-    return 0;
+void HelloTriangleGLFW::draw()
+{
+    line.draw(viewId());
+    // drawOnView(viewId(), vbh, program);
 }

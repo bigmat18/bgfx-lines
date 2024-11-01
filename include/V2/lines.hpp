@@ -16,11 +16,13 @@ namespace lines
     class TriangulatedLines : public vcl::DrawableObjectI {
 
     public:
+        TriangulatedLines() {}
+        
         TriangulatedLines(const std::vector<LinePoint> &points, const float width, const float heigth);
 
-        TriangulatedLines(const bgfx::ProgramHandle program, const bgfx::VertexBufferHandle vbh);
+        TriangulatedLines(const bgfx::VertexBufferHandle vbh);
 
-        TriangulatedLines(const bgfx::ProgramHandle program, const bgfx::VertexBufferHandle vbh, const bgfx::IndexBufferHandle ibh);
+        TriangulatedLines(const bgfx::VertexBufferHandle vbh, const bgfx::IndexBufferHandle ibh);
 
         ~TriangulatedLines();
 

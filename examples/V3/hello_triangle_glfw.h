@@ -20,24 +20,25 @@
  * for more details.                                                         *
  ****************************************************************************/
 
-#include "common.h"
+#ifndef HELLO_TRIANGLE_GLFW_H
+#define HELLO_TRIANGLE_GLFW_H
 
-#include <vclib/glfw/viewer_window.h>
+#include <vclib/glfw/canvas_window.h>
+#include <lines.hpp>
 
-int main(int argc, char** argv)
+class HelloTriangleGLFW : public vcl::glfw::CanvasWindow
 {
-    vcl::glfw::ViewerWindow tw("Viewer GLFW");
+public:
+    HelloTriangleGLFW();
 
-    // load and set up a drawable mesh
-    vcl::DrawableMesh<vcl::TriMesh> drawable = getDrawableMesh();
+    ~HelloTriangleGLFW();
 
-    // add the drawable mesh to the scene
-    // the viewer will own **a copy** of the drawable mesh
-    tw.pushDrawableObject(drawable);
+    void draw() override;
 
-    tw.fitScene();
+private:
+    bgfx::VertexBufferHandle vbh;
+    bgfx::ProgramHandle program;
+    lines::TriangulatedLines line;
+};
 
-    tw.show();
-
-    return 0;
-}
+#endif // HELLO_TRIANGLE_GLFW_H

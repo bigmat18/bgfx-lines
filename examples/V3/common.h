@@ -20,24 +20,69 @@
  * for more details.                                                         *
  ****************************************************************************/
 
-#include "common.h"
+#ifndef COMMON_H
+#define COMMON_H
 
-#include <vclib/glfw/viewer_window.h>
+#include <bgfx/bgfx.h>
 
-int main(int argc, char** argv)
+#include <vclib/render_bgfx/context/load_program.h>
+#include <vclib/space/core/color.h>
+
+struct Vertex
 {
-    vcl::glfw::ViewerWindow tw("Viewer GLFW");
+    float    pos[2];
+    uint32_t abgr;
+};
 
-    // load and set up a drawable mesh
-    vcl::DrawableMesh<vcl::TriMesh> drawable = getDrawableMesh();
+static const Vertex vertices[] {
+    {{-1.0f, -1.0f}, vcl::Color(vcl::Color::Red).abgr()  },
+    {{-1.0f, 1.0f},   vcl::Color(vcl::Color::Blue).abgr() },
+    {{1.0f, 1.0f},   vcl::Color(vcl::Color::Blue).abgr() },
 
-    // add the drawable mesh to the scene
-    // the viewer will own **a copy** of the drawable mesh
-    tw.pushDrawableObject(drawable);
+    {{-1.0f, -1.0f}, vcl::Color(vcl::Color::Red).abgr()  }, 
+    {{1.0f, -1.0f},  vcl::Color(vcl::Color::Green).abgr()},
+    {{1.0f, 1.0f},   vcl::Color(vcl::Color::Blue).abgr() },
 
-    tw.fitScene();
+};
 
-    tw.show();
+inline void setUpBGFX(
+    bgfx::ViewId              viewId,
+    bgfx::VertexBufferHandle& vbh,
+    bgfx::ProgramHandle&      program)
+{
+    vcl::Color backgroundColor = vcl::Color::Black;
 
-    return 0;
+    bgfx::setViewClear(
+        viewId,
+        BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH,
+        backgroundColor.rgba(),
+        1.0f,
+        0);
+
+    bgfx::VertexLayout layout;
+
+    layout.begin()
+        .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
+        .end();
+
+    vbh = bgfx::createVertexBuffer(
+        bgfx::makeRef(vertices, sizeof(vertices)), layout);
+
+    program = vcl::loadProgram(
+        "base_example/vs_vertex_shader", "base_example/fs_fragment_shader");
+
+    bgfx::touch(viewId);
 }
+
+inline void drawOnView(
+    bgfx::ViewId                    viewId,
+    const bgfx::VertexBufferHandle& vbh,
+    const bgfx::ProgramHandle&      program)
+{
+    bgfx::setVertexBuffer(0, vbh);
+
+    bgfx::submit(viewId, program);
+}
+
+#endif // COMMON_H
