@@ -75,5 +75,7 @@ namespace lines
         LineData m_Data;
         vcl::Box3d m_BoundingBox;
         bool m_Visible = true;
+        std::vector<float> vertices;
+        std::vector<uint32_t> indices;
     };
 }

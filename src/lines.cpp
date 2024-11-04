@@ -21,11 +21,11 @@ namespace lines {
     }
 
     TriangulatedLines::~TriangulatedLines() {
-        // bgfx::destroy(m_UniformColor);
-        // bgfx::destroy(m_UniformData);
-        // bgfx::destroy(m_Vbh);
-        // bgfx::destroy(m_Ibh);
-        // bgfx::destroy(m_Program);
+        bgfx::destroy(m_UniformColor);
+        bgfx::destroy(m_UniformData);
+        bgfx::destroy(m_Vbh);
+        bgfx::destroy(m_Ibh);
+        bgfx::destroy(m_Program);
     }
 
     void TriangulatedLines::draw(uint viewId) const {
@@ -48,17 +48,35 @@ namespace lines {
     }
 
     void TriangulatedLines::generateVertexBuffer(const std::vector<LinePoint> points) {
-        std::vector<float> vertices = {
-            0.0, 0.0, 0.0, 
-            0.0, 0.5, 0.0, 
-            0.5, 0.5, 0.0, 
-            0.5, 0.0, 0.0,
-        };
 
-       bgfx::VertexLayout layout;
-       layout
+        for(uint i = 0; i < points.size() - 1; i++) {
+
+            for(uint k = 0; k < 2; k++) {
+
+                for(uint j = 0; j < 2; j++) {
+                    int u = k % 2 == 0 ? 0 : 1;
+                    int v = j % 2 == 0 ? 1 : 0;
+
+                    vertices.push_back(points[i].x);
+                    vertices.push_back(points[i].y);
+                    vertices.push_back(points[i].z);
+
+                    vertices.push_back(points[i + 1].x);
+                    vertices.push_back(points[i + 1].y);
+                    vertices.push_back(points[i + 1].z);
+
+                    vertices.push_back(u);
+                    vertices.push_back(v);
+                }
+            }
+        }
+
+        bgfx::VertexLayout layout;
+        layout
          .begin()
          .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
          .end();
 
         m_Vbh = bgfx::createVertexBuffer(
@@ -68,10 +86,15 @@ namespace lines {
     }
 
     void TriangulatedLines::generateIndexBuffer(const std::vector<LinePoint> points) {
-        std::vector<uint32_t> indices = {
-            0, 2, 1, 
-            0, 3, 2
-        };
+        for(uint32_t i = 0; i < points.size() - 1; i++) {
+            indices.push_back(i + (3 * i));
+            indices.push_back(i + (3 * i) + 1);
+            indices.push_back(i + (3 * i) + 2);
+
+            indices.push_back(i + (3 * i) + 1);
+            indices.push_back(i + (3 * i) + 3);
+            indices.push_back(i + (3 * i) + 2);
+        }
 
         m_Ibh = bgfx::createIndexBuffer(
             bgfx::makeRef(&indices[0], sizeof(uint32_t) * indices.size()),
