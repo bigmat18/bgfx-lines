@@ -3,79 +3,80 @@
 #include <bgfx/bgfx.h>
 #include <algorithm>
 
-namespace lines
-{
+namespace lines {
 
-    struct LinePoint {
+    struct LinesPoint {
         float x, y, z;
 
-        LinePoint(float xx, float yy, float zz)
+        LinesPoint(float xx, float yy, float zz)
             : x(xx), y(yy), z(zz) {}
     };
 
-    class TriangulatedLines : public vcl::DrawableObjectI {
+    enum LinesType {
+        CPU_GENERATED_LINES = 0,
+        GPU_GENERATED_LINES,
+        INSTANCING_BASED_LINES
+    };
 
-    public:
-        TriangulatedLines() {}
+    class Lines : public vcl::DrawableObjectI {
+
+        public:
+
+            static std::unique_ptr<Lines> create(const std::vector<LinesPoint> &points, const float width, const float heigth, LinesType type = LinesType::CPU_GENERATED_LINES);
+
+            static std::unique_ptr<Lines> create(bgfx::VertexBufferHandle vbh);
+
+            static std::unique_ptr<Lines> create(bgfx::VertexBufferHandle vbh, bgfx::IndexBufferHandle ivh);
+
+            Lines(const float width, const float heigth, const std::string& vs_name,  const std::string& fs_name);
+
+            virtual ~Lines();
+
+            vcl::Box3d boundingBox() const override { 
+                return vcl::Box3d(vcl::Point3d(-1,-1,-1), vcl::Point3d(1, 1, 1));
+            }
+
+            bool isVisible() const override { return m_Visible; }
+
+            void setVisibility(bool vis) override { m_Visible = vis; }
+
+            void setThickness(float thickness) { m_Data.thickness = thickness; }
+
+            void setAntialias(float antialias) { m_Data.antialias = antialias; }
+
+            void setColor(float r, float g, float b, float a) { 
+                m_Data.color[0] = r;
+                m_Data.color[1] = g;
+                m_Data.color[2] = b;
+                m_Data.color[3] = a;
+            }
+
+            void setScreenSize(float width, float heigth) { 
+                m_Data.screenSize[0] = width; 
+                m_Data.screenSize[1] = heigth;
+            }
+
+        protected: 
         
-        TriangulatedLines(const std::vector<LinePoint> &points, const float width, const float heigth);
+            bgfx::ProgramHandle m_Program;
+            bgfx::VertexBufferHandle m_Vbh;
+            bgfx::IndexBufferHandle m_Ibh;
 
-        TriangulatedLines(const bgfx::VertexBufferHandle vbh);
+            bgfx::UniformHandle m_UniformData;
+            bgfx::UniformHandle m_UniformColor;
 
-        TriangulatedLines(const bgfx::VertexBufferHandle vbh, const bgfx::IndexBufferHandle ibh);
+            std::vector<float> vertices;
+            std::vector<uint32_t> indices;
+            
+            struct LineData {
+                float thickness = 5.0;
+                float antialias = 0.0;
+                float color[4] = {0.0, 1.0, 0.0, 1.0};
+                float screenSize[2];
+            };
 
-        ~TriangulatedLines();
-
-        vcl::Box3d boundingBox() const override { 
-            return vcl::Box3d(vcl::Point3d(-1,-1,-1), vcl::Point3d(1, 1, 1));
-         }
-
-        bool isVisible() const override { return true; }
-
-        void setVisibility(bool vis) override { m_Visible = vis; }
-
-        std::shared_ptr<vcl::DrawableObjectI> clone() const override {
-            return std::make_shared<TriangulatedLines>(*this);
-        }
-
-        void draw(uint viewId) const override;
-
-        void setColor(float color[4]) { std::copy(color, color + 4, std::begin(m_Data.color)); }
-
-        void setThickness(float thickness) { m_Data.thickness = thickness; }
-
-        void setAntialias(float antialias) { m_Data.antialias = antialias; }
-
-        void setScreenSize(float width, float heigth) {
-            m_Data.screenSize[0] = width;
-            m_Data.screenSize[1] = heigth;
-        }
-
-    private:
-        void generateVertexBuffer(const std::vector<LinePoint> points);
-
-        void generateIndexBuffer(const std::vector<LinePoint> points);
-
-    private: 
-    
-        bgfx::ProgramHandle m_Program;
-        bgfx::VertexBufferHandle m_Vbh;
-        bgfx::IndexBufferHandle m_Ibh;
-
-        bgfx::UniformHandle m_UniformData;
-        bgfx::UniformHandle m_UniformColor;
-
-        struct LineData {
-            float thickness = 5.0;
-            float antialias = 0.0;
-            float color[4] = {0.0, 1.0, 0.0, 1.0};
-            float screenSize[2];
-        };
-
-        LineData m_Data;
-        vcl::Box3d m_BoundingBox;
-        bool m_Visible = true;
-        std::vector<float> vertices;
-        std::vector<uint32_t> indices;
+            LineData m_Data;
+            vcl::Box3d m_BoundingBox;
+            bool m_Visible = true;
     };
 }

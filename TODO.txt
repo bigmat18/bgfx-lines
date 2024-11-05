@@ -1,6 +1,15 @@
-- Spiral in triangulate (orto)
-- Spiral in primitive (perspective / orto)
-- Sphere in triangulate (perspective)
-- Sphere in primitive (perspective / orto)
-- Triangle in triangulate (orto)
-- Triangle in primitive (orto)
+- LINES (GL_LINES)
+    - Input vertices
+        - [] CPU VBO generation
+        - [] GPU VBO generation
+        - [] Instancing
+    - Input VBO
+        - [] Compute shaders calculation
+
+- POLYLINES (GL_LINES_STRIP)
+    - Input vertices
+        - [] CPU VBO generation
+        - [] GPU VBO generation
+        - [] Instancing
+    - Input VBO
+        - [] Compute shaders calculation

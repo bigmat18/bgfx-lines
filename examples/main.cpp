@@ -5,14 +5,14 @@ int main(int argc, char** argv)
 {
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
     
-    std::vector<lines::LinePoint> vertices = {
-        lines::LinePoint(0.0f, 0.0f, 0.0f),
-        lines::LinePoint(0.25f, 0.0f, -0.5f)
+    std::vector<lines::LinesPoint> points = {
+        lines::LinesPoint(0.0f, 0.0f, 0.0f),
+        lines::LinesPoint(0.25f, 0.0f, -0.5f)
     };
 
-    lines::TriangulatedLines line = lines::TriangulatedLines(vertices, tw.width(), tw.height());
-    line.setThickness(3);
-    tw.pushDrawableObject(line);
+    auto line = lines::Lines::create(points, tw.width(), tw.height());
+    line->setThickness(3);
+    tw.pushDrawableObject(*line.get());
 
     tw.fitScene();
 
