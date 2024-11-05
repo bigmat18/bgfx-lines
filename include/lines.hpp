@@ -13,7 +13,7 @@ namespace lines {
     };
 
     enum LinesType {
-        CPU_GENERATED_LINES = 0,
+        CPU_GENERATED_LINES,
         GPU_GENERATED_LINES,
         INSTANCING_BASED_LINES
     };
@@ -65,8 +65,8 @@ namespace lines {
             bgfx::UniformHandle m_UniformData;
             bgfx::UniformHandle m_UniformColor;
 
-            std::vector<float> vertices;
-            std::vector<uint32_t> indices;
+            std::vector<float> m_Vertices;
+            std::vector<uint32_t> m_Indices;
             
             struct LineData {
                 float thickness = 5.0;

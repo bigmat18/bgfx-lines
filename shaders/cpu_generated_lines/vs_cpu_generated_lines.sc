@@ -40,9 +40,6 @@ void main() {
     vec4 screen_p0 = vec4(((NDC_p0.xy / NDC_p0.w)).xy, 0.0, 0.0);
     vec4 screen_p1 = vec4(((NDC_p1.xy / NDC_p1.w)).xy, 0.0, 0.0); 
 
-    //screen_p0 = vec4(p0.xyz, 0.0);
-    //screen_p1 = vec4(p1.xyz, 0.0);
-
     vec4 p0_px = ClipToScreen(screen_p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = ClipToScreen(screen_p1, u_screenWidth, u_screenHeigth); 
 

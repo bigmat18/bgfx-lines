@@ -1,5 +1,6 @@
 #include <lines.hpp>
 #include <cpu_generated_lines.hpp>
+#include <instancing_based_lines.hpp>
 #include <vclib/render_bgfx/context/load_program.h>
 
 namespace lines {
@@ -15,7 +16,12 @@ namespace lines {
             }
 
             case LinesType::INSTANCING_BASED_LINES: {
-                return nullptr;
+                const bgfx::Caps* caps = bgfx::getCaps();
+
+                const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
+                assert((void("Instancing not supported"), instancingSupported));
+                
+                return std::make_unique<InstancingBasedLines>(points, width, heigth);
             }
         }
         assert((void("Lines type is incorrect"), true));

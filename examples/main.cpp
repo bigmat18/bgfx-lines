@@ -10,7 +10,7 @@ int main(int argc, char** argv)
         lines::LinesPoint(0.25f, 0.0f, -0.5f)
     };
 
-    auto line = lines::Lines::create(points, tw.width(), tw.height());
+    auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::LinesType::INSTANCING_BASED_LINES);
     line->setThickness(3);
     tw.pushDrawableObject(*line.get());
 
