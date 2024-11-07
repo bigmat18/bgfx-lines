@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     // };
 
     std::vector<lines::Segment> segments;
-    generateSegmentsInSphere(segments, 2.0f, 1000);
+    generateSegmentsInSphere(segments, 20.0f, 1000);
 
     auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::LinesType::INSTANCING_BASED_LINES);
     line->setThickness(3);

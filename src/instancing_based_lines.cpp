@@ -65,21 +65,23 @@ namespace lines {
 
         uint8_t* data = m_IDBSegments.data;
         for(uint32_t i = 0; i < segments.size(); i++) {
-            float* s = reinterpret_cast<float*>(data);
-            s[0] = segments[i].m_P0.x;
-            s[1] = segments[i].m_P0.y;
-            s[2] = segments[i].m_P0.z;
-            s[3] = 0.0f;
+            float* p0 = reinterpret_cast<float*>(data);
+            p0[0] = segments[i].m_P0.x;
+            p0[1] = segments[i].m_P0.y;
+            p0[2] = segments[i].m_P0.z;
+            p0[3] = 0.0f;
 
-            s[4] = segments[i].m_P1.x;
-            s[5] = segments[i].m_P1.y;
-            s[6] = segments[i].m_P1.z;
-            s[7] = 0.0f;
+            float* p1 = (float*)&data[16];
+            p1[0] = segments[i].m_P1.x;
+            p1[1] = segments[i].m_P1.y;
+            p1[2] = segments[i].m_P1.z;
+            p1[3] = 0.0f;
 
-            s[8] = segments[i].m_Color.r;
-            s[9] = segments[i].m_Color.g;
-            s[10] = segments[i].m_Color.b;
-            s[11] = segments[i].m_Color.a;
+            float* color = (float*)&data[32];
+            color[0] = segments[i].m_Color.r;
+            color[1] = segments[i].m_Color.g;
+            color[2] = segments[i].m_Color.b;
+            color[3] = segments[i].m_Color.a;
 
             data += stride;
         }
