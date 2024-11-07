@@ -14,7 +14,7 @@ namespace lines {
          .end();
 
         m_DVbh = bgfx::createDynamicVertexBuffer((points.size() / 2) * 4, layoutDVbh, BGFX_BUFFER_COMPUTE_WRITE);
-        m_DIbh = bgfx::createDynamicIndexBuffer((points.size() / 2) * 6, BGFX_BUFFER_COMPUTE_WRITE);
+        m_DIbh = bgfx::createDynamicIndexBuffer((points.size() / 2) * 6, BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_INDEX32);
 
         bgfx::VertexLayout layoutPointsBuffer;
         layoutPointsBuffer
