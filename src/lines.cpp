@@ -1,26 +1,28 @@
 #include <lines.hpp>
 #include <cpu_generated_lines.hpp>
 #include <instancing_based_lines.hpp>
+#include <gpu_generated_lines.hpp>
 #include <vclib/render_bgfx/context/load_program.h>
 
 namespace lines {
 
     std::unique_ptr<Lines> Lines::create(const std::vector<LinesPoint> &points, const float width, const float heigth, LinesType type) {
+        const bgfx::Caps* caps = bgfx::getCaps();
+        
         switch (type) {
             case LinesType::CPU_GENERATED_LINES: {
                 return std::make_unique<CPUGeneratedLines>(points, width, heigth);
             }
 
             case LinesType::GPU_GENERATED_LINES: {
-                return nullptr;
+                bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
+                assert((void("GPU compute not supported"), computeSupported));
+                return std::make_unique<GPUGeneratedLines>(points, width, heigth);
             }
 
             case LinesType::INSTANCING_BASED_LINES: {
-                const bgfx::Caps* caps = bgfx::getCaps();
-
                 const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
                 assert((void("Instancing not supported"), instancingSupported));
-                
                 return std::make_unique<InstancingBasedLines>(points, width, heigth);
             }
         }
@@ -30,10 +32,12 @@ namespace lines {
 
     std::unique_ptr<Lines> Lines::create(bgfx::VertexBufferHandle vbh) {
         /** ... */
+        return nullptr;
     }
 
     std::unique_ptr<Lines> Lines::create(bgfx::VertexBufferHandle vbh, bgfx::IndexBufferHandle ivh) {
         /** ... */
+        return nullptr;
     }
 
     Lines::Lines(const float width, const float heigth, const std::string& vs_name,  const std::string& fs_name) {

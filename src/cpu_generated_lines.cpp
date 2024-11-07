@@ -6,6 +6,7 @@ namespace lines {
     CPUGeneratedLines::CPUGeneratedLines(const std::vector<LinesPoint> &points, const float width, const float heigth) :
         Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines") {
         
+        assert(points.size() % 2 == 0); 
         generateVertexBuffer(points);
         generateIndexBuffer(points);
     }
@@ -31,7 +32,7 @@ namespace lines {
 
     void CPUGeneratedLines::generateVertexBuffer(const std::vector<LinesPoint> points) {
         uint i = 0;
-        for(; i < points.size() - 1; i++) {
+        for(; i < points.size(); i+=2) {
 
             for(uint k = 0; k < 2; k++) {
 
@@ -71,14 +72,14 @@ namespace lines {
 
 
     void CPUGeneratedLines::generateIndexBuffer(const std::vector<LinesPoint> points) {
-        for(uint32_t i = 0; i < points.size() - 1; i++) {
-            m_Indices.push_back(i + (3 * i));
-            m_Indices.push_back(i + (3 * i) + 1);
-            m_Indices.push_back(i + (3 * i) + 2);
+        for(uint32_t i = 0; i < points.size(); i+=2) {
+            m_Indices.push_back(i);
+            m_Indices.push_back(i + 1);
+            m_Indices.push_back(i + 2);
 
-            m_Indices.push_back(i + (3 * i) + 1);
-            m_Indices.push_back(i + (3 * i) + 3);
-            m_Indices.push_back(i + (3 * i) + 2);
+            m_Indices.push_back(i + 1);
+            m_Indices.push_back(i + 3);
+            m_Indices.push_back(i + 2);
         }
 
         m_Ibh = bgfx::createIndexBuffer(
