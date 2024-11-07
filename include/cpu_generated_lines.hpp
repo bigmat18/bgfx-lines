@@ -6,7 +6,7 @@ namespace lines {
     class CPUGeneratedLines : public Lines {
 
         public:
-            CPUGeneratedLines(const std::vector<LinesPoint> &points, const float width, const float heigth);
+            CPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth);
 
             ~CPUGeneratedLines() = default;
 
@@ -17,9 +17,9 @@ namespace lines {
             void draw(uint viewId) const override;
 
         private:
-            void generateVertexBuffer(const std::vector<LinesPoint> points);
+            void generateVertexBuffer(const std::vector<Segment> segments);
 
-            void generateIndexBuffer(const std::vector<LinesPoint> points);
+            void generateIndexBuffer(const std::vector<Segment> segments);
 
     };
 }

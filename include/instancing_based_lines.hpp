@@ -4,7 +4,7 @@
 namespace lines {
     class InstancingBasedLines : public Lines {
         public:
-            InstancingBasedLines(const std::vector<LinesPoint> &points, const float width, const float heigth);
+            InstancingBasedLines(const std::vector<Segment> &segments, const float width, const float heigth);
 
             ~InstancingBasedLines() = default;
 
@@ -14,7 +14,7 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void setPoints(const std::vector<LinesPoint> &points);
+            void setSegments(const std::vector<Segment> &segments);
         
         private:
             bgfx::InstanceDataBuffer m_IDBPoints;

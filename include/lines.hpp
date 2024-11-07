@@ -5,11 +5,27 @@
 
 namespace lines {
 
-    struct LinesPoint {
+    struct Point {
         float x, y, z;
 
-        LinesPoint(float xx, float yy, float zz)
+        Point(float xx, float yy, float zz)
             : x(xx), y(yy), z(zz) {}
+    };
+
+    struct Color {
+        float r, g, b, a;
+
+        Color(float rr, float gg, float bb, float aa)
+            : r(rr), g(gg), b(bb), a(aa) {}
+    };
+
+    struct Segment {
+        Point m_P0;
+        Point m_P1;
+	    Color m_Color;
+
+        Segment(const Point p0, const Point p1, const Color color) :
+            m_P0(p0), m_P1(p1), m_Color(color) {}
     };
 
     enum LinesType {
@@ -22,7 +38,7 @@ namespace lines {
 
         public:
 
-            static std::unique_ptr<Lines> create(const std::vector<LinesPoint> &points, const float width, const float heigth, LinesType type = LinesType::CPU_GENERATED_LINES);
+            static std::unique_ptr<Lines> create(const std::vector<Segment> &segments, const float width, const float heigth, LinesType type = LinesType::CPU_GENERATED_LINES);
 
             static std::unique_ptr<Lines> create(bgfx::VertexBufferHandle vbh);
 
@@ -44,13 +60,6 @@ namespace lines {
 
             void setAntialias(float antialias) { m_Data.antialias = antialias; }
 
-            void setColor(float r, float g, float b, float a) { 
-                m_Data.color[0] = r;
-                m_Data.color[1] = g;
-                m_Data.color[2] = b;
-                m_Data.color[3] = a;
-            }
-
             void setScreenSize(float width, float heigth) { 
                 m_Data.screenSize[0] = width; 
                 m_Data.screenSize[1] = heigth;
@@ -63,7 +72,6 @@ namespace lines {
             bgfx::IndexBufferHandle m_Ibh;
 
             bgfx::UniformHandle m_UniformData;
-            bgfx::UniformHandle m_UniformColor;
 
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;
@@ -71,7 +79,6 @@ namespace lines {
             struct LineData {
                 float thickness = 5.0;
                 float antialias = 0.0;
-                float color[4] = {0.0, 1.0, 0.0, 1.0};
                 float screenSize[2];
             };
 

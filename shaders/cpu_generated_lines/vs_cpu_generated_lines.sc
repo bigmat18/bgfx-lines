@@ -1,10 +1,9 @@
-$input a_position, a_texcoord0, a_texcoord1
+$input a_position, a_color0, a_texcoord0, a_texcoord1
 $output v_color
 
 #include <bgfx_shader.sh>
 
 uniform vec4 u_data;
-uniform vec4 u_color;
 
 #define p0                    a_position
 #define p1                    a_texcoord0
@@ -54,6 +53,6 @@ void main() {
     vec4 p = p0_px + (uv.x * T * length_px) + (u * T * width_px) + (v * N * width_px); 
     p = ScreenToClip(p, u_screenWidth, u_screenHeigth);
 
-    v_color = u_color;
+    v_color = a_color0;
     gl_Position = vec4(p.xy, NDC_p0.z / NDC_p0.w, 1.0);
 }

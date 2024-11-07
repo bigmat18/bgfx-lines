@@ -3,18 +3,16 @@
 
 
 namespace lines {
-    CPUGeneratedLines::CPUGeneratedLines(const std::vector<LinesPoint> &points, const float width, const float heigth) :
+    CPUGeneratedLines::CPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth) :
         Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines") {
         
-        assert(points.size() % 2 == 0); 
-        generateVertexBuffer(points);
-        generateIndexBuffer(points);
+        generateVertexBuffer(segments);
+        generateIndexBuffer(segments);
     }
 
     void CPUGeneratedLines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);
-        bgfx::setUniform(m_UniformColor, m_Data.color);
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -30,9 +28,8 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void CPUGeneratedLines::generateVertexBuffer(const std::vector<LinesPoint> points) {
-        uint i = 0;
-        for(; i < points.size(); i+=2) {
+    void CPUGeneratedLines::generateVertexBuffer(const std::vector<Segment> segments) {
+        for(uint i = 0; i < segments.size(); i++) {
 
             for(uint k = 0; k < 2; k++) {
 
@@ -40,26 +37,30 @@ namespace lines {
                     int u = k % 2 == 0 ? 0 : 1;
                     int v = j % 2 == 0 ? 1 : 0;
 
-                    m_Vertices.push_back(points[i].x);
-                    m_Vertices.push_back(points[i].y);
-                    m_Vertices.push_back(points[i].z);
+                    m_Vertices.push_back(segments[i].m_P0.x);
+                    m_Vertices.push_back(segments[i].m_P0.y);
+                    m_Vertices.push_back(segments[i].m_P0.z);
 
-                    m_Vertices.push_back(points[i + 1].x);
-                    m_Vertices.push_back(points[i + 1].y);
-                    m_Vertices.push_back(points[i + 1].z);
+                    m_Vertices.push_back(segments[i].m_Color.r);
+                    m_Vertices.push_back(segments[i].m_Color.g);
+                    m_Vertices.push_back(segments[i].m_Color.b);
+                    m_Vertices.push_back(segments[i].m_Color.a);
+
+                    m_Vertices.push_back(segments[i].m_P1.x);
+                    m_Vertices.push_back(segments[i].m_P1.y);
+                    m_Vertices.push_back(segments[i].m_P1.z);
 
                     m_Vertices.push_back(u);
                     m_Vertices.push_back(v);
                 }
             }
-            m_BoundingBox.add(vcl::Point3d(points[i].x, points[i].y, points[i].z));
         }
-        m_BoundingBox.add(vcl::Point3d(points[i].x, points[i].y, points[i].z));
 
         bgfx::VertexLayout layout;
         layout
          .begin()
-         .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
          .end();
@@ -71,15 +72,15 @@ namespace lines {
     }
 
 
-    void CPUGeneratedLines::generateIndexBuffer(const std::vector<LinesPoint> points) {
-        for(uint32_t i = 0; i < points.size(); i+=2) {
-            m_Indices.push_back(i);
-            m_Indices.push_back(i + 1);
-            m_Indices.push_back(i + 2);
+    void CPUGeneratedLines::generateIndexBuffer(const std::vector<Segment> segments) {
+        for(uint32_t i = 0; i < segments.size(); i++) {
+            m_Indices.push_back(i + (3 * i));
+            m_Indices.push_back(i + (3 * i) + 1);
+            m_Indices.push_back(i + (3 * i) + 2);
 
-            m_Indices.push_back(i + 1);
-            m_Indices.push_back(i + 3);
-            m_Indices.push_back(i + 2);
+            m_Indices.push_back(i + (3 * i) + 1);
+            m_Indices.push_back(i + (3 * i) + 3);
+            m_Indices.push_back(i + (3 * i) + 2);
         }
 
         m_Ibh = bgfx::createIndexBuffer(
