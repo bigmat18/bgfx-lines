@@ -17,7 +17,7 @@ namespace lines {
             void setSegments(const std::vector<Segment> &segments);
         
         private:
-            bgfx::InstanceDataBuffer m_IDBPoints;
+            bgfx::InstanceDataBuffer m_IDBSegments;
 
     }; 
 }

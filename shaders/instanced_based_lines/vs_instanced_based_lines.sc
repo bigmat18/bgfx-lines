@@ -1,13 +1,13 @@
-$input a_position, i_data0, i_data1
+$input a_position, i_data0, i_data1, i_data2
 $output v_color
 
 #include <bgfx_shader.sh>
 
 uniform vec4 u_data;
-uniform vec4 u_color;
 
 #define p0                    i_data0
 #define p1                    i_data1
+#define color                 i_data2
 #define uv                    a_position
 
 #define u_screenWidth         u_data.x
@@ -56,6 +56,6 @@ void main() {
 
     gl_Position = vec4(p.xy, NDC_p0.z / NDC_p0.w, 1.0);
 
-    v_color = u_color;
-	  gl_Position = vec4(uv.xy, 0.0, 1.0);
+    v_color = color;
+    gl_Position = vec4(p.xy, NDC_p0.z / NDC_p0.w, 1.0);
 }

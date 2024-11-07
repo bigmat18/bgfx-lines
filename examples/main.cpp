@@ -9,10 +9,18 @@ int main(int argc, char** argv)
 {
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
     
+    // std::vector<lines::Segment> segments = {
+    //     lines::Segment(
+    //         lines::Point(0.0f, 0.0f, 0.0f),
+    //         lines::Point(1.0f, 0.0f, 0.0f),
+    //         lines::Color(1.0f, 0.0f, 1.0f, 1.0f)
+    //     )
+    // };
+
     std::vector<lines::Segment> segments;
     generateSegmentsInSphere(segments, 2.0f, 1000);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height());
+    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::LinesType::INSTANCING_BASED_LINES);
     line->setThickness(3);
     tw.pushDrawableObject(*line.get());
 

@@ -5,34 +5,35 @@ namespace lines {
     GPUGeneratedLines::GPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth) : 
         Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines")
     {
-        // bgfx::VertexLayout layoutDVbh;
-        // layoutDVbh
-        //  .begin()
-        //  .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-        //  .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
-        //  .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
-        //  .end();
+        bgfx::VertexLayout layoutDVbh;
+        layoutDVbh
+         .begin()
+         .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
+         .end();
 
-        // m_DVbh = bgfx::createDynamicVertexBuffer((points.size() / 2) * 4, layoutDVbh, BGFX_BUFFER_COMPUTE_WRITE);
-        // m_DIbh = bgfx::createDynamicIndexBuffer((points.size() / 2) * 6, BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_INDEX32);
+        m_DVbh = bgfx::createDynamicVertexBuffer(segments.size() * 4, layoutDVbh, BGFX_BUFFER_COMPUTE_WRITE);
+        m_DIbh = bgfx::createDynamicIndexBuffer(segments.size() * 6, BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_INDEX32);
 
-        // bgfx::VertexLayout layoutPointsBuffer;
-        // layoutPointsBuffer
-        //  .begin()
-        //  .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-        //  .end();
+        bgfx::VertexLayout layoutSegmentsBuffer;
+        layoutSegmentsBuffer
+         .begin()
+         .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+         .end();
 
-        // m_PointsBuffer = bgfx::createDynamicVertexBuffer(
-        //     bgfx::makeRef(&points[0], sizeof(Point) * points.size()),
-        //     layoutPointsBuffer,
-        //     BGFX_BUFFER_COMPUTE_READ
-        // );
-        // m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers.sc"), true);
+        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(
+            bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()),
+            layoutSegmentsBuffer,
+            BGFX_BUFFER_COMPUTE_READ
+        );
+        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers.sc"), true);
 
-        // bgfx::setBuffer(0, m_PointsBuffer, bgfx::Access::Read);
-        // bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
-        // bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);
-        // bgfx::dispatch(0, m_ComputeProgram, points.size() / 2, 1, 1);
+        bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
+        bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
+        bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);
+        bgfx::dispatch(0, m_ComputeProgram, segments.size(), 1, 1);
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
