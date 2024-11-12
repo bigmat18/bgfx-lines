@@ -18,11 +18,19 @@ namespace lines {
             void update(const std::vector<Segment> &segments) override;
 
         private:
-            void generateBuffers(const std::vector<Segment> &segments);
+            void generateBuffers();
+
+            void allocateVertexBuffer();
+
+            void allocateIndexBuffer();
+
+            void allocateSegmentsBuffer(const bgfx::Memory* mem);
 
             bgfx::DynamicIndexBufferHandle m_DIbh;
             bgfx::DynamicVertexBufferHandle m_DVbh;
-            bgfx::VertexBufferHandle m_SegmentsBuffer;
+            bgfx::DynamicVertexBufferHandle m_SegmentsBuffer;
             bgfx::ProgramHandle m_ComputeProgram;
+
+            uint32_t m_SegmentsSize;
     };
 }

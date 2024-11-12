@@ -3,18 +3,32 @@
 
 namespace lines {
     GPUGeneratedLines::GPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth) : 
-        Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines")
+        Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines"),
+        m_SegmentsSize(segments.size())
     {
         m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers"), true);
-        generateBuffers(segments);
+        allocateSegmentsBuffer(bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        allocateVertexBuffer();
+        allocateIndexBuffer();
+        generateBuffers();
     }
 
     void GPUGeneratedLines::update(const std::vector<Segment> &segments) {
-        bgfx::destroy(m_DIbh);
-        bgfx::destroy(m_DVbh);
-        bgfx::destroy(m_SegmentsBuffer);
+        if(segments.size() != m_SegmentsSize) {
+            bgfx::destroy(m_DIbh);
+            bgfx::destroy(m_DVbh);
+            bgfx::destroy(m_SegmentsBuffer);
 
-        generateBuffers(segments);
+            m_SegmentsSize = segments.size();
+
+            allocateIndexBuffer();
+            allocateVertexBuffer();
+            allocateSegmentsBuffer(bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        } else {
+            bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        }
+
+        generateBuffers();
     }
 
     GPUGeneratedLines::~GPUGeneratedLines() {
@@ -23,9 +37,16 @@ namespace lines {
         bgfx::destroy(m_SegmentsBuffer);
     }
 
-    void GPUGeneratedLines::generateBuffers(const std::vector<Segment> &segments) {
-        bgfx::VertexLayout layoutDVbh;
-        layoutDVbh
+    void GPUGeneratedLines::generateBuffers() {
+        bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
+        bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
+        bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);
+        bgfx::dispatch(0, m_ComputeProgram, m_SegmentsSize, 1, 1);
+    }
+
+    void GPUGeneratedLines::allocateVertexBuffer() {
+        bgfx::VertexLayout layout;
+        layout
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
@@ -33,27 +54,23 @@ namespace lines {
          .add(bgfx::Attrib::TexCoord1, 1, bgfx::AttribType::Float)
          .end();
 
-        m_DVbh = bgfx::createDynamicVertexBuffer(segments.size() * 4, layoutDVbh, BGFX_BUFFER_COMPUTE_WRITE);
-        m_DIbh = bgfx::createDynamicIndexBuffer(segments.size() * 6, BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_INDEX32);
+        m_DVbh = bgfx::createDynamicVertexBuffer(m_SegmentsSize * 4, layout, BGFX_BUFFER_COMPUTE_WRITE);
+    }
 
-        bgfx::VertexLayout layoutSegmentsBuffer;
-        layoutSegmentsBuffer
+    void GPUGeneratedLines::allocateIndexBuffer() {
+        m_DIbh = bgfx::createDynamicIndexBuffer(m_SegmentsSize * 6, BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_INDEX32);
+    }
+
+    void GPUGeneratedLines::allocateSegmentsBuffer(const bgfx::Memory* mem) {
+        bgfx::VertexLayout layout;
+        layout
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .end();
 
-        m_SegmentsBuffer = bgfx::createVertexBuffer(
-            bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()),
-            layoutSegmentsBuffer,
-            BGFX_BUFFER_COMPUTE_READ
-        );
-
-        bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
-        bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
-        bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);
-        bgfx::dispatch(0, m_ComputeProgram, segments.size(), 1, 1);
+        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(mem, layout, BGFX_BUFFER_COMPUTE_READ);
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
