@@ -1,7 +1,7 @@
 - LINES (GL_LINES)
     - Input vertices
         - [X] CPU VBO generation
-        - [] GPU VBO generation
+        - [X] GPU VBO generation
         - [X] Instancing
     - Input VBO
         - [] Compute shaders calculation

@@ -18,6 +18,8 @@ namespace lines {
     void CPUGeneratedLines::update(const std::vector<Segment> &segments) {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
+        m_Vertices.clear();
+        m_Indices.clear();
         
         generateVertexBuffer(segments);
         generateIndexBuffer(segments);

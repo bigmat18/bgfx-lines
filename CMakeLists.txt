@@ -21,12 +21,6 @@ add_library(bgfx-lines ${SOURCES})
 target_include_directories(bgfx-lines PUBLIC include)
 target_link_libraries(bgfx-lines PUBLIC vclib)
 
-file(GLOB CPP_SOURCES "${CMAKE_SOURCE_DIR}/examples/*.cpp")
-message(STATUS "${CPP_SOURCES}")
-add_executable(main ${CPP_SOURCES})
-target_include_directories(main PUBLIC ${CMAKE_SOURCE_DIR}/examples)
-target_link_libraries(main PUBLIC vclib bgfx-lines)
-
 
 set(SHADERS_DIR "${CMAKE_SOURCE_DIR}/shaders")
 file(GLOB_RECURSE ABSOLUTE_SHADERS_FILES "${SHADERS_DIR}/*.sc")
@@ -37,8 +31,23 @@ foreach(file ${ABSOLUTE_SHADERS_FILES})
     list(APPEND RELATIVE_SHADERS_FILES ${relative_file})
 endforeach()
 
-message(STATUS "${RELATIVE_SHADERS_FILES}")
-target_add_bgfx_shaders(
-  main
-  ${RELATIVE_SHADERS_FILES}
-)
+
+set(EXAMPLES_DIR "${CMAKE_SOURCE_DIR}/examples")
+file(GLOB EXAMPLE_DIRS RELATIVE "${EXAMPLES_DIR}" "${EXAMPLES_DIR}/*")
+foreach(EXAMPLE_DIR ${EXAMPLE_DIRS})
+    set(EXAMPLE_MAIN "${EXAMPLES_DIR}/${EXAMPLE_DIR}/main.cpp")
+    if (EXISTS "${EXAMPLE_MAIN}")
+        add_executable(${EXAMPLE_DIR} "${EXAMPLE_MAIN}")
+        target_include_directories(${EXAMPLE_DIR} PUBLIC ${EXAMPLES_DIR}/${EXAMPLE_DIR})
+        target_link_libraries(${EXAMPLE_DIR} PUBLIC bgfx-lines)
+        target_add_bgfx_shaders(
+            ${EXAMPLE_DIR}
+            ${RELATIVE_SHADERS_FILES}
+          )
+    endif()
+endforeach()
+
+
+
+
+

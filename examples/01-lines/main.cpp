@@ -1,8 +1,5 @@
 #include <vclib/glfw/viewer_window.h>
 #include <lines.hpp>
-#include <random>
-#include <cmath>
-
 #include "common.h"
 
 int main(int argc, char** argv)
@@ -30,7 +27,7 @@ int main(int argc, char** argv)
     std::vector<lines::Segment> segments;
     generateSegmentsInCube(segments, 3, 100000);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::LinesType::INSTANCING_BASED_LINES);
+    auto line = lines::Lines::create(segments, tw.width(), tw.height());
     line->setThickness(2);
     tw.pushDrawableObject(*line.get());
 
