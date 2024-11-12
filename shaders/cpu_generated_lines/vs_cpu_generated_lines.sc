@@ -43,14 +43,11 @@ void main() {
     vec4 p1_px = ClipToScreen(screen_p1, u_screenWidth, u_screenHeigth); 
 
     float width_px = u_thickness / 2.0 + u_antialias;
-    float length_px = length(p1_px - p0_px);
-    float u = 2.0 * uv.x - 1.0;
-    float v = 2.0 * uv.y - 1.0;
 
     vec4 T = normalize(p1_px - p0_px);
     vec4 N = vec4(-T.y, T.x, 0.0, 0.0);
 
-    vec4 p = p0_px + (uv.x * T * length_px) + (u * T * width_px) + (v * N * width_px); 
+    vec4 p = p0_px + (uv.x * N * width_px);
     p = ScreenToClip(p, u_screenWidth, u_screenHeigth);
 
     v_color = a_color0;
