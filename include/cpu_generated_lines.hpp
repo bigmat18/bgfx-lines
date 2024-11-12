@@ -8,7 +8,7 @@ namespace lines {
         public:
             CPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth);
 
-            ~CPUGeneratedLines() = default;
+            ~CPUGeneratedLines();
 
             std::shared_ptr<vcl::DrawableObjectI> clone() const override {
                 return std::make_shared<CPUGeneratedLines>(*this);
@@ -20,6 +20,12 @@ namespace lines {
             void generateVertexBuffer(const std::vector<Segment> segments);
 
             void generateIndexBuffer(const std::vector<Segment> segments);
+
+            std::vector<float> m_Vertices;
+            std::vector<uint32_t> m_Indices;
+
+            bgfx::VertexBufferHandle m_Vbh;
+            bgfx::IndexBufferHandle m_Ibh;
 
     };
 }

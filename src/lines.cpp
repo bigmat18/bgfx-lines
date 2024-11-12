@@ -49,8 +49,6 @@ namespace lines {
 
     Lines::~Lines() {
         bgfx::destroy(m_UniformData);
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
         bgfx::destroy(m_Program);
     }
 }

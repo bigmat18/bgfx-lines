@@ -39,6 +39,12 @@ namespace lines {
         bgfx::dispatch(0, m_ComputeProgram, segments.size(), 1, 1);
     }
 
+    GPUGeneratedLines::~GPUGeneratedLines() {
+        bgfx::destroy(m_DIbh);
+        bgfx::destroy(m_DVbh);
+        bgfx::destroy(m_SegmentsBuffer);
+    }
+
     void GPUGeneratedLines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);

@@ -7,7 +7,7 @@ namespace lines {
         public:
             GPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth);
 
-            ~GPUGeneratedLines() = default;
+            ~GPUGeneratedLines();
 
             std::shared_ptr<vcl::DrawableObjectI> clone() const override {
                 return std::make_shared<GPUGeneratedLines>(*this);

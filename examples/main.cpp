@@ -20,15 +20,15 @@ int main(int argc, char** argv)
     //         lines::Point(2.0f, 1.0f, 0.0f),
     //         lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
     //     ),
-    //     // lines::Segment(
-    //     //     lines::Point(2.0f, -1.0f, 0.0f),
-    //     //     lines::Point(3.0f, -1.0f, 0.0f),
-    //     //     lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
-    //     // )
+    //     lines::Segment(
+    //         lines::Point(2.0f, -1.0f, 0.0f),
+    //         lines::Point(3.0f, -1.0f, 0.0f),
+    //         lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
+    //     )
     // };
 
     std::vector<lines::Segment> segments;
-    generateSegmentsInCube(segments, 3, 1000);
+    generateSegmentsInCube(segments, 3, 100000);
 
     auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::LinesType::GPU_GENERATED_LINES);
     line->setThickness(2);

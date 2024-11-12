@@ -36,6 +36,10 @@ namespace lines {
         setSegments(segments);
     }
 
+    InstancingBasedLines::~InstancingBasedLines() {
+        bgfx::destroy(m_Vbh);
+        bgfx::destroy(m_Ibh);
+    }
 
     void InstancingBasedLines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};

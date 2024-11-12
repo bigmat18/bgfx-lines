@@ -66,15 +66,8 @@ namespace lines {
             }
 
         protected: 
-        
             bgfx::ProgramHandle m_Program;
-            bgfx::VertexBufferHandle m_Vbh;
-            bgfx::IndexBufferHandle m_Ibh;
-
             bgfx::UniformHandle m_UniformData;
-
-            std::vector<float> m_Vertices;
-            std::vector<uint32_t> m_Indices;
             
             struct LineData {
                 float thickness = 5.0;

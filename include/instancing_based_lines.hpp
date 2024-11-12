@@ -6,7 +6,7 @@ namespace lines {
         public:
             InstancingBasedLines(const std::vector<Segment> &segments, const float width, const float heigth);
 
-            ~InstancingBasedLines() = default;
+            ~InstancingBasedLines();
 
             std::shared_ptr<vcl::DrawableObjectI> clone() const override {
                 return std::make_shared<InstancingBasedLines>(*this);
@@ -18,6 +18,11 @@ namespace lines {
         
         private:
             bgfx::InstanceDataBuffer m_IDBSegments;
+            std::vector<float> m_Vertices;
+            std::vector<uint32_t> m_Indices;
+
+            bgfx::VertexBufferHandle m_Vbh;
+            bgfx::IndexBufferHandle m_Ibh;
 
     }; 
 }
