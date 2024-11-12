@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     std::vector<lines::Segment> segments;
     generateSegmentsInCube(segments, 3, 100000);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height());
+    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::INSTANCING_BASED);
     line->setThickness(2);
     tw.pushDrawableObject(*line.get());
 

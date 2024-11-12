@@ -56,5 +56,6 @@ void main() {
     p = ScreenToClip(p, u_screenWidth, u_screenHeigth);
 
     v_color = color;
-    gl_Position = vec4(p.xy, NDC_p0.z / NDC_p0.w, 1.0);
+    float z = ((1 - uv.x) * (NDC_p0.z / NDC_p0.w)) + (uv.x * (NDC_p1.z / NDC_p1.w));
+    gl_Position = vec4(p.xy, z, 1.0);
 }
