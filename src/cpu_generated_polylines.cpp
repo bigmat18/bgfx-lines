@@ -16,7 +16,7 @@ namespace lines {
     void CPUGeneratedPolylines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);
-        bgfx::setUniform(m_UniformColor, &m_Data.color);
+        // bgfx::setUniform(m_UniformColor, &m_Data.color);
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -99,15 +99,14 @@ namespace lines {
     }
 
     void CPUGeneratedPolylines::generateIndexBuffer(const std::vector<Point> points) {
-        uint32_t j = 0;
-        for(uint32_t i = 0; i < points.size() - 1; i++, j+=2) {
-            m_Indices.push_back(j);
-            m_Indices.push_back(j+1);
-            m_Indices.push_back(j+2);
+        for(uint32_t i = 0; i < points.size() - 1; i++) {
+            m_Indices.push_back((i * 2));
+            m_Indices.push_back((i * 2) + 1);
+            m_Indices.push_back((i * 2) + 2);
 
-            m_Indices.push_back(j+1);
-            m_Indices.push_back(j+3);
-            m_Indices.push_back(j+2);
+            m_Indices.push_back((i * 2) + 1);
+            m_Indices.push_back((i * 2) + 3);
+            m_Indices.push_back((i * 2) + 2);
         }
 
         m_Ibh = bgfx::createIndexBuffer(
