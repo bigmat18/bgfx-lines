@@ -30,7 +30,7 @@ namespace lines {
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord1, 1, bgfx::AttribType::Float)
          .end();
 
         m_DVbh = bgfx::createDynamicVertexBuffer(segments.size() * 4, layoutDVbh, BGFX_BUFFER_COMPUTE_WRITE);
