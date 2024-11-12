@@ -16,6 +16,8 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
+            void update(const std::vector<Segment> &segments) override;
+
         private:
             void generateVertexBuffer(const std::vector<Segment> segments);
 

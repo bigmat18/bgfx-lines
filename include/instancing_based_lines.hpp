@@ -14,9 +14,11 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void setSegments(const std::vector<Segment> &segments);
-        
+            void update(const std::vector<Segment> &segments) override;
+
         private:
+            void generateInstanceDataBuffer(const std::vector<Segment> &segments);
+
             bgfx::InstanceDataBuffer m_IDBSegments;
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;

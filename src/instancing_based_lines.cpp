@@ -33,12 +33,16 @@ namespace lines {
             BGFX_BUFFER_INDEX32
         );
 
-        setSegments(segments);
+        generateInstanceDataBuffer(segments);
     }
 
     InstancingBasedLines::~InstancingBasedLines() {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
+    }
+
+    void InstancingBasedLines::update(const std::vector<Segment> &segments) {
+        generateInstanceDataBuffer(segments);
     }
 
     void InstancingBasedLines::draw(uint viewId) const {
@@ -61,7 +65,7 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void InstancingBasedLines::setSegments(const std::vector<Segment> &segments) {
+    void InstancingBasedLines::generateInstanceDataBuffer(const std::vector<Segment> &segments) {
         const uint16_t stride = sizeof(float) * 12;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer(segments.size(), stride);

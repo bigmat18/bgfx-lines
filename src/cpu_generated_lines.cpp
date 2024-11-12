@@ -15,6 +15,14 @@ namespace lines {
         bgfx::destroy(m_Ibh);
     }
 
+    void CPUGeneratedLines::update(const std::vector<Segment> &segments) {
+        bgfx::destroy(m_Vbh);
+        bgfx::destroy(m_Ibh);
+        
+        generateVertexBuffer(segments);
+        generateIndexBuffer(segments);
+    }
+
     void CPUGeneratedLines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);

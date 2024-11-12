@@ -56,6 +56,8 @@ namespace lines {
 
             void setVisibility(bool vis) override { m_Visible = vis; }
 
+            virtual void update(const std::vector<Segment> &segments) = 0;
+
             void setThickness(float thickness) { m_Data.thickness = thickness; }
 
             void setAntialias(float antialias) { m_Data.antialias = antialias; }

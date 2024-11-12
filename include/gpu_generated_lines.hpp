@@ -15,7 +15,11 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
+            void update(const std::vector<Segment> &segments) override;
+
         private:
+            void generateBuffers(const std::vector<Segment> &segments);
+
             bgfx::DynamicIndexBufferHandle m_DIbh;
             bgfx::DynamicVertexBufferHandle m_DVbh;
             bgfx::VertexBufferHandle m_SegmentsBuffer;

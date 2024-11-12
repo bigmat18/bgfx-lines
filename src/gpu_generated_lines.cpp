@@ -5,6 +5,25 @@ namespace lines {
     GPUGeneratedLines::GPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth) : 
         Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines")
     {
+        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers"), true);
+        generateBuffers(segments);
+    }
+
+    void GPUGeneratedLines::update(const std::vector<Segment> &segments) {
+        bgfx::destroy(m_DIbh);
+        bgfx::destroy(m_DVbh);
+        bgfx::destroy(m_SegmentsBuffer);
+
+        generateBuffers(segments);
+    }
+
+    GPUGeneratedLines::~GPUGeneratedLines() {
+        bgfx::destroy(m_DIbh);
+        bgfx::destroy(m_DVbh);
+        bgfx::destroy(m_SegmentsBuffer);
+    }
+
+    void GPUGeneratedLines::generateBuffers(const std::vector<Segment> &segments) {
         bgfx::VertexLayout layoutDVbh;
         layoutDVbh
          .begin()
@@ -31,18 +50,10 @@ namespace lines {
             BGFX_BUFFER_COMPUTE_READ
         );
 
-        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers"), true);
-
         bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
         bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
         bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);
         bgfx::dispatch(0, m_ComputeProgram, segments.size(), 1, 1);
-    }
-
-    GPUGeneratedLines::~GPUGeneratedLines() {
-        bgfx::destroy(m_DIbh);
-        bgfx::destroy(m_DVbh);
-        bgfx::destroy(m_SegmentsBuffer);
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
