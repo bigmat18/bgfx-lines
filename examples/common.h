@@ -33,7 +33,7 @@ void generateSegmentsInSphere(std::vector<lines::Segment> &segments, float radiu
         segments.push_back(lines::Segment(
             lines::Point(x0, y0, z0),
             lines::Point(x1, y1, z1),
-            lines::Color(0.0, 0.0, color(gen), 1.0)));
+            lines::Color(color(gen), color(gen), color(gen), 1.0)));
     }
 }
 
@@ -47,6 +47,6 @@ void generateSegmentsInCube(std::vector<lines::Segment> &segments, float size, f
         segments.push_back(lines::Segment(
             lines::Point(coord(gen), coord(gen), coord(gen)),
             lines::Point(coord(gen), coord(gen), coord(gen)),
-            lines::Color(color(gen), 0.0, 0.0, 1.0)));
+            lines::Color(color(gen), color(gen), color(gen), 1.0)));
     }
 }

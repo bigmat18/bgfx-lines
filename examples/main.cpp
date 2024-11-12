@@ -12,17 +12,26 @@ int main(int argc, char** argv)
     // std::vector<lines::Segment> segments = {
     //     lines::Segment(
     //         lines::Point(0.0f, 0.0f, 0.0f),
-    //         lines::Point(1.0f, 0.0f, 0.0f),
+    //         lines::Point(0.5f, 0.0f, 0.0f),
     //         lines::Color(1.0f, 0.0f, 1.0f, 1.0f)
-    //     )
+    //     ),
+    //     lines::Segment(
+    //         lines::Point(1.0f, 1.0f, 0.0f),
+    //         lines::Point(2.0f, 1.0f, 0.0f),
+    //         lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
+    //     ),
+    //     // lines::Segment(
+    //     //     lines::Point(2.0f, -1.0f, 0.0f),
+    //     //     lines::Point(3.0f, -1.0f, 0.0f),
+    //     //     lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
+    //     // )
     // };
 
     std::vector<lines::Segment> segments;
-    // generateSegmentsInSphere(segments, 20, 10000);
-    generateSegmentsInCube(segments, 3, 1000000);
+    generateSegmentsInCube(segments, 3, 1000);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::LinesType::INSTANCING_BASED_LINES);
-    line->setThickness(1);
+    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::LinesType::GPU_GENERATED_LINES);
+    line->setThickness(2);
     tw.pushDrawableObject(*line.get());
 
     tw.fitScene();

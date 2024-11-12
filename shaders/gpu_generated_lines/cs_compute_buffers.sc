@@ -1,32 +1,47 @@
 #include "bgfx_compute.sh"
 
-BUFFER_RO(pointsBuffer,    vec3, 0);
-BUFFER_WO(vertexBuffer,    float, 1);
-BUFFER_WO(indexBuffer,     uint, 2);
+BUFFER_RO(segmentsBuffer,    float,  0);
+BUFFER_WO(vertexBuffer,      float,  1);
+BUFFER_WO(indexBuffer,       uint,   2);
+
+#define p0(pos)    vec3(segmentsBuffer[0 + (pos * 10)], segmentsBuffer[1 + (pos * 10)], segmentsBuffer[2 + (pos * 10)])
+#define p1(pos)    vec3(segmentsBuffer[3 + (pos * 10)], segmentsBuffer[4 + (pos * 10)], segmentsBuffer[5 + (pos * 10)])
+#define color(pos) vec4(segmentsBuffer[6 + (pos * 10)], segmentsBuffer[7 + (pos * 10)], segmentsBuffer[8 + (pos * 10)], segmentsBuffer[9 + (pos * 10)])
 
 NUM_THREADS(2, 2, 1)
 void main() {
-    int baseIndex = (gl_GlobalInvocationID.x * 8) + (gl_LocalInvocationID.x + gl_LocalInvocationID.y * 2);
+    uint baseIndex = (gl_WorkGroupID.x * 48) + ((gl_LocalInvocationID.y + (gl_LocalInvocationID.x * 2)) * 12);
 
-    vertexBuffer[baseIndex] =     pointsBuffer[gl_GlobalInvocationID.x].x;
-    vertexBuffer[baseIndex + 1] = pointsBuffer[gl_GlobalInvocationID.x].y;
-    vertexBuffer[baseIndex + 2] = pointsBuffer[gl_GlobalInvocationID.x].z;
+    vec3 p0 =    p0(gl_WorkGroupID.x);
+    vec3 p1 =    p1(gl_WorkGroupID.x);
+    vec4 color = color(gl_WorkGroupID.x);
 
-    vertexBuffer[baseIndex + 3] = pointsBuffer[gl_GlobalInvocationID.x + 1].x;
-    vertexBuffer[baseIndex + 4] = pointsBuffer[gl_GlobalInvocationID.x + 1].y;
-    vertexBuffer[baseIndex + 5] = pointsBuffer[gl_GlobalInvocationID.x + 1].z;
 
-    vertexBuffer[baseIndex + 6] = gl_LocalInvocationID.x;
-    vertexBuffer[baseIndex + 7] = gl_LocalInvocationID.y;
+    vertexBuffer[baseIndex] =     p0.x;
+    vertexBuffer[baseIndex + 1] = p0.y;
+    vertexBuffer[baseIndex + 2] = p0.z;
+
+    vertexBuffer[baseIndex + 3] = p1.x;
+    vertexBuffer[baseIndex + 4] = p1.y;
+    vertexBuffer[baseIndex + 5] = p1.z;
+
+    vertexBuffer[baseIndex + 6] = color.x;
+    vertexBuffer[baseIndex + 7] = color.y;
+    vertexBuffer[baseIndex + 8] = color.z;
+    vertexBuffer[baseIndex + 9] = color.w;
+
+    vertexBuffer[baseIndex + 10] = gl_LocalInvocationID.x;
+    vertexBuffer[baseIndex + 11] = gl_LocalInvocationID.y;
 
     if(gl_LocalInvocationID.x == 0 && gl_LocalInvocationID.y == 0) {
-        indexBuffer[gl_GlobalInvocationID] = gl_GlobalInvocationID;
-        indexBuffer[gl_GlobalInvocationID] = gl_GlobalInvocationID + 2;
-        indexBuffer[gl_GlobalInvocationID] = gl_GlobalInvocationID + 1;
+        indexBuffer[(6 * gl_WorkGroupID.x) + 0] = (gl_WorkGroupID.x * 4);
+        indexBuffer[(6 * gl_WorkGroupID.x) + 1] = (gl_WorkGroupID.x * 4) + 3;
+        indexBuffer[(6 * gl_WorkGroupID.x) + 2] = (gl_WorkGroupID.x * 4) + 1;
 
-        indexBuffer[gl_GlobalInvocationID] = gl_GlobalInvocationID;
-        indexBuffer[gl_GlobalInvocationID] = gl_GlobalInvocationID + 2;
-        indexBuffer[gl_GlobalInvocationID] = gl_GlobalInvocationID + 3;
+        indexBuffer[(6 * gl_WorkGroupID.x) + 3] = (gl_WorkGroupID.x * 4);
+        indexBuffer[(6 * gl_WorkGroupID.x) + 4] = (gl_WorkGroupID.x * 4) + 2;
+        indexBuffer[(6 * gl_WorkGroupID.x) + 5] = (gl_WorkGroupID.x * 4) + 3;
+
     }
 
 }

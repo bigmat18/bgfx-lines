@@ -9,8 +9,8 @@ namespace lines {
         layoutDVbh
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
          .end();
 
@@ -20,15 +20,18 @@ namespace lines {
         bgfx::VertexLayout layoutSegmentsBuffer;
         layoutSegmentsBuffer
          .begin()
-         .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .end();
 
-        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(
+        m_SegmentsBuffer = bgfx::createVertexBuffer(
             bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()),
             layoutSegmentsBuffer,
             BGFX_BUFFER_COMPUTE_READ
         );
-        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers.sc"), true);
+
+        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers"), true);
 
         bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
         bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
