@@ -4,10 +4,14 @@
 
 namespace lines {
     CPUGeneratedLines::CPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth) :
-        Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines") {
-        
-        generateVertexBuffer(segments);
-        generateIndexBuffer(segments);
+        Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines"),
+        m_SegmentsSize(segments.size())
+    {
+        allocateVertexBuffer();
+        allocateIndexBuffer();
+
+        generateVertices(segments);
+        generateIndexes(segments);
     }
 
     CPUGeneratedLines::~CPUGeneratedLines() {
@@ -16,13 +20,20 @@ namespace lines {
     }
 
     void CPUGeneratedLines::update(const std::vector<Segment> &segments) {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
         m_Vertices.clear();
         m_Indices.clear();
-        
-        generateVertexBuffer(segments);
-        generateIndexBuffer(segments);
+
+        if(m_SegmentsSize > segments.size()) {
+            bgfx::destroy(m_Vbh);
+            bgfx::destroy(m_Ibh);
+
+            allocateVertexBuffer();
+            allocateIndexBuffer();
+        }
+
+        m_SegmentsSize = segments.size();
+        generateVertices(segments);
+        generateIndexes(segments);
     }
 
     void CPUGeneratedLines::draw(uint viewId) const {
@@ -43,7 +54,7 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void CPUGeneratedLines::generateVertexBuffer(const std::vector<Segment> segments) {
+    void CPUGeneratedLines::generateVertices(const std::vector<Segment> segments) {
         for(uint i = 0; i < segments.size(); i++) {
 
             for(uint k = 0; k < 2; k++) {
@@ -72,24 +83,11 @@ namespace lines {
                 }
             }
         }
-
-        bgfx::VertexLayout layout;
-        layout
-         .begin()
-         .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::TexCoord1, 1, bgfx::AttribType::Float)
-         .end();
-
-        m_Vbh = bgfx::createVertexBuffer(
-            bgfx::makeRef(&m_Vertices[0], sizeof(float) * m_Vertices.size()),
-            layout
-        );
+        bgfx::update(m_Vbh, 0, bgfx::makeRef(&m_Vertices[0], sizeof(float) * m_Vertices.size()));
     }
 
 
-    void CPUGeneratedLines::generateIndexBuffer(const std::vector<Segment> segments) {
+    void CPUGeneratedLines::generateIndexes(const std::vector<Segment> segments) {
         for(uint32_t i = 0; i < segments.size(); i++) {
             m_Indices.push_back((4 * i));
             m_Indices.push_back((4 * i) + 1);
@@ -99,10 +97,23 @@ namespace lines {
             m_Indices.push_back((4 * i) + 3);
             m_Indices.push_back((4 * i) + 2);
         }
+        bgfx::update(m_Ibh, 0, bgfx::makeRef(&m_Indices[0], sizeof(uint32_t) * m_Indices.size()));
+    }
 
-        m_Ibh = bgfx::createIndexBuffer(
-            bgfx::makeRef(&m_Indices[0], sizeof(uint32_t) * m_Indices.size()),
-            BGFX_BUFFER_INDEX32
-        );
+    void CPUGeneratedLines::allocateVertexBuffer() {
+        bgfx::VertexLayout layout;
+        layout
+         .begin()
+         .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord1, 1, bgfx::AttribType::Float)
+         .end();
+
+        m_Vbh = bgfx::createDynamicVertexBuffer(m_SegmentsSize * 4, layout, BGFX_BUFFER_ALLOW_RESIZE);
+    }
+
+    void CPUGeneratedLines::allocateIndexBuffer() {
+        m_Ibh = bgfx::createDynamicIndexBuffer(m_SegmentsSize * 6, BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32);
     }
 }

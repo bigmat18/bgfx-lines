@@ -19,15 +19,20 @@ namespace lines {
             void update(const std::vector<Segment> &segments) override;
 
         private:
-            void generateVertexBuffer(const std::vector<Segment> segments);
+            void generateVertices(const std::vector<Segment> segments);
 
-            void generateIndexBuffer(const std::vector<Segment> segments);
+            void generateIndexes(const std::vector<Segment> segments);
+
+            void allocateVertexBuffer();
+
+            void allocateIndexBuffer();
 
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;
 
-            bgfx::VertexBufferHandle m_Vbh;
-            bgfx::IndexBufferHandle m_Ibh;
+            bgfx::DynamicVertexBufferHandle m_Vbh;
+            bgfx::DynamicIndexBufferHandle m_Ibh;
+            uint32_t m_SegmentsSize;
 
     };
 }
