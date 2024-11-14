@@ -43,7 +43,7 @@ namespace lines {
 
         m_Program = vcl::loadProgram(vs_name, fs_name);
         m_UniformData = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
-        m_UniformData = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
+        m_UniformColor = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
     }
 
     Polylines::~Polylines() {

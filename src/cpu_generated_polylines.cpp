@@ -2,7 +2,7 @@
 
 namespace lines {
     CPUGeneratedPolylines::CPUGeneratedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
-        Polylines(width, heigth, "cpu_generated_polylines/vs_cpu_generated_polylines", "cpu_generated_polylines/vs_cpu_generated_polylines")
+        Polylines(width, heigth, "cpu_generated_polylines/vs_cpu_generated_polylines", "cpu_generated_polylines/fs_cpu_generated_polylines")
     {
         generateVertexBuffer(points);
         generateIndexBuffer(points);
@@ -16,7 +16,7 @@ namespace lines {
     void CPUGeneratedPolylines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);
-        // bgfx::setUniform(m_UniformColor, &m_Data.color);
+        bgfx::setUniform(m_UniformColor, &m_Data.color);
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB

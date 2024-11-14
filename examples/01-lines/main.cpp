@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     line->setThickness(2);
 
     std::vector<lines::Segment> segments1;
-    generateSegmentsInCube(segments1, 3, 10);
+    generateSegmentsInCube(segments1, 3, 100000);
 
     line->update(segments1);
 
