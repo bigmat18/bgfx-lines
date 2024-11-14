@@ -24,7 +24,7 @@ namespace lines {
 
             void allocateIndexBuffer();
 
-            void allocateSegmentsBuffer(const bgfx::Memory* mem);
+            void allocateSegmentsBuffer();
 
             bgfx::DynamicIndexBufferHandle m_DIbh;
             bgfx::DynamicVertexBufferHandle m_DVbh;

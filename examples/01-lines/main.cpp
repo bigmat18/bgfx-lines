@@ -25,13 +25,13 @@ int main(int argc, char** argv)
     // };
 
     std::vector<lines::Segment> segments;
-    generateSegmentsInCube(segments, 3, 1000000);
+    generateSegmentsInCube(segments, 3, 10000);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height());
+    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::GPU_GENERATED);
     line->setThickness(2);
 
     std::vector<lines::Segment> segments1;
-    generateSegmentsInCube(segments1, 3, 100);
+    generateSegmentsInCube(segments1, 3, 10);
 
     line->update(segments1);
 

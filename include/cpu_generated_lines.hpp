@@ -19,9 +19,7 @@ namespace lines {
             void update(const std::vector<Segment> &segments) override;
 
         private:
-            void generateVertices(const std::vector<Segment> segments);
-
-            void generateIndexes(const std::vector<Segment> segments);
+            void generateBuffers(const std::vector<Segment> segments);
 
             void allocateVertexBuffer();
 

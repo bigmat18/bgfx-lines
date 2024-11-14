@@ -9,9 +9,7 @@ namespace lines {
     {
         allocateVertexBuffer();
         allocateIndexBuffer();
-
-        generateVertices(segments);
-        generateIndexes(segments);
+        generateBuffers(segments);
     }
 
     CPUGeneratedLines::~CPUGeneratedLines() {
@@ -32,8 +30,7 @@ namespace lines {
         }
 
         m_SegmentsSize = segments.size();
-        generateVertices(segments);
-        generateIndexes(segments);
+        generateBuffers(segments);
     }
 
     void CPUGeneratedLines::draw(uint viewId) const {
@@ -54,7 +51,7 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void CPUGeneratedLines::generateVertices(const std::vector<Segment> segments) {
+    void CPUGeneratedLines::generateBuffers(const std::vector<Segment> segments) {
         for(uint i = 0; i < segments.size(); i++) {
 
             for(uint k = 0; k < 2; k++) {
@@ -82,13 +79,6 @@ namespace lines {
                     m_Vertices.push_back(v * u);
                 }
             }
-        }
-        bgfx::update(m_Vbh, 0, bgfx::makeRef(&m_Vertices[0], sizeof(float) * m_Vertices.size()));
-    }
-
-
-    void CPUGeneratedLines::generateIndexes(const std::vector<Segment> segments) {
-        for(uint32_t i = 0; i < segments.size(); i++) {
             m_Indices.push_back((4 * i));
             m_Indices.push_back((4 * i) + 1);
             m_Indices.push_back((4 * i) + 2);
@@ -97,6 +87,8 @@ namespace lines {
             m_Indices.push_back((4 * i) + 3);
             m_Indices.push_back((4 * i) + 2);
         }
+
+        bgfx::update(m_Vbh, 0, bgfx::makeRef(&m_Vertices[0], sizeof(float) * m_Vertices.size()));
         bgfx::update(m_Ibh, 0, bgfx::makeRef(&m_Indices[0], sizeof(uint32_t) * m_Indices.size()));
     }
 

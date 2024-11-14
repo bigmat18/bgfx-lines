@@ -6,28 +6,34 @@ namespace lines {
         Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines"),
         m_SegmentsSize(segments.size())
     {
-        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers"), true);
-        allocateSegmentsBuffer(bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        allocateSegmentsBuffer();
         allocateVertexBuffer();
         allocateIndexBuffer();
+
+        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("gpu_generated_lines/cs_compute_buffers"), true);
+        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+
         generateBuffers();
     }
 
     void GPUGeneratedLines::update(const std::vector<Segment> &segments) {
-        if(segments.size() != m_SegmentsSize) {
+        int oldSize = m_SegmentsSize;
+        m_SegmentsSize = segments.size();
+
+        if(oldSize != m_SegmentsSize) {
             bgfx::destroy(m_DIbh);
             bgfx::destroy(m_DVbh);
-            bgfx::destroy(m_SegmentsBuffer);
-
-            m_SegmentsSize = segments.size();
 
             allocateIndexBuffer();
             allocateVertexBuffer();
-            allocateSegmentsBuffer(bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
-        } else {
-            bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        } 
+
+        if(oldSize > m_SegmentsSize) {
+            bgfx::destroy(m_SegmentsBuffer);
+            allocateSegmentsBuffer();
         }
 
+        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
         generateBuffers();
     }
 
@@ -54,14 +60,14 @@ namespace lines {
          .add(bgfx::Attrib::TexCoord1, 1, bgfx::AttribType::Float)
          .end();
 
-        m_DVbh = bgfx::createDynamicVertexBuffer(m_SegmentsSize * 4, layout, BGFX_BUFFER_COMPUTE_WRITE);
+        m_DVbh = bgfx::createDynamicVertexBuffer(m_SegmentsSize * 4, layout, BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE);
     }
 
     void GPUGeneratedLines::allocateIndexBuffer() {
-        m_DIbh = bgfx::createDynamicIndexBuffer(m_SegmentsSize * 6, BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_INDEX32);
+        m_DIbh = bgfx::createDynamicIndexBuffer(m_SegmentsSize * 6, BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32);
     }
 
-    void GPUGeneratedLines::allocateSegmentsBuffer(const bgfx::Memory* mem) {
+    void GPUGeneratedLines::allocateSegmentsBuffer() {
         bgfx::VertexLayout layout;
         layout
          .begin()
@@ -70,7 +76,7 @@ namespace lines {
          .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .end();
 
-        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(mem, layout, BGFX_BUFFER_COMPUTE_READ);
+        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(m_SegmentsSize, layout, BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE);
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
