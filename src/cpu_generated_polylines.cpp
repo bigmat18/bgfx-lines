@@ -61,6 +61,8 @@ namespace lines {
             else next[i] = {points[i+1].x, points[i+1].y, points[i+1].z, 0.0f};
         }
 
+        m_Data.antialias = length;
+
         for(uint32_t i = 0; i < curr.size() * 2; i++) {
         
             // a_position ==> prev(x,y,z)
