@@ -18,9 +18,16 @@ namespace lines {
                 return nullptr;
             }
 
-            case Types::INSTANCING_BASED: {
+            case Types::INSTANCING_CPU_GENERATED: {
                 const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
                 assert((void("Instancing not supported"), instancingSupported));
+                return nullptr;
+            }
+
+            case Types::INSTANCING_GPU_GENERATED: {
+                bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
+                const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
+                assert((void("Instancing or compute are not supported"), instancingSupported || computeSupported));
                 return nullptr;
             }
         }

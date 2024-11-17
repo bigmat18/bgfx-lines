@@ -1,7 +1,8 @@
 #include <lines.hpp>
 #include <cpu_generated_lines.hpp>
-#include <instancing_based_lines.hpp>
 #include <gpu_generated_lines.hpp>
+#include <instancing_cpu_lines.hpp>
+#include <instancing_gpu_lines.hpp>
 #include <vclib/render_bgfx/context/load_program.h>
 
 namespace lines {
@@ -20,10 +21,17 @@ namespace lines {
                 return std::make_unique<GPUGeneratedLines>(segments, width, heigth);
             }
 
-            case Types::INSTANCING_BASED: {
+            case Types::INSTANCING_CPU_GENERATED: {
                 const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
                 assert((void("Instancing not supported"), instancingSupported));
-                return std::make_unique<InstancingBasedLines>(segments, width, heigth);
+                return std::make_unique<InstancingCPULines>(segments, width, heigth);
+            }
+
+            case Types::INSTANCING_GPU_GENERATED: {
+                bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
+                const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
+                assert((void("Instancing or compute are not supported"), instancingSupported || computeSupported));
+                return std::make_unique<InstancingGPULines>(segments, width, heigth);
             }
         }
         assert((void("Lines type is incorrect"), true));

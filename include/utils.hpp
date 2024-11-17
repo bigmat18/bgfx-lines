@@ -30,6 +30,7 @@ namespace lines {
     enum Types {
         CPU_GENERATED,
         GPU_GENERATED,
-        INSTANCING_BASED
+        INSTANCING_CPU_GENERATED,
+        INSTANCING_GPU_GENERATED
     };
 }

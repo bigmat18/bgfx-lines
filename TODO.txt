@@ -3,6 +3,7 @@
         - [X] CPU VBO generation
         - [X] GPU VBO generation
         - [X] Instancing
+        - [] Instancing using compute
     - Input VBO
         - [] Compute shaders calculation
 
@@ -11,5 +12,6 @@
         - [] CPU VBO generation
         - [] GPU VBO generation
         - [] Instancing
+        - [] Instancing using compute
     - Input VBO
         - [] Compute shaders calculation
