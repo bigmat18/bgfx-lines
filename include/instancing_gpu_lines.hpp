@@ -23,6 +23,14 @@ class InstancingGPULines : public Lines {
 
             bgfx::VertexBufferHandle m_Vbh;
             bgfx::IndexBufferHandle m_Ibh;
+            
+            bgfx::TextureHandle m_InstancingBuffer;
+            bgfx::UniformHandle m_InstancingUniform;
+            
+            bgfx::DynamicVertexBufferHandle m_SegmentsBuffer;
+            bgfx::InstanceDataBuffer m_DataBuffer;
+            
+            bgfx::ProgramHandle m_ComputeProgram;
 
     };  
 }

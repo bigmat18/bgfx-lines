@@ -1,4 +1,6 @@
 #include <instancing_gpu_lines.hpp>
+#include <vclib/render_bgfx/context/load_program.h>
+
 
 namespace lines {
     InstancingGPULines::InstancingGPULines(const std::vector<Segment> &segments, const float width, const float heigth) :
@@ -33,11 +35,36 @@ namespace lines {
             BGFX_BUFFER_INDEX32
         );
 
+        m_InstancingUniform = bgfx::createUniform("u_Texture", bgfx::UniformType::Sampler);
+        m_InstancingBuffer = bgfx::createTexture2D(
+            segments.size() * 3, 1, false, 1, bgfx::TextureFormat::RGBA32F, 
+            BGFX_TEXTURE_COMPUTE_WRITE | BGFX_SAMPLER_U_CLAMP | BGFX_SAMPLER_V_CLAMP
+        );
+
+
+        bgfx::VertexLayout layout1;
+        layout1
+         .begin()
+         .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .end();
+
+        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(segments.size(), layout1, BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE);
+        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+
+        bgfx::allocInstanceDataBuffer(&m_DataBuffer, segments.size(), 16);
+
+        // m_ComputeProgram = bgfx::createProgram(vcl::loadShader("instancing_gpu_lines/cs_compute_instancing_buffer"), true);
+        // bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
+        // bgfx::setTexture(1, m_InstancingUniform, m_InstancingBuffer);
+        // bgfx::dispatch(0, m_ComputeProgram, segments.size(), 1, 1);
     }
 
     InstancingGPULines::~InstancingGPULines() {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
+        bgfx::destroy(m_SegmentsBuffer);
     }
 
     void InstancingGPULines::draw(uint viewId) const {
@@ -55,6 +82,8 @@ namespace lines {
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
         
+        bgfx::setTexture(0, m_InstancingUniform, m_InstancingBuffer);
+
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
     }
