@@ -1,8 +1,8 @@
-#include "cpu_generated_polylines.hpp"
+#include <polylines/cpu_generated_polylines.hpp>
 
 namespace lines {
     CPUGeneratedPolylines::CPUGeneratedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
-        Polylines(width, heigth, "cpu_generated_polylines/vs_cpu_generated_polylines", "cpu_generated_polylines/fs_cpu_generated_polylines")
+        Polylines(width, heigth, "polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines")
     {
         generateVertexBuffer(points);
         generateIndexBuffer(points);

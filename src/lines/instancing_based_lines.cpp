@@ -1,8 +1,8 @@
-#include <instancing_cpu_lines.hpp>
+#include <lines/instancing_based_lines.hpp>
 
 namespace lines {
-    InstancingCPULines::InstancingCPULines(const std::vector<Segment> &segments, const float width, const float heigth) :
-        Lines(width, heigth, "instancing_cpu_lines/vs_instancing_cpu_lines", "instancing_cpu_lines/fs_instancing_cpu_lines") 
+    InstancingBasedLines::InstancingBasedLines(const std::vector<Segment> &segments, const float width, const float heigth) :
+        Lines(width, heigth, "lines/instancing_based_lines/vs_instancing_based_lines", "lines/instancing_based_lines/fs_instancing_based_lines") 
     {
 
         m_Vertices = {
@@ -36,12 +36,12 @@ namespace lines {
         generateInstanceDataBuffer(segments);
     }
 
-    InstancingCPULines::~InstancingCPULines() {
+    InstancingBasedLines::~InstancingBasedLines() {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
     }
 
-    void InstancingCPULines::generateInstanceDataBuffer(const std::vector<Segment> &segments) {
+    void InstancingBasedLines::generateInstanceDataBuffer(const std::vector<Segment> &segments) {
         const uint16_t stride = sizeof(float) * 12;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer(segments.size(), stride);
@@ -71,7 +71,7 @@ namespace lines {
         }
     }
 
-    void InstancingCPULines::draw(uint viewId) const {
+    void InstancingBasedLines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);
 
@@ -91,7 +91,7 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void InstancingCPULines::update(const std::vector<Segment> &segments) {
+    void InstancingBasedLines::update(const std::vector<Segment> &segments) {
         generateInstanceDataBuffer(segments);
     }
 }

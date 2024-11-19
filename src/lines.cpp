@@ -1,8 +1,9 @@
 #include <lines.hpp>
-#include <cpu_generated_lines.hpp>
-#include <gpu_generated_lines.hpp>
-#include <instancing_cpu_lines.hpp>
-#include <instancing_gpu_lines.hpp>
+#include <lines/cpu_generated_lines.hpp>
+#include <lines/gpu_generated_lines.hpp>
+#include <lines/instancing_based_lines.hpp>
+#include <lines/texture_based_lines.hpp>
+
 #include <vclib/render_bgfx/context/load_program.h>
 
 namespace lines {
@@ -21,19 +22,19 @@ namespace lines {
                 return std::make_unique<GPUGeneratedLines>(segments, width, heigth);
             }
 
-            case Types::INSTANCING_CPU_GENERATED: {
+            case Types::INSTANCING_BASED: {
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
                 assert((void("Instancing not supported"), instancingSupported));
-                return std::make_unique<InstancingCPULines>(segments, width, heigth);
+                return std::make_unique<InstancingBasedLines>(segments, width, heigth);
             }
 
-            case Types::INSTANCING_GPU_GENERATED: {
+            case Types::TEXTURE_BASED: {
                 const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 const bool indirectSupported = !!(caps->supported & BGFX_CAPS_DRAW_INDIRECT);
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
 
                 assert((void("Instancing or compute are not supported"), instancingSupported && computeSupported && indirectSupported));
-                return std::make_unique<InstancingGPULines>(segments, width, heigth);
+                return std::make_unique<TextureBasedLines>(segments, width, heigth);
             }
         }
         assert((void("Lines type is incorrect"), true));

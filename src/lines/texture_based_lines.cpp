@@ -1,10 +1,10 @@
-#include <instancing_gpu_lines.hpp>
+#include <lines/texture_based_lines.hpp>
 #include <vclib/render_bgfx/context/load_program.h>
 
 
 namespace lines {
-    InstancingGPULines::InstancingGPULines(const std::vector<Segment> &segments, const float width, const float heigth) :
-        Lines(width, heigth, "instancing_gpu_lines/vs_instancing_gpu_lines", "instancing_gpu_lines/fs_instancing_gpu_lines"),
+    TextureBasedLines::TextureBasedLines(const std::vector<Segment> &segments, const float width, const float heigth) :
+        Lines(width, heigth, "lines/texture_based_lines/vs_texture_based_lines", "lines/texture_based_lines/fs_texture_based_lines"),
         m_SegmentsSize(segments.size())
     {
         m_TextureUniform = bgfx::createUniform("u_Texture", bgfx::UniformType::Sampler);
@@ -50,20 +50,20 @@ namespace lines {
         generateIndirectBuffer();
     }
 
-    InstancingGPULines::~InstancingGPULines() {
+    TextureBasedLines::~TextureBasedLines() {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
         bgfx::destroy(m_SegmentsBuffer);
     }
 
-    void InstancingGPULines::allocateTextureBuffer() {
+    void TextureBasedLines::allocateTextureBuffer() {
         m_TextureBuffer = bgfx::createTexture2D(
             m_SegmentsSize * 3, 1, false, 1, bgfx::TextureFormat::RGBA32F, 
             BGFX_TEXTURE_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE
         );
     }
 
-    void InstancingGPULines::allocateSegmentsBuffer() {
+    void TextureBasedLines::allocateSegmentsBuffer() {
         bgfx::VertexLayout layout;
         layout
          .begin()
@@ -77,20 +77,20 @@ namespace lines {
         );
     }
 
-    void InstancingGPULines::generateTextureBuffer() {
+    void TextureBasedLines::generateTextureBuffer() {
         bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
         bgfx::setImage(1, m_TextureBuffer, 0, bgfx::Access::Write);
         bgfx::dispatch(0, m_ComputeProgram, m_SegmentsSize, 1, 1);
     }
 
-    void InstancingGPULines::generateIndirectBuffer() {
+    void TextureBasedLines::generateIndirectBuffer() {
         float data[] = {static_cast<float>(m_SegmentsSize), 0, 0, 0};
         bgfx::setUniform(m_IndirectDataUniform, data);
 		bgfx::setBuffer(0, m_IndirectBuffer, bgfx::Access::Write);
 		bgfx::dispatch(0, m_ComputeIndirect);
     }
 
-    void InstancingGPULines::draw(uint viewId) const {
+    void TextureBasedLines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);
 
@@ -111,7 +111,7 @@ namespace lines {
         bgfx::submit(viewId, m_Program, m_IndirectBuffer, 0);
     }
 
-    void InstancingGPULines::update(const std::vector<Segment> &segments) {
+    void TextureBasedLines::update(const std::vector<Segment> &segments) {
         int oldSize = m_SegmentsSize;
         m_SegmentsSize = segments.size();
 

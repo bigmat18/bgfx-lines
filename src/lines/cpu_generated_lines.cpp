@@ -1,10 +1,10 @@
-#include <cpu_generated_lines.hpp>
+#include <lines/cpu_generated_lines.hpp>
 #include <vclib/render_bgfx/context/load_program.h>
 
 
 namespace lines {
     CPUGeneratedLines::CPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth) :
-        Lines(width, heigth, "cpu_generated_lines/vs_cpu_generated_lines", "cpu_generated_lines/fs_cpu_generated_lines"),
+        Lines(width, heigth, "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
         m_SegmentsSize(segments.size())
     {
         allocateVertexBuffer();

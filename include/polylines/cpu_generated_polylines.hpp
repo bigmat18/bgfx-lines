@@ -1,5 +1,5 @@
 #pragma once
-#include "polylines.hpp" 
+#include "../polylines.hpp"
 
 namespace lines {
     class CPUGeneratedPolylines : public Polylines {

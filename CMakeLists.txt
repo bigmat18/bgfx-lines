@@ -16,8 +16,13 @@ set(VCLIB_BUILD_EXAMPLES OFF)
 set(VCLIB_BUILD_TESTS OFF)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/vclib)
 
-file(GLOB SOURCES "src/*")
-add_library(bgfx-lines ${SOURCES})
+
+set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+
+file(GLOB_RECURSE SOURCES_FILES "${SRC_DIR}/*.cpp")
+
+add_library(bgfx-lines ${SOURCES_FILES})
 target_include_directories(bgfx-lines PUBLIC include)
 target_link_libraries(bgfx-lines PUBLIC vclib)
 

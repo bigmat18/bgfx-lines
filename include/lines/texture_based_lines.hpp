@@ -1,15 +1,15 @@
 #pragma once
-#include "lines.hpp"
+#include "../lines.hpp"
 
 namespace lines {
-class InstancingGPULines : public Lines {
+class TextureBasedLines : public Lines {
         public:
-            InstancingGPULines(const std::vector<Segment> &segments, const float width, const float heigth);
+            TextureBasedLines(const std::vector<Segment> &segments, const float width, const float heigth);
 
-            ~InstancingGPULines();
+            ~TextureBasedLines();
 
             std::shared_ptr<vcl::DrawableObjectI> clone() const override {
-                return std::make_shared<InstancingGPULines>(*this);
+                return std::make_shared<TextureBasedLines>(*this);
             }
 
             void draw(uint viewId) const override;

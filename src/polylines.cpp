@@ -1,6 +1,7 @@
 #include <vclib/render_bgfx/context/load_program.h>
-#include <cpu_generated_polylines.hpp>
+
 #include <polylines.hpp>
+#include <polylines/cpu_generated_polylines.hpp>
 
 namespace lines {
 
@@ -18,13 +19,13 @@ namespace lines {
                 return nullptr;
             }
 
-            case Types::INSTANCING_CPU_GENERATED: {
+            case Types::INSTANCING_BASED: {
                 const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
                 assert((void("Instancing not supported"), instancingSupported));
                 return nullptr;
             }
 
-            case Types::INSTANCING_GPU_GENERATED: {
+            case Types::TEXTURE_BASED: {
                 bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
                 assert((void("Instancing or compute are not supported"), instancingSupported || computeSupported));

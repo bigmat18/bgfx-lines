@@ -1,5 +1,5 @@
 #pragma once 
-#include <lines.hpp>
+#include "../lines.hpp"
 
 namespace lines {
 
