@@ -16,21 +16,23 @@ namespace lines {
             }
 
             case Types::GPU_GENERATED: {
-                bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
+                const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 assert((void("GPU compute not supported"), computeSupported));
                 return std::make_unique<GPUGeneratedLines>(segments, width, heigth);
             }
 
             case Types::INSTANCING_CPU_GENERATED: {
-                const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
+                const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
                 assert((void("Instancing not supported"), instancingSupported));
                 return std::make_unique<InstancingCPULines>(segments, width, heigth);
             }
 
             case Types::INSTANCING_GPU_GENERATED: {
-                bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
-                const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
-                assert((void("Instancing or compute are not supported"), instancingSupported || computeSupported));
+                const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
+                const bool indirectSupported = !!(caps->supported & BGFX_CAPS_DRAW_INDIRECT);
+                const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
+
+                assert((void("Instancing or compute are not supported"), instancingSupported && computeSupported && indirectSupported));
                 return std::make_unique<InstancingGPULines>(segments, width, heigth);
             }
         }

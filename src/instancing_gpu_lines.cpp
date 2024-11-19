@@ -4,8 +4,14 @@
 
 namespace lines {
     InstancingGPULines::InstancingGPULines(const std::vector<Segment> &segments, const float width, const float heigth) :
-        Lines(width, heigth, "instancing_gpu_lines/vs_test", "instancing_gpu_lines/fs_test") 
+        Lines(width, heigth, "instancing_gpu_lines/vs_instancing_gpu_lines", "instancing_gpu_lines/fs_instancing_gpu_lines") 
     {
+        m_TextureUniform = bgfx::createUniform("u_Texture", bgfx::UniformType::Sampler);
+        m_IndirectDataUniform = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
+        m_IndirectBuffer = bgfx::createIndirectBuffer(1);
+
+        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("instancing_gpu_lines/cs_compute_texture"), true);
+        m_ComputeIndirect = bgfx::createProgram(vcl::loadShader("instancing_gpu_lines/cs_compute_indirect"), true);
 
         m_Vertices = {
             0.0f, 1.0f, 
@@ -35,36 +41,51 @@ namespace lines {
             BGFX_BUFFER_INDEX32
         );
 
-        m_InstancingUniform = bgfx::createUniform("u_Texture", bgfx::UniformType::Sampler);
-        m_InstancingBuffer = bgfx::createTexture2D(
-            segments.size() * 3, 1, false, 1, bgfx::TextureFormat::RGBA32F, 
-            BGFX_TEXTURE_COMPUTE_WRITE | BGFX_SAMPLER_U_CLAMP | BGFX_SAMPLER_V_CLAMP
-        );
-
-
-        bgfx::VertexLayout layout1;
-        layout1
-         .begin()
-         .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
-         .end();
-
-        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(segments.size(), layout1, BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE);
-        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
-
-        bgfx::allocInstanceDataBuffer(&m_DataBuffer, segments.size(), 16);
-
-        // m_ComputeProgram = bgfx::createProgram(vcl::loadShader("instancing_gpu_lines/cs_compute_instancing_buffer"), true);
-        // bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
-        // bgfx::setTexture(1, m_InstancingUniform, m_InstancingBuffer);
-        // bgfx::dispatch(0, m_ComputeProgram, segments.size(), 1, 1);
+        allocateSegmentsBuffer(segments);
+        allocateTextureBuffer(segments);
+        generateTextureBuffer(segments);
+        generateIndirectBuffer(segments);
     }
 
     InstancingGPULines::~InstancingGPULines() {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
         bgfx::destroy(m_SegmentsBuffer);
+    }
+
+    void InstancingGPULines::allocateTextureBuffer(const std::vector<Segment> &segments) {
+        m_TextureBuffer = bgfx::createTexture2D(
+            segments.size() * 3, 1, false, 1, bgfx::TextureFormat::RGBA32F, 
+            BGFX_TEXTURE_COMPUTE_WRITE
+        );
+    }
+
+    void InstancingGPULines::allocateSegmentsBuffer(const std::vector<Segment> &segments) {
+        bgfx::VertexLayout layout;
+        layout
+         .begin()
+         .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .end();
+
+        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(segments.size(), layout, 
+            BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE
+        );
+        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+    }
+
+    void InstancingGPULines::generateTextureBuffer(const std::vector<Segment> &segments) {
+        bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
+        bgfx::setImage(1, m_TextureBuffer, 0, bgfx::Access::Write);
+        bgfx::dispatch(0, m_ComputeProgram, segments.size(), 1, 1);
+    }
+
+    void InstancingGPULines::generateIndirectBuffer(const std::vector<Segment> &segments) {
+        float data[] = {static_cast<float>(segments.size()), 0, 0, 0};
+        bgfx::setUniform(m_IndirectDataUniform, data);
+		bgfx::setBuffer(0, m_IndirectBuffer, bgfx::Access::Write);
+		bgfx::dispatch(0, m_ComputeIndirect);
     }
 
     void InstancingGPULines::draw(uint viewId) const {
@@ -82,10 +103,10 @@ namespace lines {
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
         
-        bgfx::setTexture(0, m_InstancingUniform, m_InstancingBuffer);
+        bgfx::setTexture(0, m_TextureUniform, m_TextureBuffer);
 
-        bgfx::setState(state);
-        bgfx::submit(viewId, m_Program);
+        bgfx::setState(BGFX_STATE_DEFAULT);
+        bgfx::submit(viewId, m_Program, m_IndirectBuffer, 0);
     }
 
     void InstancingGPULines::update(const std::vector<Segment> &segments) {
