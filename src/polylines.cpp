@@ -20,15 +20,17 @@ namespace lines {
             }
 
             case Types::INSTANCING_BASED: {
-                const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
+                const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
                 assert((void("Instancing not supported"), instancingSupported));
                 return nullptr;
             }
 
-            case Types::TEXTURE_BASED: {
-                bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
-                const bool instancingSupported = 0 != (BGFX_CAPS_INSTANCING & caps->supported);
-                assert((void("Instancing or compute are not supported"), instancingSupported || computeSupported));
+            case Types::INDIRECT_BASED: {
+                const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
+                const bool indirectSupported = !!(caps->supported & BGFX_CAPS_DRAW_INDIRECT);
+                const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
+
+                assert((void("Instancing or compute are not supported"), instancingSupported && computeSupported && indirectSupported));
                 return nullptr;
             }
         }

@@ -2,7 +2,7 @@
 #include <lines/cpu_generated_lines.hpp>
 #include <lines/gpu_generated_lines.hpp>
 #include <lines/instancing_based_lines.hpp>
-#include <lines/texture_based_lines.hpp>
+#include <lines/indirect_based_lines.hpp>
 
 #include <vclib/render_bgfx/context/load_program.h>
 
@@ -28,13 +28,13 @@ namespace lines {
                 return std::make_unique<InstancingBasedLines>(segments, width, heigth);
             }
 
-            case Types::TEXTURE_BASED: {
+            case Types::INDIRECT_BASED: {
                 const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 const bool indirectSupported = !!(caps->supported & BGFX_CAPS_DRAW_INDIRECT);
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
 
                 assert((void("Instancing or compute are not supported"), instancingSupported && computeSupported && indirectSupported));
-                return std::make_unique<TextureBasedLines>(segments, width, heigth);
+                return std::make_unique<IndirectBasedLines>(segments, width, heigth);
             }
         }
         assert((void("Lines type is incorrect"), true));

@@ -1,9 +1,7 @@
-#include "bgfx_compute.sh"
+#include <bgfx_compute.sh>
 
 BUFFER_WO(indirectBuffer, uvec4, 0);
 uniform vec4 u_IndirectData;
-
-#define numInstancing 2
 
 NUM_THREADS(1, 1, 1)
 void main()
