@@ -18,13 +18,13 @@ class InstancingGPULines : public Lines {
 
         private:
 
-            void allocateTextureBuffer(const std::vector<Segment> &segments);
+            void allocateTextureBuffer();
 
-            void allocateSegmentsBuffer(const std::vector<Segment> &segments);
+            void allocateSegmentsBuffer();
 
-            void generateIndirectBuffer(const std::vector<Segment> &segments);
+            void generateIndirectBuffer();
 
-            void generateTextureBuffer(const std::vector<Segment> &segments);
+            void generateTextureBuffer();
 
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;
@@ -43,5 +43,6 @@ class InstancingGPULines : public Lines {
             bgfx::IndirectBufferHandle m_IndirectBuffer;
             bgfx::UniformHandle m_IndirectDataUniform;
 
+            uint32_t m_SegmentsSize;
     };  
 }
