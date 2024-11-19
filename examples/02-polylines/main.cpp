@@ -9,15 +9,15 @@ int main(int argc, char** argv)
 
     std::vector<lines::Point> points = {
         lines::Point(0.0f, 0.0f, 0.0f),
-        lines::Point(0.25f, 0.0f, 0.0f),
-        lines::Point(0.5f, 0.25f, 0.0f),
+        lines::Point(1.0f, 0.0f, 0.0f),
+        lines::Point(2.0f, 1.0f, 0.0f),
     };
 
     // std::vector<lines::Point> points;
     // generateSegmentsInCube(points, 3, 100);
 
     auto line = lines::Polylines::create(points, tw.width(), tw.height());
-    line->setThickness(5);
+    line->setThickness(10);
     line->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
 
     tw.pushDrawableObject(*line.get());

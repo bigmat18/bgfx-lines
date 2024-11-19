@@ -1,12 +1,5 @@
-$input v_color, v_uv, v_prev, v_curr, v_next
+$input v_color
 #include <bgfx_shader.sh>
-
-uniform vec4 u_data;
-
-#define u_width           u_data.x
-#define u_heigth          u_data.y
-#define u_linelength      u_data.z
-#define u_thickness       u_data.w
 
 void main() {
     gl_FragColor = v_color;
