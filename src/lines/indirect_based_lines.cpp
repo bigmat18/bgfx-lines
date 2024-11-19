@@ -8,6 +8,7 @@ namespace lines {
         m_SegmentsSize(segments.size())
     {
         m_IndirectBuffer = bgfx::createIndirectBuffer(1);
+        m_IndirectDataUniform = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
         m_ComputeIndirect = bgfx::createProgram(vcl::loadShader("lines/indirect_based_lines/cs_compute_indirect"), true);
 
         m_Vertices = {
@@ -39,16 +40,16 @@ namespace lines {
         );
 
         generateIndirectBuffer();
-        // allocateSegmentsBuffer();
-        // bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        allocateSegmentsBuffer();
+        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
     }
 
     IndirectBasedLines::~IndirectBasedLines() {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
-        // bgfx::destroy(m_SegmentsBuffer);
-        // bgfx::destroy(m_IndirectBuffer);
-        // bgfx::destroy(m_ComputeIndirect);
+        bgfx::destroy(m_SegmentsBuffer);
+        bgfx::destroy(m_IndirectBuffer);
+        bgfx::destroy(m_ComputeIndirect);
     }
 
     void IndirectBasedLines::allocateSegmentsBuffer() {
@@ -87,7 +88,7 @@ namespace lines {
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
         
-        // bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
+        bgfx::setBuffer(1, m_SegmentsBuffer, bgfx::Access::Read);
 
         bgfx::setState(BGFX_STATE_DEFAULT);
         bgfx::submit(viewId, m_Program, m_IndirectBuffer, 0);

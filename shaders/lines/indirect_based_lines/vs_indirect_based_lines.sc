@@ -2,13 +2,13 @@ $input a_position
 $output v_color
 
 #include <bgfx_shader.sh>
-// #include <bgfx_compute.sh>
+#include <bgfx_compute.sh>
 
-// BUFFER_RO(segmentsBuffer, float, 0);
+BUFFER_RO(segmentsBuffer, float, 1);
 
-// #define p0(pos)    vec4(segmentsBuffer[0 + (pos * 10)], segmentsBuffer[1 + (pos * 10)], segmentsBuffer[2 + (pos * 10)], 0.0)
-// #define p1(pos)    vec4(segmentsBuffer[3 + (pos * 10)], segmentsBuffer[4 + (pos * 10)], segmentsBuffer[5 + (pos * 10)], 0.0)
-// #define color(pos) vec4(segmentsBuffer[6 + (pos * 10)], segmentsBuffer[7 + (pos * 10)], segmentsBuffer[8 + (pos * 10)], segmentsBuffer[9 + (pos * 10)])
+#define p0(pos)    vec4(segmentsBuffer[0 + (pos * 10)], segmentsBuffer[1 + (pos * 10)], segmentsBuffer[2 + (pos * 10)], 0.0)
+#define p1(pos)    vec4(segmentsBuffer[3 + (pos * 10)], segmentsBuffer[4 + (pos * 10)], segmentsBuffer[5 + (pos * 10)], 0.0)
+#define color(pos) vec4(segmentsBuffer[6 + (pos * 10)], segmentsBuffer[7 + (pos * 10)], segmentsBuffer[8 + (pos * 10)], segmentsBuffer[9 + (pos * 10)])
 
 uniform vec4 u_data;
 
@@ -37,34 +37,32 @@ vec4 ClipToScreen(vec4 coordinate, float width, float heigth) {
 }
 
 void main() {
-    // vec4 p0 =    p0(gl_InstanceID);
-    // vec4 p1 =    p1(gl_InstanceID);
-    // vec4 color = color(gl_InstanceID);
+    vec4 p0 =    p0(gl_InstanceID);
+    vec4 p1 =    p1(gl_InstanceID);
+    vec4 color = color(gl_InstanceID);
     
-    // vec4 NDC_p0 = mul(u_modelViewProj, vec4(p0.xyz, 1.0));
-    // vec4 NDC_p1 = mul(u_modelViewProj, vec4(p1.xyz, 1.0));
+    vec4 NDC_p0 = mul(u_modelViewProj, vec4(p0.xyz, 1.0));
+    vec4 NDC_p1 = mul(u_modelViewProj, vec4(p1.xyz, 1.0));
 
-    // vec4 screen_p0 = vec4(((NDC_p0.xy / NDC_p0.w)).xy, 0.0, 0.0);
-    // vec4 screen_p1 = vec4(((NDC_p1.xy / NDC_p1.w)).xy, 0.0, 0.0); 
+    vec4 screen_p0 = vec4(((NDC_p0.xy / NDC_p0.w)).xy, 0.0, 0.0);
+    vec4 screen_p1 = vec4(((NDC_p1.xy / NDC_p1.w)).xy, 0.0, 0.0); 
 
-    // vec4 p0_px = ClipToScreen(screen_p0, u_screenWidth, u_screenHeigth);
-    // vec4 p1_px = ClipToScreen(screen_p1, u_screenWidth, u_screenHeigth); 
+    vec4 p0_px = ClipToScreen(screen_p0, u_screenWidth, u_screenHeigth);
+    vec4 p1_px = ClipToScreen(screen_p1, u_screenWidth, u_screenHeigth); 
 
-    // float width_px = u_thickness / 2.0 + u_antialias;
-    // float length_px = length(p1_px - p0_px);
+    float width_px = u_thickness / 2.0 + u_antialias;
+    float length_px = length(p1_px - p0_px);
     
-    // float u = 2.0 * uv.x - 1.0;
-    // float v = 2.0 * uv.y - 1.0;
+    float u = 2.0 * uv.x - 1.0;
+    float v = 2.0 * uv.y - 1.0;
 
-    // vec4 T = normalize(p1_px - p0_px);
-    // vec4 N = vec4(-T.y, T.x, 0.0, 0.0);
+    vec4 T = normalize(p1_px - p0_px);
+    vec4 N = vec4(-T.y, T.x, 0.0, 0.0);
 
-    // vec4 p = p0_px + (uv.x * T * length_px) + (v * N * width_px); 
-    // p = ScreenToClip(p, u_screenWidth, u_screenHeigth);
+    vec4 p = p0_px + (uv.x * T * length_px) + (v * N * width_px); 
+    p = ScreenToClip(p, u_screenWidth, u_screenHeigth);
 
-    // v_color = color;
-    // float z = ((1 - uv.x) * (NDC_p0.z / NDC_p0.w)) + (uv.x * (NDC_p1.z / NDC_p1.w));
-    // gl_Position = vec4(p.xy, z, 1.0);
-    v_color = vec4(1.0, 0.0, 0.0, 1.0);
-    gl_Position = vec4(uv.x, uv.y, 0.0, 1.0);
+    v_color = color;
+    float z = ((1 - uv.x) * (NDC_p0.z / NDC_p0.w)) + (uv.x * (NDC_p1.z / NDC_p1.w));
+    gl_Position = vec4(p.xy, z, 1.0);
 }
