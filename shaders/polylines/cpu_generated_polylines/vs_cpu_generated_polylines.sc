@@ -13,7 +13,7 @@ uniform vec4 u_color;
 
 #define u_width           u_data.x
 #define u_heigth          u_data.y
-#define u_linelength      u_data.z
+#define u_miter_limit     u_data.z
 #define u_thickness       u_data.w
 
 #define EPSILON           0.1
@@ -61,16 +61,16 @@ void main() {
 
     vec4 p;
 
+    float u = 2.0 * a_uv.x - 1.0;
+    float v = 2.0 * a_uv.y - 1.0;
+
     if(a_prev.x == a_curr.x && a_prev.y == a_curr.y) {
     
-      p = curr - (line_width * T1) + (a_uv.x * line_width * N1);
+      p = curr - (line_width * T1) + (v * line_width * N1);
 
     } else if (a_curr.x == a_next.x && a_curr.y == a_next.y) {
 
-      if(total_width > 50)
-        v_color = vec4(0.0, 0.0, 1.0, 1.0);
-
-      p = curr + (line_width * T0) + (a_uv.x * -1 * line_width * N0);
+      p = curr + (line_width * T0) + (v * line_width * N0);
 
     } else {
 
@@ -83,14 +83,14 @@ void main() {
       vec4 final_direction = miter * actual_miter_length;
       float total_width = length(final_direction) * 2;
 
-      if(total_width > 50)
-          final_direction = N0 * line_width;
-
-      p = curr + (a_uv.x * final_direction);
+      if(total_width > u_miter_limit) {
+          vec4 new_miter = (N1 * (1-a_uv.x)) + (N0 * a_uv.x);
+          final_direction = new_miter * line_width;
+      }
+      p = curr + (v * final_direction);
 
     } 
 
     p = ScreenToClip(p, u_width, u_heigth);
     gl_Position = vec4(p.xy, NDC_curr.z / NDC_curr.w, 1.0);
-    // gl_Position = vec4(v_uv.x, v_uv.y, v_uv.z, 1.0);
 }

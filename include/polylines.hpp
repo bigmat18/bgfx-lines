@@ -31,7 +31,7 @@ namespace lines {
 
             void setThickness(float thickness) { m_Data.thickness = thickness; }
 
-            void setAntialias(float antialias) { m_Data.antialias = antialias; }
+            void setMiterLimit(float miterLimit) { m_Data.miterLimit = miterLimit; }
 
             void setColor(Color color) { m_Data.color = color; }
 
@@ -47,7 +47,7 @@ namespace lines {
             
             struct LineData {
                 float thickness = 5.0;
-                float antialias = 0.0;
+                float miterLimit = 50.0;
                 float screenSize[2];
                 Color color;
             };

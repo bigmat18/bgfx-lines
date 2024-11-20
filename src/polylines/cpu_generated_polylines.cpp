@@ -14,7 +14,7 @@ namespace lines {
     }
 
     void CPUGeneratedPolylines::draw(uint viewId) const {
-        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
+        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);
         bgfx::setUniform(m_UniformColor, &m_Data.color);
 
@@ -61,28 +61,33 @@ namespace lines {
             else next[i] = {points[i+1].x, points[i+1].y, points[i+1].z, 0.0f};
         }
 
-        m_Data.antialias = length;
+        for(uint i = 0; i < points.size() -1; i++) {
 
-        for(uint32_t i = 0; i < curr.size() * 2; i++) {
+            for(uint k = 0; k < 2; k++) {
+                
+                for(uint j = 0; j < 2; j++) {
+
+                    // a_position ==> prev(x,y,z)
+                    m_Vertices.push_back(prev[i + k][0]);
+                    m_Vertices.push_back(prev[i + k][1]);
+                    m_Vertices.push_back(prev[i + k][2]);
+
+                    // a_texcoord0 ==> curr(x,y,z)
+                    m_Vertices.push_back(curr[i + k][0]);
+                    m_Vertices.push_back(curr[i + k][1]);
+                    m_Vertices.push_back(curr[i + k][2]);
+
+                    // a_texcoord1 ==> next(x,y,z)
+                    m_Vertices.push_back(next[i + k][0]);
+                    m_Vertices.push_back(next[i + k][1]);
+                    m_Vertices.push_back(next[i + k][2]);
+
+                    // a_texcoord2 ==> uv(x,y)
+                    m_Vertices.push_back(static_cast<float>(k));
+                    m_Vertices.push_back(static_cast<float>(j));
+                }
+            }
         
-            // a_position ==> prev(x,y,z)
-            m_Vertices.push_back(prev[i/2][0]);
-            m_Vertices.push_back(prev[i/2][1]);
-            m_Vertices.push_back(prev[i/2][2]);
-
-            // a_texcoord0 ==> curr(x,y,z)
-            m_Vertices.push_back(curr[i/2][0]);
-            m_Vertices.push_back(curr[i/2][1]);
-            m_Vertices.push_back(curr[i/2][2]);
-
-            // a_texcoord1 ==> next(x,y,z)
-            m_Vertices.push_back(next[i/2][0]);
-            m_Vertices.push_back(next[i/2][1]);
-            m_Vertices.push_back(next[i/2][2]);
-
-            // a_texcoord2 ==> uv(up/low, distance)
-            m_Vertices.push_back(i % 2 == 0 ? 1.0 : -1.0);
-            m_Vertices.push_back(curr[i/2][3]);
         }
 
         bgfx::VertexLayout layout;
@@ -102,13 +107,23 @@ namespace lines {
 
     void CPUGeneratedPolylines::generateIndexBuffer(const std::vector<Point> points) {
         for(uint32_t i = 0; i < points.size() - 1; i++) {
-            m_Indices.push_back((i * 2));
-            m_Indices.push_back((i * 2) + 1);
-            m_Indices.push_back((i * 2) + 2);
+            m_Indices.push_back((i * 4));
+            m_Indices.push_back((i * 4) + 3);
+            m_Indices.push_back((i * 4) + 1);
 
-            m_Indices.push_back((i * 2) + 1);
-            m_Indices.push_back((i * 2) + 3);
-            m_Indices.push_back((i * 2) + 2);
+            m_Indices.push_back((i * 4));
+            m_Indices.push_back((i * 4) + 2);
+            m_Indices.push_back((i * 4) + 3);
+
+            if(i != points.size() - 2) {
+                m_Indices.push_back((i * 4) + 3);
+                m_Indices.push_back((i * 4) + 4);
+                m_Indices.push_back((i * 4) + 5);
+
+                m_Indices.push_back((i * 4) + 4);
+                m_Indices.push_back((i * 4) + 2);
+                m_Indices.push_back((i * 4) + 5);
+            }
         }
 
         m_Ibh = bgfx::createIndexBuffer(
