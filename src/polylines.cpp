@@ -2,6 +2,7 @@
 
 #include <polylines.hpp>
 #include <polylines/cpu_generated_polylines.hpp>
+#include <polylines/gpu_generated_polylines.hpp>
 
 namespace lines {
 
@@ -16,7 +17,7 @@ namespace lines {
             case Types::GPU_GENERATED: {
                 bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 assert((void("GPU compute not supported"), computeSupported));
-                return nullptr;
+                return std::make_unique<GPUGeneratedPolylines>(points, width, heigth);
             }
 
             case Types::INSTANCING_BASED: {

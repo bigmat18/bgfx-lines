@@ -37,8 +37,6 @@ vec4 ClipToScreen(vec4 coordinate, float width, float heigth) {
 }
 
 void main() {
-    v_color = u_color;
-
     vec4 NDC_prev = mul(u_modelViewProj, vec4(a_prev.xyz, 1.0));
     vec4 NDC_curr = mul(u_modelViewProj, vec4(a_curr.xyz, 1.0));
     vec4 NDC_next = mul(u_modelViewProj, vec4(a_next.xyz, 1.0));
@@ -51,7 +49,7 @@ void main() {
     vec4 curr = ClipToScreen(screen_curr, u_width, u_heigth);
     vec4 next = ClipToScreen(screen_next, u_width, u_heigth);
 
-    float line_width = u_thickness / 2.0;
+    float half_thickness = u_thickness / 2.0;
 
     vec4 T0 = vec4(normalize(curr.xy - prev.xy).xy, 0.0, 0.0);
     vec4 N0 = vec4(-T0.y , T0.x, 0.0, 0.0);
@@ -66,31 +64,38 @@ void main() {
 
     if(a_prev.x == a_curr.x && a_prev.y == a_curr.y) {
     
-      p = curr - (line_width * T1) + (v * line_width * N1);
+      p = curr + (v * half_thickness * N1);
 
     } else if (a_curr.x == a_next.x && a_curr.y == a_next.y) {
 
-      p = curr + (line_width * T0) + (v * line_width * N0);
+      p = curr + (v * half_thickness * N0);
 
     } else {
 
-      vec4 miter = normalize(N0 + N1);
-      float cos_theta = dot(miter, N1);
-
-      float miter_length = line_width / max(cos_theta, EPSILON);
-      float actual_miter_length = max(miter_length, line_width);
+      vec4 miter_direction = normalize(N0 + N1);
+      float miter_length = max(half_thickness / max(dot(miter_direction, N1), EPSILON), half_thickness);
       
-      vec4 final_direction = miter * actual_miter_length;
-      float total_width = length(final_direction) * 2;
+      vec4 miter = miter_direction * miter_length;
+      float total_width = length(miter) * 2;
+
+      // p = curr + (v * miter);
 
       if(total_width > u_miter_limit) {
-          vec4 new_miter = (N1 * (1-a_uv.x)) + (N0 * a_uv.x);
-          final_direction = new_miter * line_width;
+          vec4 new_miter_direction = (N1 * (1-a_uv.x)) + (N0 * a_uv.x);
+          miter = new_miter_direction * half_thickness;
+
+          // float new_width = (actual_miter_length - (u_miter_limit / 2));
+          // vec4  new_direction = (T1 * (1-a_uv.x)) + (T0 * a_uv.x);
+          // vec4  new_p = p + vec4(-vec.x, vec.y, 0, 0) * (new_width / dot(normalize(p), T0));
+          
+          // p = new_p;
       }
-      p = curr + (v * final_direction);
+
+      p = curr + (v * miter);
 
     } 
-
+    
+    v_color = u_color;
     p = ScreenToClip(p, u_width, u_heigth);
     gl_Position = vec4(p.xy, NDC_curr.z / NDC_curr.w, 1.0);
 }
