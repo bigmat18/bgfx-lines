@@ -6,13 +6,13 @@ namespace lines {
         Lines(width, heigth, "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
         m_SegmentsSize(segments.size())
     {
+        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
+
         allocateSegmentsBuffer();
         allocateVertexBuffer();
         allocateIndexBuffer();
 
-        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
         bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
-
         generateBuffers();
     }
 
@@ -46,9 +46,11 @@ namespace lines {
 
         if(oldSize != m_SegmentsSize) {
             bgfx::destroy(m_DIbh);
-            bgfx::destroy(m_DVbh);
-
             allocateIndexBuffer();
+        }
+
+        if(oldSize < m_SegmentsSize) {
+            bgfx::destroy(m_DVbh);
             allocateVertexBuffer();
         } 
 

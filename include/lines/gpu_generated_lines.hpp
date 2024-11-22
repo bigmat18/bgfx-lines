@@ -29,6 +29,7 @@ namespace lines {
             bgfx::DynamicIndexBufferHandle m_DIbh;
             bgfx::DynamicVertexBufferHandle m_DVbh;
             bgfx::DynamicVertexBufferHandle m_SegmentsBuffer;
+            
             bgfx::ProgramHandle m_ComputeProgram;
 
             uint32_t m_SegmentsSize;

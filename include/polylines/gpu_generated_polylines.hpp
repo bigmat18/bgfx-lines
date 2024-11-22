@@ -29,6 +29,7 @@ namespace lines {
             bgfx::DynamicIndexBufferHandle m_DIbh;
             bgfx::DynamicVertexBufferHandle m_DVbh;
             bgfx::DynamicVertexBufferHandle m_PointsBuffer;
+            
             bgfx::ProgramHandle m_ComputeProgram;
             bgfx::UniformHandle m_NumWorksGroupUniform;
 

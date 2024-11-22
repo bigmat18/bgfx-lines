@@ -44,12 +44,32 @@ namespace lines {
     }
 
     void GPUGeneratedPolylines::update(const std::vector<Point> &points) {
+        int oldSize = m_PointsSize;
+        m_PointsSize = points.size();
 
+        if(oldSize != m_PointsSize) {
+            bgfx::destroy(m_DIbh);
+            allocateIndexBuffer();
+        }
+
+        if(oldSize < m_PointsSize) {
+            bgfx::destroy(m_DVbh);
+            allocateVertexBuffer();
+        } 
+
+        if(oldSize > m_PointsSize) {
+            bgfx::destroy(m_PointsBuffer);
+            allocatePointsBuffer();
+        }
+
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
+        generateBuffers();
     }
 
     void GPUGeneratedPolylines::generateBuffers() {
         float data[] = {static_cast<float>(m_PointsSize - 1), 0, 0, 0};
         bgfx::setUniform(m_NumWorksGroupUniform, data);
+
         bgfx::setBuffer(0, m_PointsBuffer, bgfx::Access::Read);
         bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
         bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);

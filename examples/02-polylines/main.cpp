@@ -15,13 +15,17 @@ int main(int argc, char** argv)
     // };
 
     std::vector<lines::Point> points;
-    generateSegmentsInCube(points, 3, 100);
+    generateSegmentsInCube(points, 3, 1000);
 
     auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::GPU_GENERATED);
     line->setThickness(5);
     line->setMiterLimit(10);
     line->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
 
+    std::vector<lines::Point> points1;
+    generateSegmentsInCube(points1, 3, 10);
+    line->update(points1);
+    
     tw.pushDrawableObject(*line.get());
 
     tw.fitScene();
