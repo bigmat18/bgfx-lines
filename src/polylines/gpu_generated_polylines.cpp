@@ -3,7 +3,7 @@
 
 namespace lines { 
     GPUGeneratedPolylines::GPUGeneratedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
-        Polylines(width, heigth, "polylines/gpu_generated_polylines/vs_test", "polylines/gpu_generated_polylines/fs_test"),
+        Polylines(width, heigth, "polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines"),
         m_PointsSize(points.size())
     {
         m_ComputeProgram = bgfx::createProgram(vcl::loadShader("polylines/gpu_generated_polylines/cs_compute_buffers"), true);
@@ -75,7 +75,7 @@ namespace lines {
 
     void GPUGeneratedPolylines::allocateIndexBuffer() {
         m_DIbh = bgfx::createDynamicIndexBuffer(
-            (m_PointsSize - 1) * 6, 
+            ((m_PointsSize - 1) * 6) + ((m_PointsSize - 2) * 6), 
             BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32
         );
     }

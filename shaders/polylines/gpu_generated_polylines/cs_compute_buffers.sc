@@ -7,17 +7,17 @@ BUFFER_WO(indexBuffer,       uint,   2);
 uniform vec4 u_numWorksGroups;
 #define numWorksGroups u_numWorksGroups.x
 
-#define p(pos)    vec3(pointsBuffer[0 + (pos * 3)], pointsBuffer[1 + (pos * 3)], pointsBuffer[2 + (pos * 3)])
+#define p(pos)    vec3(pointsBuffer[((pos) * 3)], pointsBuffer[((pos) * 3) + 1], pointsBuffer[((pos) * 3) + 2])
 
 NUM_THREADS(2, 2, 1)
 void main() {
     uint baseIndex = (gl_WorkGroupID.x * 44) + ((gl_LocalInvocationID.y + (gl_LocalInvocationID.x * 2)) * 11);
     int actualPoint = gl_WorkGroupID.x + gl_LocalInvocationID.x;
-    int numPoints = numWorksGroups + 1;
+    int numPoints = numWorksGroups;
 
-    vec3 prev = p(actualPoint - (1 * sign(actualPoint)));
+    vec3 prev = p(actualPoint - sign(actualPoint));
     vec3 curr = p(actualPoint);
-    vec3 next = p(actualPoint + (1 * sign(numPoints - actualPoint)));
+    vec3 next = p(actualPoint + sign(numPoints - actualPoint));
 
     vertexBuffer[baseIndex + 0] = prev.x;
     vertexBuffer[baseIndex + 1] = prev.y;
@@ -43,7 +43,7 @@ void main() {
         indexBuffer[(gl_WorkGroupID.x * 12) + 4] = (gl_WorkGroupID.x * 4) + 2;
         indexBuffer[(gl_WorkGroupID.x * 12) + 5] = (gl_WorkGroupID.x * 4) + 3;
 
-        if(gl_WorkGroupID.x != numWorksGroups - 2) {
+        if(gl_WorkGroupID.x != numWorksGroups - 1) {
             indexBuffer[(gl_WorkGroupID.x * 12) + 6]  = (gl_WorkGroupID.x * 4) + 3;
             indexBuffer[(gl_WorkGroupID.x * 12) + 7]  = (gl_WorkGroupID.x * 4) + 4;
             indexBuffer[(gl_WorkGroupID.x * 12) + 8]  = (gl_WorkGroupID.x * 4) + 5;
