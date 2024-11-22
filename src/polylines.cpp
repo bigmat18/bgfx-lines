@@ -3,6 +3,7 @@
 #include <polylines.hpp>
 #include <polylines/cpu_generated_polylines.hpp>
 #include <polylines/gpu_generated_polylines.hpp>
+#include <polylines/instancing_based_polylines.hpp>
 
 namespace lines {
 
@@ -23,7 +24,7 @@ namespace lines {
             case Types::INSTANCING_BASED: {
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
                 assert((void("Instancing not supported"), instancingSupported));
-                return nullptr;
+                return std::make_unique<InstancingBasedPolylines>(points, width, heigth);
             }
 
             case Types::INDIRECT_BASED: {

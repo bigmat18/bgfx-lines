@@ -41,6 +41,30 @@ namespace lines {
         bgfx::destroy(m_Ibh);
     }
 
+    void InstancingBasedLines::draw(uint viewId) const {
+        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
+        bgfx::setUniform(m_UniformData, data);
+
+        uint64_t state = 0
+            | BGFX_STATE_WRITE_RGB
+            | BGFX_STATE_WRITE_A
+            | BGFX_STATE_WRITE_Z
+            | BGFX_STATE_DEPTH_TEST_LESS
+            | UINT64_C(0)
+            | BGFX_STATE_BLEND_ALPHA;
+
+        bgfx::setVertexBuffer(0, m_Vbh);
+        bgfx::setIndexBuffer(m_Ibh);
+        bgfx::setInstanceDataBuffer(&m_IDBSegments);
+        
+        bgfx::setState(state);
+        bgfx::submit(viewId, m_Program);
+    }
+
+    void InstancingBasedLines::update(const std::vector<Segment> &segments) {
+        generateInstanceDataBuffer(segments);
+    }
+
     void InstancingBasedLines::generateInstanceDataBuffer(const std::vector<Segment> &segments) {
         const uint16_t stride = sizeof(float) * 12;
 
@@ -69,29 +93,5 @@ namespace lines {
 
             data += stride;
         }
-    }
-
-    void InstancingBasedLines::draw(uint viewId) const {
-        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
-        bgfx::setUniform(m_UniformData, data);
-
-        uint64_t state = 0
-            | BGFX_STATE_WRITE_RGB
-            | BGFX_STATE_WRITE_A
-            | BGFX_STATE_WRITE_Z
-            | BGFX_STATE_DEPTH_TEST_LESS
-            | UINT64_C(0)
-            | BGFX_STATE_BLEND_ALPHA;
-
-        bgfx::setVertexBuffer(0, m_Vbh);
-        bgfx::setIndexBuffer(m_Ibh);
-        bgfx::setInstanceDataBuffer(&m_IDBSegments);
-        
-        bgfx::setState(state);
-        bgfx::submit(viewId, m_Program);
-    }
-
-    void InstancingBasedLines::update(const std::vector<Segment> &segments) {
-        generateInstanceDataBuffer(segments);
     }
 }
