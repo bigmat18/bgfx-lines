@@ -17,14 +17,20 @@ namespace lines {
             void update(const std::vector<Point> &points) override;
 
         private:
-            void generateInstanceDataBuffer(const std::vector<Point> &points);
+            void generateIDBSegments(const std::vector<Point> &points);
 
-            bgfx::InstanceDataBuffer m_InstanceDataBuffer;
+            void generateIDBJoins(const std::vector<Point> &points);
+
+            bgfx::InstanceDataBuffer m_IDBSegments;
+            bgfx::InstanceDataBuffer m_IDBJoins;
+
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;
 
             bgfx::VertexBufferHandle m_Vbh;
             bgfx::IndexBufferHandle m_Ibh;
+
+            bgfx::ProgramHandle m_JoinsProgram;
 
     };
 }

@@ -1,11 +1,13 @@
+#include <vclib/render_bgfx/context/load_program.h>
 #include <polylines/instancing_based_polylines.hpp>
 #include <cmath>
 
 namespace lines {
     InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
-        Polylines(width, heigth, "polylines/instancing_based_polylines/vs_instancing_based_polylines", "polylines/instancing_based_polylines/fs_instancing_based_polylines")
+        Polylines(width, heigth, "polylines/instancing_based_polylines/segments/vs_segments", "polylines/instancing_based_polylines/segments/fs_segments")
 
     {
+        m_JoinsProgram = vcl::loadProgram("polylines/instancing_based_polylines/joins/vs_joins", "polylines/instancing_based_polylines/joins/fs_joins");
         m_Vertices = {
             0.0f, 0.0f,
             0.0f, 1.0f, 
@@ -34,7 +36,8 @@ namespace lines {
             BGFX_BUFFER_INDEX32
         );
 
-        generateInstanceDataBuffer(points);
+        generateIDBSegments(points);
+        generateIDBJoins(points);
     }
 
     InstancingBasedPolylines::~InstancingBasedPolylines() {
@@ -57,24 +60,31 @@ namespace lines {
 
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
-
-        bgfx::setInstanceDataBuffer(&m_InstanceDataBuffer);
-
-        bgfx::setState(BGFX_STATE_DEFAULT);
+        bgfx::setInstanceDataBuffer(&m_IDBSegments);
+        bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
+
+
+        bgfx::setVertexBuffer(0, m_Vbh);
+        bgfx::setIndexBuffer(m_Ibh);
+        bgfx::setInstanceDataBuffer(&m_IDBJoins);
+        bgfx::setState(state);
+        bgfx::submit(viewId, m_JoinsProgram);
+
     }
 
     void InstancingBasedPolylines::update(const std::vector<Point> &points) {
-        generateInstanceDataBuffer(points);
+        generateIDBSegments(points);
+        generateIDBJoins(points);
     }
 
-    void InstancingBasedPolylines::generateInstanceDataBuffer(const std::vector<Point> &points) {
+    void InstancingBasedPolylines::generateIDBSegments(const std::vector<Point> &points) {
         const uint16_t stride = sizeof(float) * 16;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer(points.size() - 1, stride);
-        bgfx::allocInstanceDataBuffer(&m_InstanceDataBuffer, linesNum, stride);
+        bgfx::allocInstanceDataBuffer(&m_IDBSegments, linesNum, stride);
 
-        uint8_t* data = m_InstanceDataBuffer.data;
+        uint8_t* data = m_IDBSegments.data;
         for(uint32_t i = 0; i < linesNum; i++) {
             float* prev = reinterpret_cast<float*>(data);
             prev[0] = points[i - !!i].x;
@@ -99,6 +109,36 @@ namespace lines {
             next_next[1] = points[i + !!(linesNum - i) + (!!(linesNum - 1 - i))].y;
             next_next[2] = points[i + !!(linesNum - i) + (!!(linesNum - 1 - i))].z;
             next_next[3] = 0.0f;
+
+            data+=stride;
+        }
+    }
+
+    void InstancingBasedPolylines::generateIDBJoins(const std::vector<Point> &points) {
+        const uint16_t stride = sizeof(float) * 12;
+
+        uint32_t linesNum = bgfx::getAvailInstanceDataBuffer(points.size() - 2, stride);
+        bgfx::allocInstanceDataBuffer(&m_IDBJoins, linesNum, stride);
+
+        uint8_t* data = m_IDBJoins.data;
+        for(uint32_t i = 1; i < linesNum + 1; i++) {
+            float* prev = reinterpret_cast<float*>(data);
+            prev[0] = points[i - 1].x;
+            prev[1] = points[i - 1].y;
+            prev[2] = points[i - 1].z;
+            prev[3] = 0.0f;
+
+            float* curr = (float*)&data[16];
+            curr[0] = points[i].x;
+            curr[1] = points[i].y;
+            curr[2] = points[i].z;
+            curr[3] = 0.0f;
+
+            float* next = (float*)&data[32];
+            next[0] = points[i + 1].x;
+            next[1] = points[i + 1].y;
+            next[2] = points[i + 1].z;
+            next[3] = 0.0f;
 
             data+=stride;
         }

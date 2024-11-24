@@ -2,16 +2,16 @@
     - Input vertices
         - [X] CPU VBO generation
         - [X] GPU VBO generation
-        - [X] Instancing
-        - [] Instancing using compute
+        - [X] Instancing based
+        - [] Indirect based
     - Input VBO
         - [] Compute shaders calculation
 
 - POLYLINES (GL_LINES_STRIP)
     - Input vertices
-        - [] CPU VBO generation
-        - [] GPU VBO generation
-        - [] Instancing
-        - [] Instancing using compute
+        - [X] CPU VBO generation
+        - [X] GPU VBO generation
+        - [X] Instancing based
+        - [] Instancing based
     - Input VBO
         - [] Compute shaders calculation
