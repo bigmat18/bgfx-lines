@@ -4,6 +4,7 @@
 #include <polylines/cpu_generated_polylines.hpp>
 #include <polylines/gpu_generated_polylines.hpp>
 #include <polylines/instancing_based_polylines.hpp>
+#include <polylines/indirect_based_polylines.hpp>
 
 namespace lines {
 
@@ -33,7 +34,7 @@ namespace lines {
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
 
                 assert((void("Instancing or compute are not supported"), instancingSupported && computeSupported && indirectSupported));
-                return nullptr;
+                return std::make_unique<IndirectBasedPolylines>(points, width, heigth);
             }
         }
         assert((void("Lines type is incorrect"), true));

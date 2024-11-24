@@ -6,9 +6,9 @@ $output v_color
 
 BUFFER_RO(segmentsBuffer, float, 1);
 
-#define p0(pos)    vec4(segmentsBuffer[0 + (pos * 10)], segmentsBuffer[1 + (pos * 10)], segmentsBuffer[2 + (pos * 10)], 0.0)
-#define p1(pos)    vec4(segmentsBuffer[3 + (pos * 10)], segmentsBuffer[4 + (pos * 10)], segmentsBuffer[5 + (pos * 10)], 0.0)
-#define color(pos) vec4(segmentsBuffer[6 + (pos * 10)], segmentsBuffer[7 + (pos * 10)], segmentsBuffer[8 + (pos * 10)], segmentsBuffer[9 + (pos * 10)])
+#define p0(pos)    vec4(segmentsBuffer[0 + ((pos) * 10)], segmentsBuffer[1 + ((pos) * 10)], segmentsBuffer[2 + ((pos) * 10)], 0.0)
+#define p1(pos)    vec4(segmentsBuffer[3 + ((pos) * 10)], segmentsBuffer[4 + ((pos) * 10)], segmentsBuffer[5 + ((pos) * 10)], 0.0)
+#define color(pos) vec4(segmentsBuffer[6 + ((pos) * 10)], segmentsBuffer[7 + ((pos) * 10)], segmentsBuffer[8 + ((pos) * 10)], segmentsBuffer[9 + ((pos) * 10)])
 
 uniform vec4 u_data;
 

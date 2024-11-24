@@ -4,7 +4,7 @@
 namespace lines {
     class IndirectBasedPolylines : public Polylines {
         public:
-            IndirectBasedPolylines(const std::vector<Point> &segments, const float width, const float heigth);
+            IndirectBasedPolylines(const std::vector<Point> &points, const float width, const float heigth);
 
             ~IndirectBasedPolylines();
 
@@ -14,16 +14,13 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Point> &segments) override;
+            void update(const std::vector<Point> &points) override;
 
         private:
 
             void allocatePointsBuffer();
 
-            void generateSegmentsIndirectBuffer();
-
-            void generateJoinsIndirectBuffer();
-
+            void generateIndirectBuffer();
 
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;
