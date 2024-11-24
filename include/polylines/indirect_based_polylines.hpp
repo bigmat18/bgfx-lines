@@ -1,0 +1,44 @@
+#pragma once
+#include "../polylines.hpp"
+
+namespace lines {
+    class IndirectBasedPolylines : public Polylines {
+        public:
+            IndirectBasedPolylines(const std::vector<Point> &segments, const float width, const float heigth);
+
+            ~IndirectBasedPolylines();
+
+            std::shared_ptr<vcl::DrawableObjectI> clone() const override {
+                return std::make_shared<IndirectBasedPolylines>(*this);
+            }
+
+            void draw(uint viewId) const override;
+
+            void update(const std::vector<Point> &segments) override;
+
+        private:
+
+            void allocatePointsBuffer();
+
+            void generateSegmentsIndirectBuffer();
+
+            void generateJoinsIndirectBuffer();
+
+
+            std::vector<float> m_Vertices;
+            std::vector<uint32_t> m_Indices;
+
+            bgfx::VertexBufferHandle m_Vbh;
+            bgfx::IndexBufferHandle m_Ibh;
+
+            bgfx::DynamicVertexBufferHandle m_PointsBuffer;
+
+            bgfx::IndirectBufferHandle m_SegmentsIndirectBuffer;
+            bgfx::IndirectBufferHandle m_JoinsIndirectBuffer;
+
+            bgfx::ProgramHandle m_ComputeIndirect;            
+            bgfx::UniformHandle m_IndirectDataUniform;
+
+            uint32_t m_PointsSize;
+    };
+}
