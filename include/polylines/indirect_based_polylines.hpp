@@ -33,6 +33,7 @@ namespace lines {
             bgfx::IndirectBufferHandle m_SegmentsIndirectBuffer;
             bgfx::IndirectBufferHandle m_JoinsIndirectBuffer;
 
+            bgfx::ProgramHandle m_JoinsProgram;
             bgfx::ProgramHandle m_ComputeIndirect;            
             bgfx::UniformHandle m_IndirectDataUniform;
 

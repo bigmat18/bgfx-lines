@@ -2,14 +2,16 @@ $input a_position, i_data0, i_data1, i_data2
 $output v_color
 
 #include <bgfx_shader.sh>
+#include <bgfx_compute.sh>
+
+BUFFER_RO(pointsBuffer, float, 1);
+#define p(pos)    vec4(pointsBuffer[0 + ((pos) * 3)], pointsBuffer[1 + ((pos) * 3)], pointsBuffer[2 + ((pos) * 3)], 0.0)
 
 uniform vec4 u_data;
 uniform vec4 u_color;
+uniform vec4 u_IndirectData;
 
 #define a_uv              a_position 
-#define a_prev            i_data0
-#define a_curr            i_data1
-#define a_next            i_data2
 
 #define u_width           u_data.x
 #define u_heigth          u_data.y
@@ -37,6 +39,11 @@ vec4 ClipToScreen(vec4 coordinate, float width, float heigth) {
 }
 
 void main() {
+    uint index = gl_InstanceID + 1;
+    vec4 a_prev = p(index - 1);
+    vec4 a_curr = p(index);
+    vec4 a_next = p(index + 1);
+
     vec4 NDC_prev = mul(u_modelViewProj, vec4(a_prev.xyz, 1.0));
     vec4 NDC_curr = mul(u_modelViewProj, vec4(a_curr.xyz, 1.0));
     vec4 NDC_next = mul(u_modelViewProj, vec4(a_next.xyz, 1.0));

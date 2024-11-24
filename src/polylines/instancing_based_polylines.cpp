@@ -4,10 +4,10 @@
 
 namespace lines {
     InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
-        Polylines(width, heigth, "polylines/instancing_based_polylines/segments/vs_segments", "polylines/instancing_based_polylines/segments/fs_segments")
+        Polylines(width, heigth, "polylines/instancing_based_polylines/vs_instancing_based_segments", "polylines/instancing_based_polylines/fs_instancing_based_segments")
 
     {
-        m_JoinsProgram = vcl::loadProgram("polylines/instancing_based_polylines/joins/vs_joins", "polylines/instancing_based_polylines/joins/fs_joins");
+        m_JoinsProgram = vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_joins");
         m_Vertices = {
             0.0f, 0.0f,
             0.0f, 1.0f, 

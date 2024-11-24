@@ -1,16 +1,19 @@
 #include <vclib/render_bgfx/context/load_program.h>
 #include <polylines/indirect_based_polylines.hpp>
+#include <vclib/render_bgfx/context/load_program.h>
 
 namespace lines {
     IndirectBasedPolylines::IndirectBasedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
-        Polylines(width, heigth, "polylines/indirect_based_polylines/segments/vs_segments", "polylines/indirect_based_polylines/segments/fs_segments"),
+        Polylines(width, heigth, "polylines/indirect_based_polylines/vs_indirect_based_segments", "polylines/indirect_based_polylines/fs_indirect_based_segments"),
         m_PointsSize(points.size())
     {
         m_JoinsIndirectBuffer = bgfx::createIndirectBuffer(1);
         m_SegmentsIndirectBuffer = bgfx::createIndirectBuffer(1);
 
+
         m_IndirectDataUniform = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
-        m_ComputeIndirect = bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/indirect/cs_compute_indirect"), true);
+        m_JoinsProgram = vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_joins");
+        m_ComputeIndirect = bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true);
 
         m_Vertices = {
             0.0f, 0.0f,
@@ -75,11 +78,15 @@ namespace lines {
 
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
-        
         bgfx::setBuffer(1, m_PointsBuffer, bgfx::Access::Read);
-
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program, m_SegmentsIndirectBuffer, 0);
+
+        bgfx::setVertexBuffer(0, m_Vbh);
+        bgfx::setIndexBuffer(m_Ibh);
+        bgfx::setBuffer(1, m_PointsBuffer, bgfx::Access::Read);
+        bgfx::setState(state);
+        bgfx::submit(viewId, m_JoinsProgram, m_JoinsIndirectBuffer, 0);
     }
 
     void IndirectBasedPolylines::update(const std::vector<Point> &segments) {
