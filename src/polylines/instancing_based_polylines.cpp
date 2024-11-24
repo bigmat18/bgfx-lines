@@ -57,9 +57,10 @@ namespace lines {
 
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
+
         bgfx::setInstanceDataBuffer(&m_InstanceDataBuffer);
 
-        bgfx::setState(state);
+        bgfx::setState(BGFX_STATE_DEFAULT);
         bgfx::submit(viewId, m_Program);
     }
 
@@ -79,25 +80,27 @@ namespace lines {
             prev[0] = points[i - !!i].x;
             prev[1] = points[i - !!i].y;
             prev[2] = points[i - !!i].z;
-            prev[3] = 0;
+            prev[3] = 0.0f;
 
             float* curr = (float*)&data[16];
             curr[0] = points[i].x;
             curr[1] = points[i].y;
             curr[2] = points[i].z;
-            curr[3] = 0;
+            curr[3] = 0.0f;
 
             float* next = (float*)&data[32];
-            next[0] = points[i + !!(linesNum - 1 - i)].x;
-            next[1] = points[i + !!(linesNum - 1 - i)].y;
-            next[2] = points[i + !!(linesNum - 1 - i)].z;
-            next[3] = 0;
+            next[0] = points[i + !!(linesNum - i)].x;
+            next[1] = points[i + !!(linesNum - i)].y;
+            next[2] = points[i + !!(linesNum - i)].z;
+            next[3] = 0.0f;
 
             float* next_next = (float*)&data[48];
-            next_next[0] = points[i + (2 * !!(linesNum - 1 - i))].x;
-            next_next[1] = points[i + (2 * !!(linesNum - 1 - i))].y;
-            next_next[2] = points[i + (2 * !!(linesNum - 1 - i))].z;
-            next_next[3] = 0;
+            next_next[0] = points[i + !!(linesNum - i) + (!!(linesNum - 1 - i))].x;
+            next_next[1] = points[i + !!(linesNum - i) + (!!(linesNum - 1 - i))].y;
+            next_next[2] = points[i + !!(linesNum - i) + (!!(linesNum - 1 - i))].z;
+            next_next[3] = 0.0f;
+
+            data+=stride;
         }
     }
 }
