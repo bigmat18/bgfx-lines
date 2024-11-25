@@ -4,7 +4,7 @@
 
 namespace lines {
     IndirectBasedPolylines::IndirectBasedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
-        Polylines(width, heigth, "polylines/indirect_based_polylines/vs_indirect_based_segments", "polylines/indirect_based_polylines/fs_indirect_based_segments"),
+        Polylines(width, heigth, "polylines/indirect_based_polylines/vs_indirect_based_segments", "polylines/indirect_based_polylines/fs_indirect_based_polylines"),
         m_PointsSize(points.size())
     {
         m_JoinsIndirectBuffer = bgfx::createIndirectBuffer(1);
@@ -12,7 +12,7 @@ namespace lines {
 
 
         m_IndirectDataUniform = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
-        m_JoinsProgram = vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_joins");
+        m_JoinsProgram = vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines");
         m_ComputeIndirect = bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true);
 
         m_Vertices = {
