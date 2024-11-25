@@ -64,7 +64,6 @@ namespace lines {
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
 
-
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
         bgfx::setInstanceDataBuffer(&m_IDBJoins);

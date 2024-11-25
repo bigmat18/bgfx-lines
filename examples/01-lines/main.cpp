@@ -22,12 +22,12 @@ int main(int argc, char** argv)
     //         lines::Point(3.0f, -1.0f, 0.0f),
     //         lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
     //     )
-    // };
+    // }; 
 
     std::vector<lines::Segment> segments;
     generateSegmentsInCube(segments, 3, 100);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::GPU_GENERATED);
+    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::INDIRECT_BASED);
     line->setThickness(2);
 
     std::vector<lines::Segment> segments1;
