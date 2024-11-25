@@ -43,7 +43,7 @@ namespace lines {
             BGFX_BUFFER_INDEX32
         );
 
-        generateIndirectBuffer();
+        generateIndirectBuffers();
 
         allocatePointsBuffer();
         bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
@@ -89,8 +89,15 @@ namespace lines {
         bgfx::submit(viewId, m_JoinsProgram, m_JoinsIndirectBuffer, 0);
     }
 
-    void IndirectBasedPolylines::update(const std::vector<Point> &segments) {
+    void IndirectBasedPolylines::update(const std::vector<Point> &points) {
+        int oldSize = m_PointsSize;
+        m_PointsSize = points.size();
+        
+        if(oldSize != m_PointsSize) {
+            generateIndirectBuffers();
+        }
 
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
     }
 
     void IndirectBasedPolylines::allocatePointsBuffer() {
@@ -105,7 +112,7 @@ namespace lines {
         );
     }
 
-    void IndirectBasedPolylines::generateIndirectBuffer() {
+    void IndirectBasedPolylines::generateIndirectBuffers() {
         float data[] = {static_cast<float>(m_PointsSize), 0, 0, 0};
         bgfx::setUniform(m_IndirectDataUniform, data);
 

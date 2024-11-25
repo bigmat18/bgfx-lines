@@ -20,7 +20,7 @@ namespace lines {
 
             void allocatePointsBuffer();
 
-            void generateIndirectBuffer();
+            void generateIndirectBuffers();
 
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;
