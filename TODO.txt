@@ -3,7 +3,7 @@
         - [X] CPU VBO generation
         - [X] GPU VBO generation
         - [X] Instancing based
-        - [] Indirect based
+        - [X] Indirect based
     - Input VBO
         - [] Compute shaders calculation
 
@@ -12,6 +12,6 @@
         - [X] CPU VBO generation
         - [X] GPU VBO generation
         - [X] Instancing based
-        - [] Instancing based
+        - [X] Indirect based
     - Input VBO
         - [] Compute shaders calculation

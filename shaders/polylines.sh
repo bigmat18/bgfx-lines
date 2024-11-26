@@ -40,18 +40,30 @@ vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thicknes
 
     } else {
 
-      vec4 miter_direction = normalize(N0 + N1);
-      float miter_length = max(half_thickness / max(dot(miter_direction, N1), 0.1), half_thickness);
+        vec4 miter_direction = normalize(N0 + N1);
+        float cos_theta = dot(miter_direction, N1);
+        float miter_length = max(half_thickness / max(cos_theta, 0.1), half_thickness);
       
-      vec4 miter = miter_direction * miter_length;
-      float total_width = length(miter) * 2;
+        vec4 miter = miter_direction * miter_length;
+        float total_width = length(miter) * 2;
 
-      if(total_width > miter_limit) {
-          vec4 new_miter_direction = (N1 * (1-uv.x)) + (N0 * uv.x);
-          miter = new_miter_direction * half_thickness;
-      }
+        vec4 new_miter_direction = (N1 * (1-uv.x)) + (N0 * uv.x);
+        vec4 miter_plane = new_miter_direction * half_thickness;
 
-      p = curr + (v * miter);
+        float min_threshold = miter_limit;
+        float max_threshold = miter_limit * 5;
+        float t = smoothstep(min_threshold, max_threshold, total_width);
+
+        vec4 final_miter = mix(miter, miter_plane, t);
+
+        #if 0
+          if(total_width > miter_limit) {
+              vec4 new_miter_direction = (N1 * (1-uv.x)) + (N0 * uv.x);
+              miter = new_miter_direction * half_thickness;
+          }
+        #endif
+
+        p = curr + (v * final_miter);
     } 
 
     p = screenToClip(p, screen_width, screen_heigth);

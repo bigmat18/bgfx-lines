@@ -18,6 +18,5 @@ uniform vec4 u_color;
 
 void main() { 
     v_color = u_color;
-    vec4 position = calculatePolylines(a_prev, a_curr, a_next, a_uv, u_thickness, u_miter_limit, u_width, u_heigth);
-    gl_Position = position;
+    gl_Position = calculatePolylines(a_prev, a_curr, a_next, a_uv, u_thickness, u_miter_limit, u_width, u_heigth);
 }
