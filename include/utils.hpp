@@ -31,6 +31,7 @@ namespace lines {
         CPU_GENERATED,
         GPU_GENERATED,
         INSTANCING_BASED,
-        INDIRECT_BASED
+        INDIRECT_BASED,
+        TEXTURE_BASED
     };
 }

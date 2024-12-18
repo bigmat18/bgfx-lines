@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     //     lines::Segment(
     //         lines::Point(0.5, 0.0f, 0.0f),
     //         lines::Point(0.5, 1.0f, 0.0f),
-    //         lines::Color(0.0f, 0.0f, 1.0f, 1.0f)
+    //         lines::Color(0.0f, 1.0f, 1.0f, 1.0f)
     //     ),
     //     lines::Segment(
     //         lines::Point(0.0f, -1.0f, 0.0f),
@@ -25,14 +25,14 @@ int main(int argc, char** argv)
     // }; 
 
     std::vector<lines::Segment> segments;
-    generateSegmentsInCube(segments, 3, 100);
+    generateSegmentsInCube(segments, 3, 10000);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::INDIRECT_BASED);
+    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->setThickness(2);
 
-    std::vector<lines::Segment> segments1;
-    generateSegmentsInCube(segments1, 3, 10000);
-    line->update(segments1);
+    // std::vector<lines::Segment> segments1;
+    // generateSegmentsInCube(segments1, 3, 10000);
+    // line->update(segments1);
     
     tw.pushDrawableObject(*line.get());    
     tw.fitScene();

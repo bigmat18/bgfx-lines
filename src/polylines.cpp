@@ -36,6 +36,9 @@ namespace lines {
                 assert((void("Instancing or compute are not supported"), instancingSupported && computeSupported && indirectSupported));
                 return std::make_unique<IndirectBasedPolylines>(points, width, heigth);
             }
+            case Types::TEXTURE_BASED: {
+                return nullptr;
+            }
         }
         assert((void("Lines type is incorrect"), true));
         return nullptr;
