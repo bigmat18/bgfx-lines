@@ -22,4 +22,6 @@
     - [] Antialias
     - [] Begin/End lines
     - [] Joins
-    - [] Patters
+    - [] Pattersù
+
+

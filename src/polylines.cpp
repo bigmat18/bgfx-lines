@@ -1,4 +1,4 @@
-#include <vclib/render_bgfx/context/load_program.h>
+#include <vclib/bgfx/context/load_program.h>
 
 #include <polylines.hpp>
 #include <polylines/cpu_generated_polylines.hpp>

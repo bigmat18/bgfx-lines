@@ -4,7 +4,7 @@
 namespace lines {
     class TextureBasedLines : public Lines {
         public:
-            TextureBasedLines(const std::vector<Segment> &segments, const float width, const float heigth);
+            TextureBasedLines(const std::vector<Segment> &segments, const float width, const float heigth, const uint32_t maxTextureSize);
 
             ~TextureBasedLines();
 
@@ -41,5 +41,6 @@ namespace lines {
             bgfx::IndexBufferHandle m_Ibh;
 
             uint32_t m_SegmentsSize;
+            uint32_t m_MaxTextureSize;
     };
 }

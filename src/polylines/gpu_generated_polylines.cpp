@@ -1,5 +1,5 @@
 #include <polylines/gpu_generated_polylines.hpp>
-#include <vclib/render_bgfx/context/load_program.h>
+#include <vclib/bgfx/context/load_program.h>
 
 namespace lines { 
     GPUGeneratedPolylines::GPUGeneratedPolylines(const std::vector<Point> &points, const float width, const float heigth) :

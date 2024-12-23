@@ -1,11 +1,14 @@
 #include <lines/texture_based_lines.hpp>
-#include <vclib/render_bgfx/context/load_program.h>
+#include <vclib/bgfx/context/load_program.h>
+#include <assert.h>
 
 namespace lines {
-    TextureBasedLines::TextureBasedLines(const std::vector<Segment> &segments, const float width, const float heigth) :
+    TextureBasedLines::TextureBasedLines(const std::vector<Segment> &segments, const float width, const float heigth, const uint32_t maxTextureSize) :
         Lines(width, heigth, "lines/texture_based_lines/vs_texture_based_lines", "lines/texture_based_lines/fs_texture_based_lines"),
-        m_SegmentsSize(segments.size())
+        m_SegmentsSize(segments.size()),
+        m_MaxTextureSize(maxTextureSize)
     {
+        assert(m_SegmentsSize <= (maxTextureSize * maxTextureSize) / 3);
         m_IndirectBuffer = bgfx::createIndirectBuffer(1);
         m_IndirectDataUniform = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
         m_ComputeIndirect = bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_indirect"), true);
@@ -91,6 +94,8 @@ namespace lines {
     }
 
     void TextureBasedLines::allocateTextureBuffer() {
+        uint16_t Y = (m_SegmentsSize * 3) - m_MaxTextureSize;
+        
         m_TextureBuffer = bgfx::createTexture2D(
             m_SegmentsSize * 3, 1, false, 1, bgfx::TextureFormat::RGBA32F,
             BGFX_TEXTURE_COMPUTE_WRITE

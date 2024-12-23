@@ -5,13 +5,13 @@
 #include <lines/indirect_based_lines.hpp>
 #include <lines/texture_based_lines.hpp>
 
-#include <vclib/render_bgfx/context/load_program.h>
+#include <vclib/bgfx/context/load_program.h>
 
 namespace lines {
 
     std::unique_ptr<Lines> Lines::create(const std::vector<Segment> &segments, const float width, const float heigth, Types type) {
         const bgfx::Caps* caps = bgfx::getCaps();
-        
+
         switch (type) {
             case Types::CPU_GENERATED: {
                 return std::make_unique<CPUGeneratedLines>(segments, width, heigth);
@@ -45,7 +45,7 @@ namespace lines {
                 const bool textureSupported = !!(caps->supported & BGFX_CAPS_TEXTURE_2D_ARRAY);
 
                 assert((void("Instancing or compute or indirect or texture are not supported"), instancingSupported && computeSupported && indirectSupported && textureSupported));
-                return std::make_unique<TextureBasedLines>(segments, width, heigth);
+                return std::make_unique<TextureBasedLines>(segments, width, heigth, caps->limits.maxTextureSize);
             }
         }
 

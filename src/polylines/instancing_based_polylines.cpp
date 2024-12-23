@@ -1,4 +1,4 @@
-#include <vclib/render_bgfx/context/load_program.h>
+#include <vclib/bgfx/context/load_program.h>
 #include <polylines/instancing_based_polylines.hpp>
 #include <cmath>
 

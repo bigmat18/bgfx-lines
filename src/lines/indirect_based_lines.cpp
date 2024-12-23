@@ -1,5 +1,5 @@
 #include <lines/indirect_based_lines.hpp>
-#include <vclib/render_bgfx/context/load_program.h>
+#include <vclib/bgfx/context/load_program.h>
 
 
 namespace lines {

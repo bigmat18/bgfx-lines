@@ -1,10 +1,12 @@
 #include <vclib/glfw/viewer_window.h>
+#include <vclib/bgfx/context.h>
 #include <lines.hpp>
 #include "common.h"
 
 int main(int argc, char** argv)
 {
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
+    // vcl::Context::instance().requestViewId();
     
     // std::vector<lines::Segment> segments = {
     //     lines::Segment(
@@ -25,7 +27,7 @@ int main(int argc, char** argv)
     // }; 
 
     std::vector<lines::Segment> segments;
-    generateSegmentsInCube(segments, 3, 10000);
+    generateSegmentsInCube(segments, 3, 1000);
 
     auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->setThickness(2);

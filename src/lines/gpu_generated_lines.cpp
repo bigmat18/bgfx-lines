@@ -1,5 +1,5 @@
 #include <lines/gpu_generated_lines.hpp>
-#include <vclib/render_bgfx/context/load_program.h>
+#include <vclib/bgfx/context/load_program.h>
 
 namespace lines {
     GPUGeneratedLines::GPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth) : 
