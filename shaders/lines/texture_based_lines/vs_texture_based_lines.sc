@@ -6,6 +6,9 @@ $output v_color
 
 uniform vec4 u_data;
 
+uniform vec4 u_IndirectData;
+#define maxTextureSize u_IndirectData.x
+
 #define uv                    a_position
 #define u_screenWidth         u_data.x
 #define u_screenHeigth        u_data.y
@@ -16,9 +19,18 @@ IMAGE2D_RO(textureBuffer, rgba32f, 0);
 
 
 void main() {
-    vec4 p0    = imageLoad(textureBuffer, vec2((gl_InstanceID * 3), 0));
-    vec4 p1    = imageLoad(textureBuffer, vec2((gl_InstanceID * 3) + 1, 0));
-    vec4 color = imageLoad(textureBuffer, vec2((gl_InstanceID * 3) + 2, 0));
+    uint p0_Y = (gl_InstanceID * 3) / maxTextureSize;
+    uint p0_X = (gl_InstanceID * 3) - (p0_Y * maxTextureSize);
+    
+    uint p1_Y = ((gl_InstanceID * 3) + 1) / maxTextureSize;
+    uint p1_X = ((gl_InstanceID * 3) + 1) - (p1_Y * maxTextureSize);
+
+    uint color_Y = ((gl_InstanceID * 3) + 2) / maxTextureSize;
+    uint color_X = ((gl_InstanceID * 3) + 2) - (color_Y * maxTextureSize);
+
+    vec4 p0    = imageLoad(textureBuffer, ivec2(p0_X, p0_Y));
+    vec4 p1    = imageLoad(textureBuffer, ivec2(p1_X, p1_Y));
+    vec4 color = imageLoad(textureBuffer, ivec2(color_X, color_Y));
 
     gl_Position = calculateLines(p0, p1, uv, u_thickness, u_screenWidth, u_screenHeigth);
     v_color = color;

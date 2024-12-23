@@ -63,6 +63,9 @@ namespace lines {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
         bgfx::setUniform(m_UniformData, data);
 
+        float indirectData[] = {static_cast<float>(m_MaxTextureSize), 0, 0, 0};
+        bgfx::setUniform(m_IndirectDataUniform, indirectData);
+
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
             | BGFX_STATE_WRITE_A
@@ -88,16 +91,20 @@ namespace lines {
     }
 
     void TextureBasedLines::generateTextureBuffer() {
+        float data[] = {static_cast<float>(m_MaxTextureSize), 0, 0, 0};
+        bgfx::setUniform(m_IndirectDataUniform, data);
+
         bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
         bgfx::setImage(1, m_TextureBuffer, 0, bgfx::Access::Write);
         bgfx::dispatch(0, m_ComputeTexture, m_SegmentsSize, 1, 1);
     }
 
     void TextureBasedLines::allocateTextureBuffer() {
-        uint16_t Y = (m_SegmentsSize * 3) - m_MaxTextureSize;
+        uint16_t Y = (m_SegmentsSize * 3) / (m_MaxTextureSize + 1);
+        uint16_t X = Y == 0 ? (m_SegmentsSize * 3) : m_MaxTextureSize;
         
         m_TextureBuffer = bgfx::createTexture2D(
-            m_SegmentsSize * 3, 1, false, 1, bgfx::TextureFormat::RGBA32F,
+            X, Y + 1, false, 1, bgfx::TextureFormat::RGBA32F,
             BGFX_TEXTURE_COMPUTE_WRITE
         );
     }

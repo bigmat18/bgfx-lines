@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     // }; 
 
     std::vector<lines::Segment> segments;
-    generateSegmentsInCube(segments, 3, 1000);
+    generateSegmentsInCube(segments, 3, 10000);
 
     auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->setThickness(2);
