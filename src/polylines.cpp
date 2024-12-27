@@ -5,6 +5,7 @@
 #include <polylines/gpu_generated_polylines.hpp>
 #include <polylines/instancing_based_polylines.hpp>
 #include <polylines/indirect_based_polylines.hpp>
+#include <polylines/texture_based_polylines.hpp>
 
 namespace lines {
 
@@ -37,7 +38,13 @@ namespace lines {
                 return std::make_unique<IndirectBasedPolylines>(points, width, heigth);
             }
             case Types::TEXTURE_BASED: {
-                return nullptr;
+                const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
+                const bool indirectSupported = !!(caps->supported & BGFX_CAPS_DRAW_INDIRECT);
+                const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
+                const bool textureSupported = !!(caps->supported & BGFX_CAPS_TEXTURE_2D_ARRAY);
+
+                assert((void("Instancing or compute or indirect or texture are not supported"), instancingSupported && computeSupported && indirectSupported && textureSupported));
+                return std::make_unique<TextureBasedPolylines>(points, width, heigth, caps->limits.maxTextureSize);
             }
         }
         assert((void("Lines type is incorrect"), true));

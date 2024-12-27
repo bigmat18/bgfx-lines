@@ -53,6 +53,7 @@ namespace lines {
     TextureBasedLines::~TextureBasedLines() {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
+        bgfx::destroy(m_SegmentsBuffer); 
         bgfx::destroy(m_IndirectBuffer);
         bgfx::destroy(m_TextureBuffer);
         bgfx::destroy(m_ComputeIndirect);
@@ -81,7 +82,17 @@ namespace lines {
         bgfx::submit(viewId, m_Program, m_IndirectBuffer, 0);
     }
 
-    void TextureBasedLines::update(const std::vector<Segment> &segments) {}
+    void TextureBasedLines::update(const std::vector<Segment> &segments) {
+        int oldSize = m_SegmentsSize;
+        m_SegmentsSize = segments.size();
+        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+
+        if(oldSize != m_SegmentsSize) {
+            generateIndirectBuffer();
+            allocateTextureBuffer();
+            generateTextureBuffer();
+        }
+    }
 
     void TextureBasedLines::generateIndirectBuffer() {
         float data[] = {static_cast<float>(m_SegmentsSize), 0, 0, 0};
