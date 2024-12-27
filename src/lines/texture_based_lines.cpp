@@ -87,11 +87,15 @@ namespace lines {
         m_SegmentsSize = segments.size();
         bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
 
+        if(oldSize < m_SegmentsSize) {
+            allocateTextureBuffer();
+        }
+
         if(oldSize != m_SegmentsSize) {
             generateIndirectBuffer();
-            allocateTextureBuffer();
-            generateTextureBuffer();
         }
+        
+        generateTextureBuffer();
     }
 
     void TextureBasedLines::generateIndirectBuffer() {

@@ -18,7 +18,7 @@ namespace lines {
             void update(const std::vector<Point> &points) override;
 
         private:
-            void generateIndirectBuffer();  
+            void generateIndirectBuffers();  
 
             void generateTextureBuffer();
 
