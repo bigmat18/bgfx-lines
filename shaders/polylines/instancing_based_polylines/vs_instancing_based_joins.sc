@@ -1,10 +1,10 @@
 $input a_position, i_data0, i_data1, i_data2
-$output v_color
+$output v_color, v_uv, v_length
 
 #include <bgfx_compute.sh>
 #include "../../polylines.sh"
 
-uniform vec4 u_data;
+uniform vec4 u_data1;
 uniform vec4 u_color;
 
 #define a_uv              a_position 
@@ -12,12 +12,18 @@ uniform vec4 u_color;
 #define a_curr            i_data1
 #define a_next            i_data2
 
-#define u_width           u_data.x
-#define u_heigth          u_data.y
-#define u_miter_limit     u_data.z
-#define u_thickness       u_data.w
+#define u_screenWidth           u_data1.x
+#define u_screenHeigth          u_data1.y
+#define u_miter_limit           u_data1.z
+#define u_thickness             u_data1.w
 
 void main() {
+    vec4 prev_px = calculatePointWithMVP(a_prev, u_screenWidth, u_screenHeigth);
+    vec4 curr_px = calculatePointWithMVP(a_curr, u_screenWidth, u_screenHeigth);
+    vec4 next_px = calculatePointWithMVP(a_next, u_screenWidth, u_screenHeigth);
+
     v_color = u_color;
-    gl_Position = calculatePolylines(a_prev, a_curr, a_next, a_uv, u_thickness, u_miter_limit, u_width, u_heigth);
+    v_uv = vec4(0);
+    v_length = 0;
+    gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth);
 }

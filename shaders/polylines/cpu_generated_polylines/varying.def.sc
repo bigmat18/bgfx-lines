@@ -1,6 +1,6 @@
 vec4 v_color            : COLOR0;
 vec4 v_uv               : POSITION;
-float v_length           : TEXCOORD0;
+float v_length          : TEXCOORD0;
 
 vec4 a_position         : POSITION;
 vec4 a_texcoord0        : TEXCOORD0;

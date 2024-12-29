@@ -17,7 +17,7 @@ int main(int argc, char** argv)
     // std::vector<lines::Point> points;
     // generateSegmentsInCube(points, 3, 1000);
 
-    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::CPU_GENERATED);
+    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->setThickness(5);
     line->setMiterLimit(10);
     line->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
