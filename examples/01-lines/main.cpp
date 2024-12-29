@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     // std::vector<lines::Segment> segments;
     // generateSegmentsInCube(segments, 3, 100);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::GPU_GENERATED);
+    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->setThickness(5);
     line->setLeftCap(lines::Caps::ROUND_CAP);
     line->setRigthCap(lines::Caps::ROUND_CAP);

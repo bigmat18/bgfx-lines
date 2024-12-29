@@ -74,8 +74,11 @@ namespace lines {
     }
 
     void IndirectBasedLines::draw(uint viewId) const {
-        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.thickness, 0};
-        bgfx::setUniform(m_UniformData1, data);
+        float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.thickness, static_cast<float>(m_Data.leftCap)};
+        bgfx::setUniform(m_UniformData1, data1);
+
+        float data2[] = {static_cast<float>(m_Data.rigthCap), 0, 0, 0};
+        bgfx::setUniform(m_UniformData2, data2);
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
