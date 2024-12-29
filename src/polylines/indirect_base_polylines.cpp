@@ -60,7 +60,7 @@ namespace lines {
 
     void IndirectBasedPolylines::draw(uint viewId) const {
         float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
-        bgfx::setUniform(m_UniformData, data1);
+        bgfx::setUniform(m_UniformData1, data1);
 
         float data2[] = {static_cast<float>(m_PointsSize - 1), 0, 0, 0};
         bgfx::setUniform(m_IndirectDataUniform, data2);

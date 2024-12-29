@@ -10,9 +10,9 @@ int main(int argc, char** argv)
     
     std::vector<lines::Segment> segments = {
         lines::Segment(
+            lines::Point(0.0, 0.0f, 0.0f),
             lines::Point(0.5, 0.0f, 0.0f),
-            lines::Point(1.0, 0.0f, 0.0f),
-            lines::Color(0.0f, 1.0f, 1.0f, 1.0f)
+            lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
         ),
         // lines::Segment(
         //     lines::Point(0.0f, -1.0f, 0.0f),
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     // std::vector<lines::Segment> segments;
     // generateSegmentsInCube(segments, 3, 100);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
+    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::CPU_GENERATED);
     line->setThickness(5);
     line->setLeftCap(lines::Caps::ROUND_CAP);
     line->setRigthCap(lines::Caps::ROUND_CAP);

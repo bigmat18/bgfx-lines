@@ -14,8 +14,12 @@ namespace lines {
     }
 
     void CPUGeneratedPolylines::draw(uint viewId) const {
-        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
-        bgfx::setUniform(m_UniformData, data);
+        float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
+        bgfx::setUniform(m_UniformData1, data1);
+
+        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), 0, 0};
+        bgfx::setUniform(m_UniformData2, data2);
+
         bgfx::setUniform(m_UniformColor, &m_Data.color);
 
         uint64_t state = 0
@@ -47,10 +51,8 @@ namespace lines {
         std::vector<std::array<float, 4>> curr(points.size());
         std::vector<std::array<float, 4>> next(points.size());
 
-        float length = 0;
         for(uint32_t i = 0; i < points.size(); i++) {
-            length += calculateDistance(points[i-1 != -1 ? i-1 : 0], points[i]);
-            std::array<float, 4> element = {points[i].x, points[i].y, points[i].z, length};
+            std::array<float, 4> element = {points[i].x, points[i].y, points[i].z, 0.0f};
 
             curr[i] = element;
 
@@ -61,7 +63,7 @@ namespace lines {
             else next[i] = {points[i+1].x, points[i+1].y, points[i+1].z, 0.0f};
         }
 
-        for(uint i = 0; i < points.size() -1; i++) {
+        for(uint i = 0; i < points.size() - 1; i++) {
 
             for(uint k = 0; k < 2; k++) {
                 

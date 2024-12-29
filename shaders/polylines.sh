@@ -5,18 +5,6 @@
 #include "utils.sh"
 
 vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickness, float miter_limit, float screen_width, float screen_heigth) {
-    vec4 NDC_prev = mul(u_modelViewProj, vec4(prev.xyz, 1.0));
-    vec4 NDC_curr = mul(u_modelViewProj, vec4(curr.xyz, 1.0));
-    vec4 NDC_next = mul(u_modelViewProj, vec4(next.xyz, 1.0));
-
-    vec4 screen_prev = vec4((NDC_prev.xy / NDC_prev.w).xy, 0.0, 0.0);
-    vec4 screen_curr = vec4((NDC_curr.xy / NDC_curr.w).xy, 0.0, 0.0);
-    vec4 screen_next = vec4((NDC_next.xy / NDC_next.w).xy, 0.0, 0.0);
-
-    prev = clipToScreen(screen_prev, screen_width, screen_heigth);
-    curr = clipToScreen(screen_curr, screen_width, screen_heigth);
-    next = clipToScreen(screen_next, screen_width, screen_heigth);
-
     float half_thickness = thickness / 2.0;
 
     vec4 T0 = vec4(normalize(curr.xy - prev.xy).xy, 0.0, 0.0);
@@ -67,7 +55,22 @@ vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thicknes
     } 
 
     p = screenToClip(p, screen_width, screen_heigth);
-    return vec4(p.xy, NDC_curr.z / NDC_curr.w, 1.0);
+    return vec4(p.xy, curr.z / curr.w, 1.0);
+}
+
+vec4 calculatePolylinesUV(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickness, float length_px, float leftCap, float rigthCap) {
+    vec4 T = vec4(1.0, 0.0, 0.0, 0.0);
+    vec4 N = vec4(0.0, 1.0, 0.0, 0.0);
+
+    float width_px = thickness / 2.0;
+
+    float u = 2.0 * uv.x - 1.0;
+    float v = 2.0 * uv.y - 1.0;
+
+    vec4 final_uv = (uv.x * length_px * T) + (v * N * width_px);
+    float activeCaps = sign(leftCap) * (1 - sign(length(curr - prev))) + sign(rigthCap) * (1 - sign(length(next - curr)));
+
+    return final_uv + (u * T * width_px * activeCaps);
 }
 
 #endif

@@ -26,7 +26,7 @@ namespace lines {
 
     void GPUGeneratedPolylines::draw(uint viewId) const {
         float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
-        bgfx::setUniform(m_UniformData, data);
+        bgfx::setUniform(m_UniformData1, data);
         bgfx::setUniform(m_UniformColor, &m_Data.color);
 
         uint64_t state = 0

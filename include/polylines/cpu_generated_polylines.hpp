@@ -23,7 +23,10 @@ namespace lines {
             void generateIndexBuffer(const std::vector<Point> points);
 
             inline float calculateDistance(const Point &p1, const Point &p2) {
-                return std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2) + std::pow(p1.z - p2.z, 2));
+                Point p1_px = Point((p1.x * m_Data.screenSize[0]) / 2, (p1.y * m_Data.screenSize[1]) / 2, p1.z);
+                Point p2_px = Point((p2.x * m_Data.screenSize[0]) / 2, (p2.y * m_Data.screenSize[1]) / 2, p2.z);
+
+                return std::sqrt(std::pow(p1_px.x - p2_px.x, 2) + std::pow(p1_px.y - p2_px.y, 2) + std::pow(p1_px.z - p2_px.z, 2));
             }
 
             std::vector<float> m_Vertices;
