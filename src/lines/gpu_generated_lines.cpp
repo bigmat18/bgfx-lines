@@ -23,8 +23,8 @@ namespace lines {
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
-        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
-        bgfx::setUniform(m_UniformData, data);
+        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.thickness, 0};
+        bgfx::setUniform(m_UniformData1, data);
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB

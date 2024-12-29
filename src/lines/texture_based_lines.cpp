@@ -61,8 +61,8 @@ namespace lines {
     }
 
     void TextureBasedLines::draw(uint viewId) const {
-        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.antialias, m_Data.thickness};
-        bgfx::setUniform(m_UniformData, data);
+        float data[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.thickness, 0};
+        bgfx::setUniform(m_UniformData1, data);
 
         float indirectData[] = {static_cast<float>(m_MaxTextureSize), 0, 0, 0};
         bgfx::setUniform(m_IndirectDataUniform, indirectData);

@@ -4,7 +4,7 @@
         - [X] GPU VBO generation
         - [X] Instancing based
         - [X] Indirect based
-        - [] Texture based
+        - [X] Texture based
     - Input VBO
         - [] Compute shaders calculation
 
@@ -14,14 +14,19 @@
         - [X] GPU VBO generation
         - [X] Instancing based
         - [X] Indirect based
-        - [] Texture based
+        - [X] Texture based
     - Input VBO
         - [] Compute shaders calculation
 
 - EFFECTS
     - [] Antialias
-    - [] Begin/End lines
-    - [] Joins
-    - [] Pattersù
+    - Caps
+        - [] BUTT_CAP
+        - [] SQUARE_CAP
+        - [] ROUND_CAP
+    - Joins
+        - [] BEVEL_JOIN
+        - [] ROUND_JOIN
+        - [] MITER_JOIN
 
 

@@ -4,16 +4,16 @@ $output v_color
 #include <bgfx_compute.sh>
 #include "../../lines.sh"
 
-uniform vec4 u_data;
+uniform vec4 u_data1;
+uniform vec4 u_data2;
 
 uniform vec4 u_IndirectData;
 #define maxTextureSize u_IndirectData.x
 
 #define uv                    a_position
-#define u_screenWidth         u_data.x
-#define u_screenHeigth        u_data.y
-#define u_antialias           u_data.z
-#define u_thickness           u_data.w
+#define u_screenWidth         u_data1.x
+#define u_screenHeigth        u_data1.y
+#define u_thickness           u_data1.z
 
 IMAGE2D_RO(textureBuffer, rgba32f, 0);
 

@@ -67,11 +67,14 @@ namespace lines {
         setScreenSize(width, heigth);
 
         m_Program = vcl::loadProgram(vs_name, fs_name);
-        m_UniformData = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
+        m_UniformData1 = bgfx::createUniform("u_data1", bgfx::UniformType::Vec4);
+        m_UniformData2 = bgfx::createUniform("u_data2", bgfx::UniformType::Vec4);
+
     }
 
     Lines::~Lines() {
-        bgfx::destroy(m_UniformData);
+        bgfx::destroy(m_UniformData1);
+        bgfx::destroy(m_UniformData2);
         bgfx::destroy(m_Program);
     }
 }

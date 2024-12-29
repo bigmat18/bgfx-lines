@@ -34,7 +34,9 @@ namespace lines {
 
             void setThickness(float thickness) { m_Data.thickness = thickness; }
 
-            void setAntialias(float antialias) { m_Data.antialias = antialias; }
+            void setLeftCap(const Caps& cap) { m_Data.leftCap = cap; }
+
+            void setRigthCap(const Caps& cap) { m_Data.rigthCap = cap; }
 
             void setScreenSize(float width, float heigth) { 
                 m_Data.screenSize[0] = width; 
@@ -43,12 +45,13 @@ namespace lines {
 
         protected: 
             bgfx::ProgramHandle m_Program;
-            bgfx::UniformHandle m_UniformData;
-            
+            bgfx::UniformHandle m_UniformData1;
+            bgfx::UniformHandle m_UniformData2;
             struct LineData {
                 float thickness = 5.0;
-                float antialias = 0.0;
                 float screenSize[2];
+                Caps leftCap = Caps::BUTT_CAP;
+                Caps rigthCap = Caps::BUTT_CAP;
             };
 
             LineData m_Data;
