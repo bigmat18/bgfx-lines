@@ -4,8 +4,7 @@ namespace lines {
     CPUGeneratedPolylines::CPUGeneratedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
         Polylines(width, heigth, "polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines")
     {
-        generateVertexBuffer(points);
-        generateIndexBuffer(points);
+        generateBuffers(points);
     }
 
     CPUGeneratedPolylines::~CPUGeneratedPolylines() {
@@ -42,73 +41,41 @@ namespace lines {
         m_Vertices.clear();
         m_Indices.clear();
         
-        generateVertexBuffer(points);
-        generateIndexBuffer(points);
+        generateBuffers(points);
     }
 
-    void CPUGeneratedPolylines::generateVertexBuffer(const std::vector<Point> points) {
-        std::vector<std::array<float, 4>> prev(points.size());
-        std::vector<std::array<float, 4>> curr(points.size());
-        std::vector<std::array<float, 4>> next(points.size());
-
-        for(uint32_t i = 0; i < points.size(); i++) {
-            std::array<float, 4> element = {points[i].x, points[i].y, points[i].z, 0.0f};
-
-            curr[i] = element;
-
-            if (i == 0) prev[i] = element;
-            else prev[i] = {points[i - 1].x, points[i - 1].y, points[i - 1].z, 0.0f};
-
-            if (i == points.size() - 1) next[i] = element;
-            else next[i] = {points[i+1].x, points[i+1].y, points[i+1].z, 0.0f};
-        }
+    void CPUGeneratedPolylines::generateBuffers(const std::vector<Point> points) {
 
         for(uint i = 0; i < points.size() - 1; i++) {
 
             for(uint k = 0; k < 2; k++) {
                 
                 for(uint j = 0; j < 2; j++) {
+                    uint curr_index = i + k;
+                    uint prev_index = curr_index - (curr_index == 0 ? 0 : 1);
+                    uint next_index = curr_index + (curr_index == points.size() - 1 ? 0 : 1);
 
                     // a_position ==> prev(x,y,z)
-                    m_Vertices.push_back(prev[i + k][0]);
-                    m_Vertices.push_back(prev[i + k][1]);
-                    m_Vertices.push_back(prev[i + k][2]);
+                    m_Vertices.push_back(points[prev_index].x);
+                    m_Vertices.push_back(points[prev_index].y);
+                    m_Vertices.push_back(points[prev_index].z);
 
                     // a_texcoord0 ==> curr(x,y,z)
-                    m_Vertices.push_back(curr[i + k][0]);
-                    m_Vertices.push_back(curr[i + k][1]);
-                    m_Vertices.push_back(curr[i + k][2]);
+                    m_Vertices.push_back(points[curr_index].x);
+                    m_Vertices.push_back(points[curr_index].y);
+                    m_Vertices.push_back(points[curr_index].z);
 
                     // a_texcoord1 ==> next(x,y,z)
-                    m_Vertices.push_back(next[i + k][0]);
-                    m_Vertices.push_back(next[i + k][1]);
-                    m_Vertices.push_back(next[i + k][2]);
+                    m_Vertices.push_back(points[next_index].x);
+                    m_Vertices.push_back(points[next_index].y);
+                    m_Vertices.push_back(points[next_index].z);
 
                     // a_texcoord2 ==> uv(x,y)
                     m_Vertices.push_back(static_cast<float>(k));
                     m_Vertices.push_back(static_cast<float>(j));
                 }
             }
-        
-        }
 
-        bgfx::VertexLayout layout;
-        layout
-            .begin()
-            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-            .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
-            .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float)
-            .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
-            .end();
-
-        m_Vbh = bgfx::createVertexBuffer(
-            bgfx::makeRef(&m_Vertices[0], sizeof(float) * m_Vertices.size()),
-            layout
-        );
-    }
-
-    void CPUGeneratedPolylines::generateIndexBuffer(const std::vector<Point> points) {
-        for(uint32_t i = 0; i < points.size() - 1; i++) {
             m_Indices.push_back((i * 4));
             m_Indices.push_back((i * 4) + 3);
             m_Indices.push_back((i * 4) + 1);
@@ -126,7 +93,22 @@ namespace lines {
                 m_Indices.push_back((i * 4) + 2);
                 m_Indices.push_back((i * 4) + 5);
             }
+
         }
+
+        bgfx::VertexLayout layout;
+        layout
+            .begin()
+            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
+            .end();
+
+        m_Vbh = bgfx::createVertexBuffer(
+            bgfx::makeRef(&m_Vertices[0], sizeof(float) * m_Vertices.size()),
+            layout
+        );
 
         m_Ibh = bgfx::createIndexBuffer(
             bgfx::makeRef(&m_Indices[0], sizeof(uint32_t) * m_Indices.size()),

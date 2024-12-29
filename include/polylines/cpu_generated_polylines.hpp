@@ -18,9 +18,7 @@ namespace lines {
             void update(const std::vector<Point> &points) override;
 
         private:
-            void generateVertexBuffer(const std::vector<Point> points);
-
-            void generateIndexBuffer(const std::vector<Point> points);
+            void generateBuffers(const std::vector<Point> points);
 
             inline float calculateDistance(const Point &p1, const Point &p2) {
                 Point p1_px = Point((p1.x * m_Data.screenSize[0]) / 2, (p1.y * m_Data.screenSize[1]) / 2, p1.z);

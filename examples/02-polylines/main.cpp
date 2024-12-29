@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     line->setMiterLimit(10);
     line->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
     line->setLeftCap(lines::Caps::ROUND_CAP);
-    line->setRigthCap(lines::Caps::SQUARE_CAP);
+    line->setRigthCap(lines::Caps::ROUND_CAP);
 
     // std::vector<lines::Point> points1;
     // generateSegmentsInCube(points1, 3, 1000);
