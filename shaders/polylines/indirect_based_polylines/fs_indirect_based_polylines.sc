@@ -16,13 +16,12 @@ void main() {
 	if(v_uv.x < 0) {
         if(u_leftCap == 2)
             d = length(vec2(v_uv.xy)) - (u_thickness/2);
-        color = vec4(0.0, 0.0, 1.0, 1.0);
-
-	} else if(v_uv.x > v_length) {
+	} 
+	
+	if(v_uv.x > v_length) {
         if(u_rigthCap == 2)
             d = length(vec2(v_uv.xy) - vec2(v_length, 0)) - (u_thickness/2);
-        color = vec4(0.0, 0.0, 1.0, 1.0);
-	} 
+	}
 
 	if(d > 0)
 		discard;

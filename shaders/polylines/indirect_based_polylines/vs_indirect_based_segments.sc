@@ -24,8 +24,8 @@ uniform vec4 u_IndirectData;
 void main() {
     vec4 a_prev = p(gl_InstanceID - sign(gl_InstanceID));
     vec4 a_curr = p(gl_InstanceID);
-    vec4 a_next = p(gl_InstanceID + sign(u_IndirectData.x - gl_InstanceID));
-    vec4 a_nextnext = p(gl_InstanceID + sign(u_IndirectData.x - gl_InstanceID) + sign(u_IndirectData.x - 1 - gl_InstanceID));
+    vec4 a_next = p(gl_InstanceID + 1);
+    vec4 a_nextnext = p(gl_InstanceID + 1 + sign(u_IndirectData.x - 1 - gl_InstanceID));
 
     vec4 prev = ((1 - a_uv.x) * a_prev) + (a_uv.x * a_curr);
     vec4 curr = ((1 - a_uv.x) * a_curr) + (a_uv.x * a_next);
