@@ -42,8 +42,8 @@ namespace lines {
     };
 
     enum Joins {
-        MITER_JOIN,
-        BEVEL_JOIN,
-        ROUND_JOIN
+        ROUND_JOIN = 0,
+        BEVEL_JOIN = 1,
+        MITER_JOIN = 2
     };
 }

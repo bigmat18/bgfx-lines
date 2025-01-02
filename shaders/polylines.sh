@@ -4,7 +4,8 @@
 #include <bgfx_shader.sh>
 #include "utils.sh"
 
-vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickness, float miter_limit, float screen_width, float screen_heigth) {
+vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickness, float miter_limit, 
+                        float screen_width, float screen_heigth, float leftCap, float rightCap, float join) {
     float half_thickness = thickness / 2.0;
 
     vec4 T0 = vec4(normalize(curr.xy - prev.xy).xy, 0.0, 0.0);
@@ -20,11 +21,11 @@ vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thicknes
 
     if(curr.x == prev.x && curr.y == prev.y) {
     
-      p = curr + (v * half_thickness * N1);
+      p = curr + (v * half_thickness * N1) + (u * T1 * half_thickness * sign(leftCap));
 
     } else if (curr.x == next.x && curr.y == next.y) {
 
-      p = curr + (v * half_thickness * N0);
+      p = curr + (v * half_thickness * N0) + (u * T0 * half_thickness * sign(rightCap));
 
     } else {
 
@@ -42,7 +43,12 @@ vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thicknes
         float max_threshold = miter_limit * 5;
         float t = smoothstep(min_threshold, max_threshold, total_width);
 
-        vec4 final_miter = mix(miter, miter_plane, t);
+        vec4 final_miter;
+        if (join == 2) {
+          final_miter = mix(miter, miter_plane, t);
+        } else {
+          final_miter =  miter_plane;
+        }
 
         #if 0
           if(total_width > miter_limit) {
@@ -51,14 +57,14 @@ vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thicknes
           }
         #endif
 
-        p = curr + (v * final_miter);
+        p = curr + (v * final_miter) + (u * half_thickness * ((T1 * (1-uv.x)) + (T0 * uv.x)) * (1 - sign(join)));
     } 
 
     p = screenToClip(p, screen_width, screen_heigth);
     return vec4(p.xy, curr.z / curr.w, 1.0);
 }
 
-vec4 calculatePolylinesUV(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickness, float length_px, float leftCap, float rigthCap) {
+vec4 calculatePolylinesUV(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickness, float length_px, float leftCap, float rigthCap, float join) {
     vec4 T = vec4(1.0, 0.0, 0.0, 0.0);
     vec4 N = vec4(0.0, 1.0, 0.0, 0.0);
 
@@ -69,8 +75,8 @@ vec4 calculatePolylinesUV(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickn
 
     vec4 final_uv = (uv.x * length_px * T) + (v * N * width_px);
     float activeCaps = sign(leftCap) * (1 - sign(length(curr - prev))) + sign(rigthCap) * (1 - sign(length(next - curr)));
-
-    return final_uv + (u * T * width_px * activeCaps);
+    float activeJoin = (1 - sign(join)) * sign(length(curr - prev)) * sign(length(next - curr));
+    return final_uv + (u * T * width_px * (activeCaps)) + (u * T * width_px * (activeJoin));
 }
 
 #endif

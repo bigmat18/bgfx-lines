@@ -9,14 +9,15 @@ namespace lines {
 
     CPUGeneratedPolylines::~CPUGeneratedPolylines() {
         bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
+        bgfx::destroy(m_SegmentsIbh);
+        bgfx::destroy(m_JoinsIbh);
     }
 
     void CPUGeneratedPolylines::draw(uint viewId) const {
         float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
         bgfx::setUniform(m_UniformData1, data1);
 
-        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), 0, 0};
+        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), static_cast<float>(m_Data.join), 0};
         bgfx::setUniform(m_UniformData2, data2);
 
         bgfx::setUniform(m_UniformColor, &m_Data.color);
@@ -30,17 +31,27 @@ namespace lines {
             | BGFX_STATE_BLEND_ALPHA;
 
         bgfx::setVertexBuffer(0, m_Vbh);
-        bgfx::setIndexBuffer(m_Ibh);
+        bgfx::setIndexBuffer(m_SegmentsIbh);
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
+
+        if(m_Data.join != 0) {
+            bgfx::setVertexBuffer(0, m_Vbh);
+            bgfx::setIndexBuffer(m_JoinsIbh);
+            bgfx::setState(state);
+            bgfx::submit(viewId, m_Program);
+        }
     }
 
     void CPUGeneratedPolylines::update(const std::vector<Point> &points) {
         bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
+        bgfx::destroy(m_SegmentsIbh);
+        bgfx::destroy(m_JoinsIbh);
+
         m_Vertices.clear();
-        m_Indices.clear();
-        
+        m_SegmentsIndices.clear();
+        m_JoinsIndices.clear();
+
         generateBuffers(points);
     }
 
@@ -76,24 +87,23 @@ namespace lines {
                 }
             }
 
-            m_Indices.push_back((i * 4));
-            m_Indices.push_back((i * 4) + 3);
-            m_Indices.push_back((i * 4) + 1);
+            m_SegmentsIndices.push_back((i * 4));
+            m_SegmentsIndices.push_back((i * 4) + 3);
+            m_SegmentsIndices.push_back((i * 4) + 1);
 
-            m_Indices.push_back((i * 4));
-            m_Indices.push_back((i * 4) + 2);
-            m_Indices.push_back((i * 4) + 3);
+            m_SegmentsIndices.push_back((i * 4));
+            m_SegmentsIndices.push_back((i * 4) + 2);
+            m_SegmentsIndices.push_back((i * 4) + 3);
 
             if(i != points.size() - 2) {
-                m_Indices.push_back((i * 4) + 3);
-                m_Indices.push_back((i * 4) + 4);
-                m_Indices.push_back((i * 4) + 5);
+                m_JoinsIndices.push_back((i * 4) + 3);
+                m_JoinsIndices.push_back((i * 4) + 4);
+                m_JoinsIndices.push_back((i * 4) + 5);
 
-                m_Indices.push_back((i * 4) + 4);
-                m_Indices.push_back((i * 4) + 2);
-                m_Indices.push_back((i * 4) + 5);
+                m_JoinsIndices.push_back((i * 4) + 4);
+                m_JoinsIndices.push_back((i * 4) + 2);
+                m_JoinsIndices.push_back((i * 4) + 5);
             }
-
         }
 
         bgfx::VertexLayout layout;
@@ -110,8 +120,13 @@ namespace lines {
             layout
         );
 
-        m_Ibh = bgfx::createIndexBuffer(
-            bgfx::makeRef(&m_Indices[0], sizeof(uint32_t) * m_Indices.size()),
+        m_SegmentsIbh = bgfx::createIndexBuffer(
+            bgfx::makeRef(&m_SegmentsIndices[0], sizeof(uint32_t) * m_SegmentsIndices.size()),
+            BGFX_BUFFER_INDEX32
+        );
+
+        m_JoinsIbh = bgfx::createIndexBuffer(
+            bgfx::makeRef(&m_JoinsIndices[0], sizeof(uint32_t) * m_JoinsIndices.size()),
             BGFX_BUFFER_INDEX32
         );
     }

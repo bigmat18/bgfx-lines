@@ -21,9 +21,9 @@
 - EFFECTS
     - [] Antialias
     - Caps
-        - [] BUTT_CAP
-        - [] SQUARE_CAP
-        - [] ROUND_CAP
+        - [X] BUTT_CAP
+        - [X] SQUARE_CAP
+        - [X] ROUND_CAP
     - Joins
         - [] BEVEL_JOIN
         - [] ROUND_JOIN

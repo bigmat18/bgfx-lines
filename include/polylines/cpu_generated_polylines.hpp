@@ -28,9 +28,12 @@ namespace lines {
             }
 
             std::vector<float> m_Vertices;
-            std::vector<uint32_t> m_Indices;
+            std::vector<uint32_t> m_SegmentsIndices;
+            std::vector<uint32_t> m_JoinsIndices;
 
             bgfx::VertexBufferHandle m_Vbh;
-            bgfx::IndexBufferHandle m_Ibh;
+            bgfx::IndexBufferHandle m_SegmentsIbh;
+            bgfx::IndexBufferHandle m_JoinsIbh;
+
     };
 }
