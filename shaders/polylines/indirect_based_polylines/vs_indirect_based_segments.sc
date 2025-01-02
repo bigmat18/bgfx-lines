@@ -20,6 +20,7 @@ uniform vec4 u_IndirectData;
 
 #define u_leftCap               u_data2.x
 #define u_rigthCap              u_data2.y
+#define u_join                  u_data2.z
 
 void main() {
     vec4 a_prev = p(gl_InstanceID - sign(gl_InstanceID));
@@ -38,6 +39,6 @@ void main() {
     v_color = u_color;
     v_length = length(((next_px - curr_px) * (1 - a_uv.x)) + ((curr_px - prev_px) * (a_uv.x)));
 
-    v_uv = calculatePolylinesUV(prev_px, curr_px, next_px, a_uv, u_thickness, v_length, u_leftCap, u_rigthCap);
-    gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth);
+    v_uv = calculatePolylinesUV(prev_px, curr_px, next_px, a_uv, u_thickness, v_length, u_leftCap, u_rigthCap, u_join);
+    gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap, u_join);
 }

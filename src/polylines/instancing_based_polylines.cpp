@@ -49,7 +49,7 @@ namespace lines {
         float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
         bgfx::setUniform(m_UniformData1, data1);
 
-        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), 0, 0};
+        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), static_cast<float>(m_Data.join), 0};
         bgfx::setUniform(m_UniformData2, data2);
         
         bgfx::setUniform(m_UniformColor, &m_Data.color);
@@ -68,11 +68,13 @@ namespace lines {
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
 
-        bgfx::setVertexBuffer(0, m_Vbh);
-        bgfx::setIndexBuffer(m_Ibh);
-        bgfx::setInstanceDataBuffer(&m_IDBJoins);
-        bgfx::setState(state);
-        bgfx::submit(viewId, m_JoinsProgram);
+        if(m_Data.join != 0) {
+            bgfx::setVertexBuffer(0, m_Vbh);
+            bgfx::setIndexBuffer(m_Ibh);
+            bgfx::setInstanceDataBuffer(&m_IDBJoins);
+            bgfx::setState(state);
+            bgfx::submit(viewId, m_JoinsProgram);
+        }
 
     }
 

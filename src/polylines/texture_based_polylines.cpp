@@ -72,7 +72,7 @@ namespace lines {
         float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
         bgfx::setUniform(m_UniformData1, data1);
 
-        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), 0, 0};
+        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), static_cast<float>(m_Data.join), 0};
         bgfx::setUniform(m_UniformData2, data2);
 
         float indirectData[] = {static_cast<float>(m_PointsSize - 1), static_cast<float>(m_MaxTextureSize), 0, 0};
@@ -94,11 +94,13 @@ namespace lines {
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program, m_SegmentsIndirectBuffer, 0);
 
-        bgfx::setVertexBuffer(0, m_Vbh);
-        bgfx::setIndexBuffer(m_Ibh);
-        bgfx::setImage(0, m_TextureBuffer, 0, bgfx::Access::Read, bgfx::TextureFormat::RGBA32F);
-        bgfx::setState(state);
-        bgfx::submit(viewId, m_JoinsProgram, m_JoinsIndirectBuffer, 0);
+        if(m_Data.join != 0) {
+            bgfx::setVertexBuffer(0, m_Vbh);
+            bgfx::setIndexBuffer(m_Ibh);
+            bgfx::setImage(0, m_TextureBuffer, 0, bgfx::Access::Read, bgfx::TextureFormat::RGBA32F);
+            bgfx::setState(state);
+            bgfx::submit(viewId, m_JoinsProgram, m_JoinsIndirectBuffer, 0);
+        }
     }
 
     void TextureBasedPolylines::update(const std::vector<Point> &points) {

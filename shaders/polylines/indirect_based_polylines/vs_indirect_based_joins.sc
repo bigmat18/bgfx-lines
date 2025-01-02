@@ -8,6 +8,7 @@ BUFFER_RO(pointsBuffer, float, 1);
 #define p(pos)    vec4(pointsBuffer[0 + ((pos) * 3)], pointsBuffer[1 + ((pos) * 3)], pointsBuffer[2 + ((pos) * 3)], 0.0)
 
 uniform vec4 u_data1;
+uniform vec4 u_data2;
 uniform vec4 u_color;
 uniform vec4 u_IndirectData;
 
@@ -16,6 +17,10 @@ uniform vec4 u_IndirectData;
 #define u_screenHeigth          u_data1.y
 #define u_miter_limit           u_data1.z
 #define u_thickness             u_data1.w
+
+#define u_leftCap               u_data2.x
+#define u_rigthCap              u_data2.y
+#define u_join                  u_data2.z
 
 void main() {
     uint index = gl_InstanceID + 1;
@@ -31,5 +36,5 @@ void main() {
     v_color = u_color;
     v_uv = vec4(0);
     v_length = 0;
-    gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth);
+    gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap, u_join);
 }

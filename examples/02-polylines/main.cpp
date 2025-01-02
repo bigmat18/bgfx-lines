@@ -17,11 +17,11 @@ int main(int argc, char** argv)
     // std::vector<lines::Point> points;
     // generateSegmentsInCube(points, 3, 1000);
 
-    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::GPU_GENERATED);
+    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->setThickness(20);
     line->setMiterLimit(50);
     line->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
-    line->setJoin(lines::Joins::BEVEL_JOIN);
+    line->setJoin(lines::Joins::ROUND_JOIN);
     line->setLeftCap(lines::Caps::ROUND_CAP);
     line->setRigthCap(lines::Caps::ROUND_CAP);
 
