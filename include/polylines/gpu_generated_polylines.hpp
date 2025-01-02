@@ -26,8 +26,10 @@ namespace lines {
 
             void allocatePointsBuffer();
 
-            bgfx::DynamicIndexBufferHandle m_DIbh;
             bgfx::DynamicVertexBufferHandle m_DVbh;
+            bgfx::DynamicIndexBufferHandle m_SegmentsDIbh;
+            bgfx::DynamicIndexBufferHandle m_JoinsDIbh;
+
             bgfx::DynamicVertexBufferHandle m_PointsBuffer;
             
             bgfx::ProgramHandle m_ComputeProgram;

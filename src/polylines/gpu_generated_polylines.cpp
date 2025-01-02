@@ -18,8 +18,9 @@ namespace lines {
     }
 
     GPUGeneratedPolylines::~GPUGeneratedPolylines() {
-        bgfx::destroy(m_DIbh);
         bgfx::destroy(m_DVbh);
+        bgfx::destroy(m_SegmentsDIbh);
+        bgfx::destroy(m_JoinsDIbh);
         bgfx::destroy(m_PointsBuffer);
         bgfx::destroy(m_ComputeProgram);
     }
@@ -28,7 +29,7 @@ namespace lines {
         float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
         bgfx::setUniform(m_UniformData1, data1);
 
-        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), 0, 0};
+        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), static_cast<float>(m_Data.join), 0};
         bgfx::setUniform(m_UniformData2, data2);
         
         bgfx::setUniform(m_UniformColor, &m_Data.color);
@@ -42,9 +43,16 @@ namespace lines {
             | BGFX_STATE_BLEND_ALPHA;
 
         bgfx::setVertexBuffer(0, m_DVbh);
-        bgfx::setIndexBuffer(m_DIbh);
+        bgfx::setIndexBuffer(m_SegmentsDIbh);
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
+
+        if(m_Data.join != 0) {
+            bgfx::setVertexBuffer(0, m_DVbh);
+            bgfx::setIndexBuffer(m_JoinsDIbh);
+            bgfx::setState(state);
+            bgfx::submit(viewId, m_Program);
+        }
     }
 
     void GPUGeneratedPolylines::update(const std::vector<Point> &points) {
@@ -52,7 +60,8 @@ namespace lines {
         m_PointsSize = points.size();
 
         if(oldSize != m_PointsSize) {
-            bgfx::destroy(m_DIbh);
+            bgfx::destroy(m_SegmentsDIbh);
+            bgfx::destroy(m_JoinsDIbh);
             allocateIndexBuffer();
         }
 
@@ -76,7 +85,8 @@ namespace lines {
 
         bgfx::setBuffer(0, m_PointsBuffer, bgfx::Access::Read);
         bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
-        bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);
+        bgfx::setBuffer(2, m_SegmentsDIbh, bgfx::Access::Write);
+        bgfx::setBuffer(3, m_JoinsDIbh, bgfx::Access::Write);
         bgfx::dispatch(0, m_ComputeProgram, m_PointsSize - 1, 1, 1);
     }
 
@@ -98,8 +108,13 @@ namespace lines {
     }
 
     void GPUGeneratedPolylines::allocateIndexBuffer() {
-        m_DIbh = bgfx::createDynamicIndexBuffer(
-            ((m_PointsSize - 1) * 6) + ((m_PointsSize - 2) * 6), 
+        m_SegmentsDIbh = bgfx::createDynamicIndexBuffer(
+            ((m_PointsSize - 1) * 6), 
+            BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32
+        );
+
+        m_JoinsDIbh = bgfx::createDynamicIndexBuffer(
+            ((m_PointsSize - 2) * 6), 
             BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32
         );
     }
