@@ -25,8 +25,8 @@
         - [X] SQUARE_CAP
         - [X] ROUND_CAP
     - Joins
-        - [] BEVEL_JOIN
-        - [] ROUND_JOIN
-        - [] MITER_JOIN
+        - [X] BEVEL_JOIN
+        - [X] ROUND_JOIN
+        - [X] MITER_JOIN
 
 

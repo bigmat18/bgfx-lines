@@ -40,7 +40,7 @@ vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thicknes
         vec4 miter_plane = new_miter_direction * half_thickness;
 
         float min_threshold = miter_limit;
-        float max_threshold = miter_limit * 5;
+        float max_threshold = miter_limit * 1.5;
         float t = smoothstep(min_threshold, max_threshold, total_width);
 
         vec4 final_miter;
@@ -77,6 +77,27 @@ vec4 calculatePolylinesUV(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickn
     float activeCaps = sign(leftCap) * (1 - sign(length(curr - prev))) + sign(rigthCap) * (1 - sign(length(next - curr)));
     float activeJoin = (1 - sign(join)) * sign(length(curr - prev)) * sign(length(next - curr));
     return final_uv + (u * T * width_px * (activeCaps)) + (u * T * width_px * (activeJoin));
+}
+
+vec4 calculatePolylinesColor(vec2 uv, float thickness, float totalLength, float leftCap, float rightCap, float join, vec4 finalColor) {
+  	float d = -1;
+    float color = 0;
+
+    if(uv.x < 0) {
+        if(leftCap == 2 || join == 0)
+            d = length(vec2(uv.xy)) - (thickness/2);
+        color = 1;
+
+    } else if(uv.x > totalLength) {
+        if(rightCap == 2 || join == 0)
+            d = length(vec2(uv.xy) - vec2(totalLength, 0)) - (thickness/2);
+        color = 1;
+    } 
+
+	  if(d > 0)
+		    return vec4(0);
+	  else
+		    return finalColor;
 }
 
 #endif
