@@ -1,7 +1,7 @@
 #include <lines/instancing_based_lines.hpp>
 
 namespace lines {
-    InstancingBasedLines::InstancingBasedLines(const std::vector<Segment> &segments, const float width, const float heigth) :
+    InstancingBasedLines::InstancingBasedLines(const std::vector<Point> &points, const float width, const float heigth) :
         Lines(width, heigth, "lines/instancing_based_lines/vs_instancing_based_lines", "lines/instancing_based_lines/fs_instancing_based_lines") 
     {
 
@@ -33,7 +33,7 @@ namespace lines {
             BGFX_BUFFER_INDEX32
         );
 
-        generateInstanceDataBuffer(segments);
+        generateInstanceDataBuffer(points);
     }
 
     InstancingBasedLines::~InstancingBasedLines() {
@@ -58,41 +58,47 @@ namespace lines {
 
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
-        bgfx::setInstanceDataBuffer(&m_IDBSegments);
+        bgfx::setInstanceDataBuffer(&m_IDBPoints);
         
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
     }
 
-    void InstancingBasedLines::update(const std::vector<Segment> &segments) {
-        generateInstanceDataBuffer(segments);
+    void InstancingBasedLines::update(const std::vector<Point> &points) {
+        generateInstanceDataBuffer(points);
     }
 
-    void InstancingBasedLines::generateInstanceDataBuffer(const std::vector<Segment> &segments) {
-        const uint16_t stride = sizeof(float) * 12;
+    void InstancingBasedLines::generateInstanceDataBuffer(const std::vector<Point> &points) {
+        const uint16_t stride = sizeof(float) * 16;
 
-        uint32_t linesNum = bgfx::getAvailInstanceDataBuffer(segments.size(), stride);
-        bgfx::allocInstanceDataBuffer(&m_IDBSegments, linesNum, stride);
+        uint32_t linesNum = bgfx::getAvailInstanceDataBuffer((points.size() / 2), stride);
+        bgfx::allocInstanceDataBuffer(&m_IDBPoints, linesNum, stride);
 
-        uint8_t* data = m_IDBSegments.data;
-        for(uint32_t i = 0; i < segments.size(); i++) {
+        uint8_t* data = m_IDBPoints.data;
+        for(uint32_t i = 1; i < points.size(); i+=2) {
             float* p0 = reinterpret_cast<float*>(data);
-            p0[0] = segments[i].m_P0.x;
-            p0[1] = segments[i].m_P0.y;
-            p0[2] = segments[i].m_P0.z;
+            p0[0] = points[i-1].x;
+            p0[1] = points[i-1].y;
+            p0[2] = points[i-1].z;
             p0[3] = 0.0f;
 
             float* p1 = (float*)&data[16];
-            p1[0] = segments[i].m_P1.x;
-            p1[1] = segments[i].m_P1.y;
-            p1[2] = segments[i].m_P1.z;
+            p1[0] = points[i].x;
+            p1[1] = points[i].y;
+            p1[2] = points[i].z;
             p1[3] = 0.0f;
 
-            float* color = (float*)&data[32];
-            color[0] = segments[i].m_Color.r;
-            color[1] = segments[i].m_Color.g;
-            color[2] = segments[i].m_Color.b;
-            color[3] = segments[i].m_Color.a;
+            float* color0 = (float*)&data[32];
+            color0[0] = points[i-1].color.r;
+            color0[1] = points[i-1].color.g;
+            color0[2] = points[i-1].color.b;
+            color0[3] = points[i-1].color.a;
+
+            float* color1 = (float*)&data[48];
+            color1[0] = points[i].color.r;
+            color1[1] = points[i].color.g;
+            color1[2] = points[i].color.b;
+            color1[3] = points[i].color.a;
 
             data += stride;
         }

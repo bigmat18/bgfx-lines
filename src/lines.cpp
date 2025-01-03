@@ -9,24 +9,24 @@
 
 namespace lines {
 
-    std::unique_ptr<Lines> Lines::create(const std::vector<Segment> &segments, const float width, const float heigth, Types type) {
+    std::unique_ptr<Lines> Lines::create(const std::vector<Point> &points, const float width, const float heigth, Types type) {
         const bgfx::Caps* caps = bgfx::getCaps();
 
         switch (type) {
             case Types::CPU_GENERATED: {
-                return std::make_unique<CPUGeneratedLines>(segments, width, heigth);
+                return std::make_unique<CPUGeneratedLines>(points, width, heigth);
             }
 
             case Types::GPU_GENERATED: {
                 const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 assert((void("GPU compute not supported"), computeSupported));
-                return std::make_unique<GPUGeneratedLines>(segments, width, heigth);
+                return std::make_unique<GPUGeneratedLines>(points, width, heigth);
             }
 
             case Types::INSTANCING_BASED: {
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
                 assert((void("Instancing not supported"), instancingSupported));
-                return std::make_unique<InstancingBasedLines>(segments, width, heigth);
+                return std::make_unique<InstancingBasedLines>(points, width, heigth);
             }
 
             case Types::INDIRECT_BASED: {
@@ -35,7 +35,7 @@ namespace lines {
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
 
                 assert((void("Instancing or compute are not supported"), instancingSupported && computeSupported && indirectSupported));
-                return std::make_unique<IndirectBasedLines>(segments, width, heigth);
+                return std::make_unique<IndirectBasedLines>(points, width, heigth);
             }
 
             case Types::TEXTURE_BASED: {
@@ -45,7 +45,7 @@ namespace lines {
                 const bool textureSupported = !!(caps->supported & BGFX_CAPS_TEXTURE_2D_ARRAY);
 
                 assert((void("Instancing or compute or indirect or texture are not supported"), instancingSupported && computeSupported && indirectSupported && textureSupported));
-                return std::make_unique<TextureBasedLines>(segments, width, heigth, caps->limits.maxTextureSize);
+                return std::make_unique<TextureBasedLines>(points, width, heigth, caps->limits.maxTextureSize);
             }
         }
 

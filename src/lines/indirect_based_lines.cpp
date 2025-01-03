@@ -3,9 +3,9 @@
 
 
 namespace lines {
-    IndirectBasedLines::IndirectBasedLines(const std::vector<Segment> &segments, const float width, const float heigth) :
+    IndirectBasedLines::IndirectBasedLines(const std::vector<Point> &points, const float width, const float heigth) :
         Lines(width, heigth, "lines/indirect_based_lines/vs_indirect_based_lines", "lines/indirect_based_lines/fs_indirect_based_lines"),
-        m_SegmentsSize(segments.size())
+        m_PointsSize(points.size())
     {
         m_IndirectBuffer = bgfx::createIndirectBuffer(1);
         m_IndirectDataUniform = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
@@ -40,19 +40,19 @@ namespace lines {
         );
 
         generateIndirectBuffer();
-        allocateSegmentsBuffer();
-        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        allocatePointsBuffer();
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
     }
 
     IndirectBasedLines::~IndirectBasedLines() {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_Ibh);
-        bgfx::destroy(m_SegmentsBuffer);
+        bgfx::destroy(m_PointsBuffer);
         bgfx::destroy(m_IndirectBuffer);
         bgfx::destroy(m_ComputeIndirect);
     }
 
-    void IndirectBasedLines::allocateSegmentsBuffer() {
+    void IndirectBasedLines::allocatePointsBuffer() {
         bgfx::VertexLayout layout;
         layout
          .begin()
@@ -61,13 +61,13 @@ namespace lines {
          .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .end();
 
-        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(m_SegmentsSize, layout, 
+        m_PointsBuffer = bgfx::createDynamicVertexBuffer(m_PointsSize, layout, 
             BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE
         );
     }
 
     void IndirectBasedLines::generateIndirectBuffer() {
-        float data[] = {static_cast<float>(m_SegmentsSize), 0, 0, 0};
+        float data[] = {static_cast<float>(m_PointsSize), 0, 0, 0};
         bgfx::setUniform(m_IndirectDataUniform, data);
 		bgfx::setBuffer(0, m_IndirectBuffer, bgfx::Access::Write);
 		bgfx::dispatch(0, m_ComputeIndirect);
@@ -91,20 +91,20 @@ namespace lines {
         bgfx::setVertexBuffer(0, m_Vbh);
         bgfx::setIndexBuffer(m_Ibh);
         
-        bgfx::setBuffer(1, m_SegmentsBuffer, bgfx::Access::Read);
+        bgfx::setBuffer(1, m_PointsBuffer, bgfx::Access::Read);
 
         bgfx::setState(BGFX_STATE_DEFAULT);
         bgfx::submit(viewId, m_Program, m_IndirectBuffer, 0);
     }
 
-    void IndirectBasedLines::update(const std::vector<Segment> &segments) {
-        int oldSize = m_SegmentsSize;
-        m_SegmentsSize = segments.size();
+    void IndirectBasedLines::update(const std::vector<Point> &points) {
+        int oldSize = m_PointsSize;
+        m_PointsSize = points.size();
 
-        if(oldSize != m_SegmentsSize) {
+        if(oldSize != m_PointsSize) {
             generateIndirectBuffer();
         }
          
-        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
     }
 }

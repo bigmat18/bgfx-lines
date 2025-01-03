@@ -5,7 +5,7 @@ namespace lines {
     class GPUGeneratedLines : public Lines {
 
         public:
-            GPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth);
+            GPUGeneratedLines(const std::vector<Point> &points, const float width, const float heigth);
 
             ~GPUGeneratedLines();
 
@@ -15,7 +15,7 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Segment> &segments) override;
+            void update(const std::vector<Point> &points) override;
 
         private:
             void generateBuffers();
@@ -24,14 +24,14 @@ namespace lines {
 
             void allocateIndexBuffer();
 
-            void allocateSegmentsBuffer();
+            void allocatePointsBuffer();
 
             bgfx::DynamicIndexBufferHandle m_DIbh;
             bgfx::DynamicVertexBufferHandle m_DVbh;
-            bgfx::DynamicVertexBufferHandle m_SegmentsBuffer;
+            bgfx::DynamicVertexBufferHandle m_PointsBuffer;
             
             bgfx::ProgramHandle m_ComputeProgram;
 
-            uint32_t m_SegmentsSize;
+            uint32_t m_PointsSize;
     };
 }

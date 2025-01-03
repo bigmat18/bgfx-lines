@@ -4,7 +4,7 @@
 namespace lines {
     class TextureBasedLines : public Lines {
         public:
-            TextureBasedLines(const std::vector<Segment> &segments, const float width, const float heigth, const uint32_t maxTextureSize);
+            TextureBasedLines(const std::vector<Point> &points, const float width, const float heigth, const uint32_t maxTextureSize);
 
             ~TextureBasedLines();
 
@@ -14,7 +14,7 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Segment> &segments) override;
+            void update(const std::vector<Point> &points) override;
 
         private:
             void generateIndirectBuffer();
@@ -23,13 +23,13 @@ namespace lines {
 
             void allocateTextureBuffer();
 
-            void allocateSegmentsBuffer();
+            void allocatePointsBuffer();
 
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;
 
             bgfx::TextureHandle m_TextureBuffer;
-            bgfx::DynamicVertexBufferHandle m_SegmentsBuffer;
+            bgfx::DynamicVertexBufferHandle m_PointsBuffer;
             bgfx::ProgramHandle m_ComputeTexture;            
 
 
@@ -40,7 +40,7 @@ namespace lines {
             bgfx::VertexBufferHandle m_Vbh;
             bgfx::IndexBufferHandle m_Ibh;
 
-            uint32_t m_SegmentsSize;
+            uint32_t m_PointsSize;
             uint32_t m_MaxTextureSize;
     };
 }

@@ -10,7 +10,7 @@ namespace lines {
 
         public:
 
-            static std::unique_ptr<Lines> create(const std::vector<Segment> &segments, const float width, const float heigth, Types type = Types::CPU_GENERATED);
+            static std::unique_ptr<Lines> create(const std::vector<Point> &points, const float width, const float heigth, Types type = Types::CPU_GENERATED);
 
             static std::unique_ptr<Lines> create(bgfx::VertexBufferHandle vbh);
 
@@ -30,7 +30,7 @@ namespace lines {
 
             void setVisibility(bool vis) override { m_Visible = vis; }
 
-            virtual void update(const std::vector<Segment> &segments) = 0;
+            virtual void update(const std::vector<Point> &points) = 0;
 
             void setThickness(float thickness) { m_Data.thickness = thickness; }
 

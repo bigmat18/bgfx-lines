@@ -1,4 +1,4 @@
-$input a_position, i_data0, i_data1, i_data2
+$input a_position, i_data0, i_data1, i_data2, i_data3
 $output v_color, v_uv, v_length
 
 #include <bgfx_shader.sh>
@@ -9,7 +9,8 @@ uniform vec4 u_data2;
 
 #define p0                    i_data0
 #define p1                    i_data1
-#define color                 i_data2
+#define color0                i_data2
+#define color1                i_data3
 #define uv                    a_position
 
 #define u_screenWidth         u_data1.x
@@ -23,7 +24,7 @@ void main() {
     vec4 p0_px = calculatePointWithMVP(p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = calculatePointWithMVP(p1, u_screenWidth, u_screenHeigth);
     
-    v_color = color;
+    v_color = (color0 * (1 - uv.x)) + (color1 * uv.x);
     v_length = length(p1_px - p0_px);
     v_uv = calculateLinesUV(p0_px, p1_px, uv, v_length, u_thickness, u_leftCap, u_rigthCap);
     gl_Position = calculateLines(p0_px, p1_px, uv, v_length, u_thickness, u_screenWidth, u_screenHeigth);

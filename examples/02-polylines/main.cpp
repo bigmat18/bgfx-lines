@@ -18,8 +18,8 @@ int main(int argc, char** argv)
     // generateSegmentsInCube(points, 3, 1000);
 
     auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::GPU_GENERATED);
-    line->setThickness(20);
-    line->setMiterLimit(40);
+    line->setThickness(5);
+    line->setMiterLimit(10);
     line->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
     // line->setJoin(lines::Joins::ROUND_JOIN);
     line->setLeftCap(lines::Caps::ROUND_CAP);

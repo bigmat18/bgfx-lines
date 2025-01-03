@@ -6,7 +6,7 @@ namespace lines {
     class CPUGeneratedLines : public Lines {
 
         public:
-            CPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth);
+            CPUGeneratedLines(const std::vector<Point> &points, const float width, const float heigth);
 
             ~CPUGeneratedLines();
 
@@ -16,10 +16,10 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Segment> &segments) override;
+            void update(const std::vector<Point> &points) override;
 
         private:
-            void generateBuffers(const std::vector<Segment> segments);
+            void generateBuffers(const std::vector<Point> points);
 
             void allocateVertexBuffer();
 
@@ -30,7 +30,7 @@ namespace lines {
 
             bgfx::DynamicVertexBufferHandle m_Vbh;
             bgfx::DynamicIndexBufferHandle m_Ibh;
-            uint32_t m_SegmentsSize;
+            uint32_t m_PointsSize;
 
     };
 }

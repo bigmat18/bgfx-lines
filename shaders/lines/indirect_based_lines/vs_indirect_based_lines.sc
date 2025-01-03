@@ -6,9 +6,8 @@ $output v_color, v_uv, v_length
 
 BUFFER_RO(segmentsBuffer, float, 1);
 
-#define p0(pos)    vec4(segmentsBuffer[0 + ((pos) * 10)], segmentsBuffer[1 + ((pos) * 10)], segmentsBuffer[2 + ((pos) * 10)], 0.0)
-#define p1(pos)    vec4(segmentsBuffer[3 + ((pos) * 10)], segmentsBuffer[4 + ((pos) * 10)], segmentsBuffer[5 + ((pos) * 10)], 0.0)
-#define color(pos) vec4(segmentsBuffer[6 + ((pos) * 10)], segmentsBuffer[7 + ((pos) * 10)], segmentsBuffer[8 + ((pos) * 10)], segmentsBuffer[9 + ((pos) * 10)])
+#define p(pos)      vec4(segmentsBuffer[0 + ((pos) * 7)], segmentsBuffer[1 + ((pos) * 7)], segmentsBuffer[2 + ((pos) * 7)], 0.0)
+#define color(pos)  vec4(segmentsBuffer[3 + ((pos) * 7)], segmentsBuffer[4 + ((pos) * 7)], segmentsBuffer[5 + ((pos) * 7)], segmentsBuffer[6 + ((pos) * 7)])
 
 uniform vec4 u_data1;
 uniform vec4 u_data2;
@@ -22,14 +21,13 @@ uniform vec4 u_data2;
 #define u_rigthCap            u_data2.x
 
 void main() {
-    vec4 p0 =    p0(gl_InstanceID);
-    vec4 p1 =    p1(gl_InstanceID);
-    vec4 color = color(gl_InstanceID);
+    vec4 p0 =    p((gl_InstanceID * 2));
+    vec4 p1 =    p((gl_InstanceID * 2) + 1);
+    vec4 color = color((gl_InstanceID * 2) + (1 * uv.x));
 
     vec4 p0_px = calculatePointWithMVP(p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = calculatePointWithMVP(p1, u_screenWidth, u_screenHeigth);
 
-    v_color = color;
     v_color = color;
     v_length = length(p1_px - p0_px);
     v_uv = calculateLinesUV(p0_px, p1_px, uv, v_length, u_thickness, u_leftCap, u_rigthCap);

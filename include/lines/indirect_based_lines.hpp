@@ -4,7 +4,7 @@
 namespace lines {
 class IndirectBasedLines : public Lines {
         public:
-            IndirectBasedLines(const std::vector<Segment> &segments, const float width, const float heigth);
+            IndirectBasedLines(const std::vector<Point> &points, const float width, const float heigth);
 
             ~IndirectBasedLines();
 
@@ -14,11 +14,11 @@ class IndirectBasedLines : public Lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Segment> &segments) override;
+            void update(const std::vector<Point> &points) override;
 
         private:
 
-            void allocateSegmentsBuffer();
+            void allocatePointsBuffer();
 
             void generateIndirectBuffer();
 
@@ -27,12 +27,12 @@ class IndirectBasedLines : public Lines {
 
             bgfx::VertexBufferHandle m_Vbh;
             bgfx::IndexBufferHandle m_Ibh;
-            bgfx::DynamicVertexBufferHandle m_SegmentsBuffer;
+            bgfx::DynamicVertexBufferHandle m_PointsBuffer;
 
             bgfx::IndirectBufferHandle m_IndirectBuffer;
             bgfx::ProgramHandle m_ComputeIndirect;            
             bgfx::UniformHandle m_IndirectDataUniform;
 
-            uint32_t m_SegmentsSize;
+            uint32_t m_PointsSize;
     };  
 }

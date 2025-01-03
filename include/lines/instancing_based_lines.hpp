@@ -4,7 +4,7 @@
 namespace lines {
     class InstancingBasedLines : public Lines {
         public:
-            InstancingBasedLines(const std::vector<Segment> &segments, const float width, const float heigth);
+            InstancingBasedLines(const std::vector<Point> &points, const float width, const float heigth);
 
             ~InstancingBasedLines();
 
@@ -14,12 +14,12 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Segment> &segments) override;
+            void update(const std::vector<Point> &points) override;
 
         private:
-            void generateInstanceDataBuffer(const std::vector<Segment> &segments);
+            void generateInstanceDataBuffer(const std::vector<Point> &points);
 
-            bgfx::InstanceDataBuffer m_IDBSegments;
+            bgfx::InstanceDataBuffer m_IDBPoints;
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_Indices;
 

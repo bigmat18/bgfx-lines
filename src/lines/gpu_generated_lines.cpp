@@ -2,24 +2,24 @@
 #include <vclib/bgfx/context/load_program.h>
 
 namespace lines {
-    GPUGeneratedLines::GPUGeneratedLines(const std::vector<Segment> &segments, const float width, const float heigth) : 
+    GPUGeneratedLines::GPUGeneratedLines(const std::vector<Point> &points, const float width, const float heigth) : 
         Lines(width, heigth, "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
-        m_SegmentsSize(segments.size())
+        m_PointsSize(points.size())
     {
         m_ComputeProgram = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
 
-        allocateSegmentsBuffer();
+        allocatePointsBuffer();
         allocateVertexBuffer();
         allocateIndexBuffer();
 
-        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
         generateBuffers();
     }
 
     GPUGeneratedLines::~GPUGeneratedLines() {
         bgfx::destroy(m_DIbh);
         bgfx::destroy(m_DVbh);
-        bgfx::destroy(m_SegmentsBuffer);
+        bgfx::destroy(m_PointsBuffer);
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
@@ -43,34 +43,34 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void GPUGeneratedLines::update(const std::vector<Segment> &segments) {
-        int oldSize = m_SegmentsSize;
-        m_SegmentsSize = segments.size();
+    void GPUGeneratedLines::update(const std::vector<Point> &points) {
+        int oldSize = m_PointsSize;
+        m_PointsSize = points.size();
 
-        if(oldSize != m_SegmentsSize) {
+        if(oldSize != m_PointsSize) {
             bgfx::destroy(m_DIbh);
             allocateIndexBuffer();
         }
 
-        if(oldSize < m_SegmentsSize) {
+        if(oldSize < m_PointsSize) {
             bgfx::destroy(m_DVbh);
             allocateVertexBuffer();
         } 
 
-        if(oldSize > m_SegmentsSize) {
-            bgfx::destroy(m_SegmentsBuffer);
-            allocateSegmentsBuffer();
+        if(oldSize > m_PointsSize) {
+            bgfx::destroy(m_PointsBuffer);
+            allocatePointsBuffer();
         }
 
-        bgfx::update(m_SegmentsBuffer, 0, bgfx::makeRef(&segments[0], sizeof(Segment) * segments.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
         generateBuffers();
     }
 
     void GPUGeneratedLines::generateBuffers() {
-        bgfx::setBuffer(0, m_SegmentsBuffer, bgfx::Access::Read);
+        bgfx::setBuffer(0, m_PointsBuffer, bgfx::Access::Read);
         bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
         bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);
-        bgfx::dispatch(0, m_ComputeProgram, m_SegmentsSize, 1, 1);
+        bgfx::dispatch(0, m_ComputeProgram, (m_PointsSize / 2), 1, 1);
     }
 
     void GPUGeneratedLines::allocateVertexBuffer() {
@@ -84,19 +84,19 @@ namespace lines {
          .end();
 
         m_DVbh = bgfx::createDynamicVertexBuffer(
-            m_SegmentsSize * 4, layout, 
+            m_PointsSize * 4, layout, 
             BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE
         );
     }
 
     void GPUGeneratedLines::allocateIndexBuffer() {
         m_DIbh = bgfx::createDynamicIndexBuffer(
-            m_SegmentsSize * 6, 
+            m_PointsSize * 6, 
             BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32
         );
     }
 
-    void GPUGeneratedLines::allocateSegmentsBuffer() {
+    void GPUGeneratedLines::allocatePointsBuffer() {
         bgfx::VertexLayout layout;
         layout
          .begin()
@@ -105,8 +105,8 @@ namespace lines {
          .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .end();
 
-        m_SegmentsBuffer = bgfx::createDynamicVertexBuffer(
-            m_SegmentsSize, layout, 
+        m_PointsBuffer = bgfx::createDynamicVertexBuffer(
+            m_PointsSize, layout, 
             BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE
         );
     }

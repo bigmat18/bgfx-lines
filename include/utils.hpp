@@ -1,14 +1,6 @@
 #pragma once
 
 namespace lines {
-
-    struct Point {
-        float x, y, z;
-
-        Point(float xx, float yy, float zz)
-            : x(xx), y(yy), z(zz) {}
-    };
-
     struct Color {
         float r, g, b, a;
 
@@ -16,6 +8,13 @@ namespace lines {
 
         Color(float rr, float gg, float bb, float aa)
             : r(rr), g(gg), b(bb), a(aa) {}
+    };
+    struct Point {
+        float x, y, z;
+        Color color;
+
+        Point(float xx, float yy, float zz, Color c = Color())
+            : x(xx), y(yy), z(zz), color(c) {}
     };
 
     struct Segment {

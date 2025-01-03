@@ -8,28 +8,19 @@ int main(int argc, char** argv)
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
     // vcl::Context::instance().requestViewId();
     
-    std::vector<lines::Segment> segments = {
-        lines::Segment(
-            lines::Point(0.0, 0.0f, 0.0f),
-            lines::Point(0.5, 0.0f, 0.0f),
-            lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
-        ),
-        // lines::Segment(
-        //     lines::Point(0.0f, -1.0f, 0.0f),
-        //     lines::Point(0.0f, 1.0f, 0.0f),
-        //     lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
-        // ),
-        // lines::Segment(
-        //     lines::Point(2.0f, -1.0f, 0.0f),
-        //     lines::Point(3.0f, -1.0f, 0.0f),
-        //     lines::Color(1.0f, 0.0f, 0.0f, 1.0f)
-        // )
+    std::vector<lines::Point> points = {
+        lines::Point(0.0, 0.0f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
+        lines::Point(0.5, 0.0f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
+        lines::Point(1.0f, -1.0f, 0.0f, lines::Color(0.0, 1.0, 0.0, 1.0)),
+        lines::Point(1.0f, 1.0f, 0.0f, lines::Color(0.0, 1.0, 0.0, 1.0)),
+        lines::Point(1.5f, -1.0f, 0.0f, lines::Color(0.0, 0.0, 1.0, 1.0)),
+        lines::Point(1.5f, 0.5f, 0.0f, lines::Color(0.0, 0.0, 1.0, 1.0)),
     }; 
 
-    // std::vector<lines::Segment> segments;
-    // generateSegmentsInCube(segments, 3, 100);
+    // std::vector<lines::Segment> points;
+    // generateSegmentsInCube(segments, 3, 2);
 
-    auto line = lines::Lines::create(segments, tw.width(), tw.height(), lines::Types::CPU_GENERATED);
+    auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->setThickness(5);
     line->setLeftCap(lines::Caps::ROUND_CAP);
     line->setRigthCap(lines::Caps::ROUND_CAP);

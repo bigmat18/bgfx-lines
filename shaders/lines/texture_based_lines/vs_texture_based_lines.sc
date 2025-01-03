@@ -21,23 +21,27 @@ uniform vec4 u_IndirectData;
 IMAGE2D_RO(textureBuffer, rgba32f, 0);
 
 void main() {
-    uint p0_Y = (gl_InstanceID * 3) / maxTextureSize;
-    uint p0_X = (gl_InstanceID * 3) - (p0_Y * maxTextureSize);
+    uint p0_Y = (gl_InstanceID * 4) / maxTextureSize;
+    uint p0_X = (gl_InstanceID * 4) - (p0_Y * maxTextureSize);
     
-    uint p1_Y = ((gl_InstanceID * 3) + 1) / maxTextureSize;
-    uint p1_X = ((gl_InstanceID * 3) + 1) - (p1_Y * maxTextureSize);
+    uint p1_Y = ((gl_InstanceID * 4) + 1) / maxTextureSize;
+    uint p1_X = ((gl_InstanceID * 4) + 1) - (p1_Y * maxTextureSize);
 
-    uint color_Y = ((gl_InstanceID * 3) + 2) / maxTextureSize;
-    uint color_X = ((gl_InstanceID * 3) + 2) - (color_Y * maxTextureSize);
+    uint color0_Y = ((gl_InstanceID * 4) + 2) / maxTextureSize;
+    uint color0_X = ((gl_InstanceID * 4) + 2) - (color0_Y * maxTextureSize);
 
-    vec4 p0    = imageLoad(textureBuffer, ivec2(p0_X, p0_Y));
-    vec4 p1    = imageLoad(textureBuffer, ivec2(p1_X, p1_Y));
-    vec4 color = imageLoad(textureBuffer, ivec2(color_X, color_Y));
+    uint color1_Y = ((gl_InstanceID * 4) + 3) / maxTextureSize;
+    uint color1_X = ((gl_InstanceID * 4) + 3) - (color1_Y * maxTextureSize);
+
+    vec4 p0     = imageLoad(textureBuffer, ivec2(p0_X, p0_Y));
+    vec4 p1     = imageLoad(textureBuffer, ivec2(p1_X, p1_Y));
+    vec4 color0 = imageLoad(textureBuffer, ivec2(color0_X, color0_Y));
+    vec4 color1 = imageLoad(textureBuffer, ivec2(color1_X, color1_Y));
 
     vec4 p0_px = calculatePointWithMVP(p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = calculatePointWithMVP(p1, u_screenWidth, u_screenHeigth);
     
-    v_color = color;
+    v_color = (color0 * (1 - uv.x)) + (color1 * uv.x);
     v_length = length(p1_px - p0_px);
     v_uv = calculateLinesUV(p0_px, p1_px, uv, v_length, u_thickness, u_leftCap, u_rigthCap);
     gl_Position = calculateLines(p0_px, p1_px, uv, v_length, u_thickness, u_screenWidth, u_screenHeigth);
