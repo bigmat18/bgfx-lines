@@ -5,7 +5,8 @@ $output v_color, v_uv, v_length
 #include "../../polylines.sh"
 
 BUFFER_RO(pointsBuffer, float, 1);
-#define p(pos)    vec4(pointsBuffer[0 + ((pos) * 3)], pointsBuffer[1 + ((pos) * 3)], pointsBuffer[2 + ((pos) * 3)], 0.0)
+#define p(pos)      vec4(pointsBuffer[0 + ((pos) * 7)], pointsBuffer[1 + ((pos) * 7)], pointsBuffer[2 + ((pos) * 7)], 0.0)
+#define color(pos)  vec4(pointsBuffer[3 + ((pos) * 7)], pointsBuffer[4 + ((pos) * 7)], pointsBuffer[5 + ((pos) * 7)], pointsBuffer[6 + ((pos) * 7)])
 
 uniform vec4 u_data1;
 uniform vec4 u_data2;
@@ -29,11 +30,13 @@ void main() {
     vec4 curr = p(index);
     vec4 next = p(index + 1);
 
+    vec4 color = color(index);
+
     vec4 prev_px = calculatePointWithMVP(prev, u_screenWidth, u_screenHeigth);
     vec4 curr_px = calculatePointWithMVP(curr, u_screenWidth, u_screenHeigth);
     vec4 next_px = calculatePointWithMVP(next, u_screenWidth, u_screenHeigth);
 
-    v_color = u_color;
+    v_color = color;
     v_uv = vec4(0);
     v_length = 0;
 

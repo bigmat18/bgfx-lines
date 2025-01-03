@@ -8,18 +8,18 @@ int main(int argc, char** argv)
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
 
     std::vector<lines::Point> points = {
-        lines::Point(0.0f, 0.0f, 0.0f),
-        lines::Point(0.5f, 0.0f, 0.0f),
-        lines::Point(1.0f, 1.0f, 0.0f),
-        lines::Point(1.0f, 1.5f, 0.0f),
+        lines::Point(0.0f, 0.0f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
+        lines::Point(0.5f, 0.0f, 0.0f, lines::Color(0.0, 1.0, 0.0, 1.0)),
+        lines::Point(1.0f, 1.0f, 0.0f, lines::Color(1.0, 0.0, 1.0, 1.0)),
+        lines::Point(1.0f, 1.5f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
     };
 
     // std::vector<lines::Point> points;
     // generateSegmentsInCube(points, 3, 1000);
 
-    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::GPU_GENERATED);
-    line->setThickness(5);
-    line->setMiterLimit(10);
+    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
+    line->setThickness(10);
+    line->setMiterLimit(20);
     line->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
     // line->setJoin(lines::Joins::ROUND_JOIN);
     line->setLeftCap(lines::Caps::ROUND_CAP);

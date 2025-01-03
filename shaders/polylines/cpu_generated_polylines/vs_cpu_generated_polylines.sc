@@ -1,4 +1,4 @@
-$input a_position, a_texcoord0, a_texcoord1, a_texcoord2
+$input a_position, a_texcoord0, a_texcoord1, a_color0, a_texcoord2
 $output v_color, v_uv, v_length
 
 #include "../../polylines.sh"
@@ -26,7 +26,7 @@ void main() {
     vec4 curr_px = calculatePointWithMVP(vec4(a_curr, 0.0), u_screenWidth, u_screenHeigth);
     vec4 next_px = calculatePointWithMVP(vec4(a_next, 0.0), u_screenWidth, u_screenHeigth);
 
-    v_color = u_color;
+    v_color = a_color0;
     v_length = length(((next_px - curr_px) * (1 - a_uv.x)) + ((curr_px - prev_px) * (a_uv.x)));
 
     v_uv = calculatePolylinesUV(vec4(a_prev, 0.0), vec4(a_curr, 0), vec4(a_next, 0), a_uv, u_thickness, v_length, u_leftCap, u_rigthCap, u_join);

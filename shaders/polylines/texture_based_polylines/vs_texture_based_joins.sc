@@ -33,15 +33,17 @@ ivec2 calculateTextureCoord(uint index) {
 void main() {
     uint index = gl_InstanceID + 1;
 
-    vec4 prev = imageLoad(textureBuffer, calculateTextureCoord(index - 1));
-    vec4 curr = imageLoad(textureBuffer, calculateTextureCoord(index));
-    vec4 next = imageLoad(textureBuffer, calculateTextureCoord(index + 1));
+    vec4 prev = imageLoad(textureBuffer, calculateTextureCoord((index - 1) * 2));
+    vec4 curr = imageLoad(textureBuffer, calculateTextureCoord(index * 2));
+    vec4 next = imageLoad(textureBuffer, calculateTextureCoord((index + 1) * 2));
+
+    vec4 color = imageLoad(textureBuffer, calculateTextureCoord((index * 2) + 1));
 
     vec4 prev_px = calculatePointWithMVP(prev, u_screenWidth, u_screenHeigth);
     vec4 curr_px = calculatePointWithMVP(curr, u_screenWidth, u_screenHeigth);
     vec4 next_px = calculatePointWithMVP(next, u_screenWidth, u_screenHeigth);
 
-    v_color = u_color;
+    v_color = color;
     v_uv = vec4(0);
     v_length = 0;
     bool is_start = curr.x == prev.x && curr.y == prev.y;

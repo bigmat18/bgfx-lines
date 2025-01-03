@@ -137,8 +137,8 @@ namespace lines {
     }
 
     void TextureBasedPolylines::allocateTextureBuffer() {
-        uint16_t Y = m_PointsSize / (m_MaxTextureSize + 1);
-        uint16_t X = Y == 0 ? m_PointsSize : m_MaxTextureSize;
+        uint16_t Y = (m_PointsSize * 2) / (m_MaxTextureSize + 1);
+        uint16_t X = Y == 0 ? (m_PointsSize * 2) : m_MaxTextureSize;
         
         m_TextureBuffer = bgfx::createTexture2D(
             X, Y + 1, false, 1, bgfx::TextureFormat::RGBA32F,
@@ -151,6 +151,7 @@ namespace lines {
         layout
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .end();
 
         m_PointsBuffer = bgfx::createDynamicVertexBuffer(m_PointsSize, layout, 

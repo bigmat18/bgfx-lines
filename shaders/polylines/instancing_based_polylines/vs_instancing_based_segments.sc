@@ -1,4 +1,4 @@
-$input a_position, i_data0, i_data1, i_data2, i_data3
+$input a_position, i_data0, i_data1, i_data2, i_data3, i_data4, i_data5
 $output v_color, v_uv, v_length
 
 #include <bgfx_compute.sh>
@@ -13,6 +13,8 @@ uniform vec4 u_color;
 #define a_curr                  i_data1
 #define a_next                  i_data2
 #define a_nextnext              i_data3
+#define a_color0                i_data4
+#define a_color1                i_data5
 
 #define u_screenWidth           u_data1.x
 #define u_screenHeigth          u_data1.y
@@ -32,7 +34,7 @@ void main() {
     vec4 curr_px = calculatePointWithMVP(curr, u_screenWidth, u_screenHeigth);
     vec4 next_px = calculatePointWithMVP(next, u_screenWidth, u_screenHeigth);
 
-    v_color = u_color;
+    v_color = (a_color0 * (1 - a_uv.x)) + (a_color1 * a_uv.x);
     v_length = length(((next_px - curr_px) * (1 - a_uv.x)) + ((curr_px - prev_px) * (a_uv.x)));
 
     v_uv = calculatePolylinesUV(prev, curr, next, a_uv, u_thickness, v_length, u_leftCap, u_rigthCap, u_join);

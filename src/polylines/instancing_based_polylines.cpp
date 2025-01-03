@@ -84,7 +84,7 @@ namespace lines {
     }
 
     void InstancingBasedPolylines::generateIDBSegments(const std::vector<Point> &points) {
-        const uint16_t stride = sizeof(float) * 16;
+        const uint16_t stride = sizeof(float) * 24;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer(points.size() - 1, stride);
         bgfx::allocInstanceDataBuffer(&m_IDBSegments, linesNum, stride);
@@ -104,23 +104,35 @@ namespace lines {
             curr[3] = 0.0f;
 
             float* next = (float*)&data[32];
-            next[0] = points[i + !!(linesNum - i)].x;
-            next[1] = points[i + !!(linesNum - i)].y;
-            next[2] = points[i + !!(linesNum - i)].z;
+            next[0] = points[i + 1].x;
+            next[1] = points[i + 1].y;
+            next[2] = points[i + 1].z;
             next[3] = 0.0f;
 
             float* next_next = (float*)&data[48];
-            next_next[0] = points[i + !!(linesNum - i) + (!!(linesNum - 1 - i))].x;
-            next_next[1] = points[i + !!(linesNum - i) + (!!(linesNum - 1 - i))].y;
-            next_next[2] = points[i + !!(linesNum - i) + (!!(linesNum - 1 - i))].z;
+            next_next[0] = points[i + 1 + (!!(linesNum - 1 - i))].x;
+            next_next[1] = points[i + 1 + (!!(linesNum - 1 - i))].y;
+            next_next[2] = points[i + 1 + (!!(linesNum - 1 - i))].z;
             next_next[3] = 0.0f;
+
+            float* color0 = (float*)&data[64];
+            color0[0] = points[i].color.r;
+            color0[1] = points[i].color.g;
+            color0[2] = points[i].color.b;
+            color0[3] = points[i].color.a;
+
+            float* color1 = (float*)&data[80];
+            color1[0] = points[i + 1].color.r;
+            color1[1] = points[i + 1].color.g;
+            color1[2] = points[i + 1].color.b;
+            color1[3] = points[i + 1].color.a;
 
             data+=stride;
         }
     }
 
     void InstancingBasedPolylines::generateIDBJoins(const std::vector<Point> &points) {
-        const uint16_t stride = sizeof(float) * 12;
+        const uint16_t stride = sizeof(float) * 16;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer(points.size() - 2, stride);
         bgfx::allocInstanceDataBuffer(&m_IDBJoins, linesNum, stride);
@@ -144,6 +156,18 @@ namespace lines {
             next[1] = points[i + 1].y;
             next[2] = points[i + 1].z;
             next[3] = 0.0f;
+
+            float* color0 = (float*)&data[48];
+            color0[0] = points[i].color.r;
+            color0[1] = points[i].color.g;
+            color0[2] = points[i].color.b;
+            color0[3] = points[i].color.a;
+
+            float* color1= (float*)&data[64];
+            color1[0] = points[i + 1].color.r;
+            color1[1] = points[i + 1].color.g;
+            color1[2] = points[i + 1].color.b;
+            color1[3] = points[i + 1].color.a;
 
             data+=stride;
         }

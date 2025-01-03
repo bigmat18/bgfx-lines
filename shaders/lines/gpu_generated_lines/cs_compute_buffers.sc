@@ -1,11 +1,11 @@
 #include "bgfx_compute.sh"
 
-BUFFER_RO(segmentsBuffer,    float,  0);
+BUFFER_RO(pointsBuffer,    float,  0);
 BUFFER_WO(vertexBuffer,      float,  1);
 BUFFER_WO(indexBuffer,       uint,   2);
 
-#define p(pos)      vec3(segmentsBuffer[0 + ((pos) * 7)], segmentsBuffer[1 + ((pos) * 7)], segmentsBuffer[2 + ((pos) * 7)])
-#define color(pos)  vec4(segmentsBuffer[3 + ((pos) * 7)], segmentsBuffer[4 + ((pos) * 7)], segmentsBuffer[5 + ((pos) * 7)], segmentsBuffer[6 + ((pos) * 7)])
+#define p(pos)      vec3(pointsBuffer[0 + ((pos) * 7)], pointsBuffer[1 + ((pos) * 7)], pointsBuffer[2 + ((pos) * 7)])
+#define color(pos)  vec4(pointsBuffer[3 + ((pos) * 7)], pointsBuffer[4 + ((pos) * 7)], pointsBuffer[5 + ((pos) * 7)], pointsBuffer[6 + ((pos) * 7)])
 
 NUM_THREADS(2, 2, 1)
 void main() {

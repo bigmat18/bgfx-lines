@@ -31,10 +31,13 @@ ivec2 calculateTextureCoord(uint index) {
 }
 
 void main() {
-    vec4 a_prev = imageLoad(textureBuffer, calculateTextureCoord(gl_InstanceID - sign(gl_InstanceID)));
-    vec4 a_curr = imageLoad(textureBuffer, calculateTextureCoord(gl_InstanceID));
-    vec4 a_next = imageLoad(textureBuffer, calculateTextureCoord(gl_InstanceID + 1));
-    vec4 a_nextnext = imageLoad(textureBuffer, calculateTextureCoord(gl_InstanceID + 1 + sign(maxInstancingNum - 1 - gl_InstanceID)));
+    vec4 a_prev     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID - sign(gl_InstanceID)) * 2));
+    vec4 a_curr     = imageLoad(textureBuffer, calculateTextureCoord(gl_InstanceID * 2));
+    vec4 a_next     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID + 1) * 2));
+    vec4 a_nextnext = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID + 1 + sign(maxInstancingNum - 1 - gl_InstanceID)) * 2));
+
+    vec4 color0 = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 2) + 1));
+    vec4 color1 = imageLoad(textureBuffer, calculateTextureCoord(((gl_InstanceID + 1) * 2) + 1));
 
     vec4 prev = ((1 - a_uv.x) * a_prev) + (a_uv.x * a_curr);
     vec4 curr = ((1 - a_uv.x) * a_curr) + (a_uv.x * a_next);
@@ -44,7 +47,7 @@ void main() {
     vec4 curr_px = calculatePointWithMVP(curr, u_screenWidth, u_screenHeigth);
     vec4 next_px = calculatePointWithMVP(next, u_screenWidth, u_screenHeigth);
 
-    v_color = u_color;
+    v_color = (color0 * (1 - a_uv.x)) + (color1 * a_uv.x);
     v_length = length(((next_px - curr_px) * (1 - a_uv.x)) + ((curr_px - prev_px) * (a_uv.x)));
 
     v_uv = calculatePolylinesUV(prev, curr, next, a_uv, u_thickness, v_length, u_leftCap, u_rigthCap, u_join);

@@ -81,6 +81,11 @@ namespace lines {
                     m_Vertices.push_back(points[next_index].y);
                     m_Vertices.push_back(points[next_index].z);
 
+                    m_Vertices.push_back(points[curr_index].color.r);
+                    m_Vertices.push_back(points[curr_index].color.g);
+                    m_Vertices.push_back(points[curr_index].color.b);
+                    m_Vertices.push_back(points[curr_index].color.a);
+
                     // a_texcoord2 ==> uv(x,y)
                     m_Vertices.push_back(static_cast<float>(k));
                     m_Vertices.push_back(static_cast<float>(j));
@@ -112,6 +117,7 @@ namespace lines {
             .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
             .end();
 
