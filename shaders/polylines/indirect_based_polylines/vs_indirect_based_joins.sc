@@ -36,5 +36,8 @@ void main() {
     v_color = u_color;
     v_uv = vec4(0);
     v_length = 0;
-    gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap, u_join);
+
+    bool is_start = curr.x == prev.x && curr.y == prev.y;
+    bool is_end = curr.x == next.x && curr.y == next.y;
+    gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap, u_join, is_start, is_end);
 }

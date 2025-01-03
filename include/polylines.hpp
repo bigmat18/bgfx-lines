@@ -60,7 +60,7 @@ namespace lines {
                 float lineLength = 0;
                 Caps leftCap = Caps::BUTT_CAP;
                 Caps rigthCap = Caps::BUTT_CAP;
-                Joins join = Joins::ROUND_JOIN;
+                Joins join = Joins::MITER_JOIN;
                 Color color;
             };
 

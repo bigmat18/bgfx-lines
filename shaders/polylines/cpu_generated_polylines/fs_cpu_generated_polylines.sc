@@ -13,5 +13,9 @@ uniform vec4 u_data2;
 #define u_join           	  u_data2.z
 
 void main() {
-	gl_FragColor = calculatePolylinesColor(v_uv.xy, u_thickness, v_length, u_leftCap, u_rigthCap, u_join, v_color);
+	vec4 color = calculatePolylinesColor(v_uv.xy, u_thickness, v_length, u_leftCap, u_rigthCap, u_join, v_color);
+	if(color.w == 0)
+		discard;
+	else
+		gl_FragColor = color;
 }

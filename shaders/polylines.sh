@@ -5,7 +5,8 @@
 #include "utils.sh"
 
 vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickness, float miter_limit, 
-                        float screen_width, float screen_heigth, float leftCap, float rightCap, float join) {
+                        float screen_width, float screen_heigth, float leftCap, float rightCap, float join,
+                        bool is_start, bool is_end) {
     float half_thickness = thickness / 2.0;
 
     vec4 T0 = vec4(normalize(curr.xy - prev.xy).xy, 0.0, 0.0);
@@ -19,11 +20,11 @@ vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thicknes
     float u = 2.0 * uv.x - 1.0;
     float v = 2.0 * uv.y - 1.0;
 
-    if(curr.x == prev.x && curr.y == prev.y) {
+    if(is_start) {
     
       p = curr + (v * half_thickness * N1) + (u * T1 * half_thickness * sign(leftCap));
 
-    } else if (curr.x == next.x && curr.y == next.y) {
+    } else if (is_end) {
 
       p = curr + (v * half_thickness * N0) + (u * T0 * half_thickness * sign(rightCap));
 
