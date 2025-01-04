@@ -38,6 +38,10 @@ namespace lines {
 
             void setRigthCap(const Caps& cap) { m_Data.rigthCap = cap; }
 
+            void setBorder(float border) { m_Data.border = border; }
+
+            void setBorderColor(const Color& color) { m_Data.borderColor = color; }
+
             void setScreenSize(float width, float heigth) { 
                 m_Data.screenSize[0] = width; 
                 m_Data.screenSize[1] = heigth;
@@ -47,11 +51,15 @@ namespace lines {
             bgfx::ProgramHandle m_Program;
             bgfx::UniformHandle m_UniformData1;
             bgfx::UniformHandle m_UniformData2;
+            bgfx::UniformHandle m_UniformBorderColor;
             struct LineData {
                 float thickness = 5.0;
+                float antialias = 0.0;
+                float border = 0.0;
                 float screenSize[2];
-                Caps leftCap = Caps::BUTT_CAP;
-                Caps rigthCap = Caps::BUTT_CAP;
+                Caps leftCap = Caps::SQUARE_CAP;
+                Caps rigthCap = Caps::SQUARE_CAP;
+                Color borderColor;
             };
 
             LineData m_Data;
