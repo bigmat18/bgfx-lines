@@ -20,14 +20,14 @@ int main(int argc, char** argv)
     // std::vector<lines::Segment> points;
     // generateSegmentsInCube(segments, 3, 2);
 
-    auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::Types::CPU_GENERATED);
+    auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::Types::INDIRECT_BASED);
     line->setThickness(10);
     line->setBorder(5);
 
     line->setLeftCap(lines::Caps::ROUND_CAP);
     line->setRigthCap(lines::Caps::ROUND_CAP);
     line->setBorderColor(lines::Color(0.0, 0.0, 1.0, 1.0));
-    
+
     // std::vector<lines::Segment> segments1;
     // generateSegmentsInCube(segments1, 3, 10000);
     // line->update(segments1);

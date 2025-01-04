@@ -37,4 +37,43 @@ vec4 calculateLinesUV(vec4 p0_px, vec4 p1_px, vec2 uv, float length_px, float th
     return (uv.x * length_px * T) + (u * T * ((activeCaps * (thickness/2)) + antialias + border)) + (v * N * width_px);
 }
 
+vec4 calculateLinesColor(vec4 uv, float length_px, float thickness, float antialias, float border, float leftCap, float rigthCap, vec4 color, vec4 borderColor) {
+	float d = -1;
+	float width_px = (thickness / 2) + antialias + border;
+
+	if(uv.x < 0) {
+		if(leftCap == 2)
+			d = width_px - length(uv);
+	} else if(uv.x > length_px) {
+		if(rigthCap == 2)
+			d = width_px - length(uv - vec4(length_px, 0, 0, 0));
+	} else
+		d = width_px - abs(uv.y);
+
+	if(d > antialias + border)
+		return color;
+
+	else if (d > 0)
+		return borderColor;
+
+	else {
+		if(uv.x < 0 && leftCap != 2) {
+
+			if(abs(uv.x) < (thickness / 2) && abs(uv.y) < (thickness / 2))
+				return color;
+			else
+                return borderColor;
+
+		} else if(uv.x > length_px && rigthCap != 2) {
+
+			if(abs(uv.x - length_px) < (thickness / 2) && abs(uv.y) < (thickness / 2))
+				return color;
+			else
+                return borderColor;
+
+		} else 
+            return vec4(0);
+	}
+}
+
 #endif

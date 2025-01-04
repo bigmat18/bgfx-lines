@@ -20,13 +20,16 @@ uniform vec4 u_data2;
 #define u_leftCap             u_data1.w
 #define u_rigthCap            u_data2.x
 
+#define u_antialias           u_data2.y
+#define u_border              u_data2.z
+
 void main() {
     vec4 p0_px = calculatePointWithMVP(p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = calculatePointWithMVP(p1, u_screenWidth, u_screenHeigth);
     
     v_color = (color0 * (1 - uv.x)) + (color1 * uv.x);
     v_length = length(p1_px - p0_px);
-    v_uv = calculateLinesUV(p0_px, p1_px, uv, v_length, u_thickness, u_leftCap, u_rigthCap);
-    gl_Position = calculateLines(p0_px, p1_px, uv, v_length, u_thickness, u_screenWidth, u_screenHeigth);
+    v_uv = calculateLinesUV(p0_px, p1_px, uv, v_length, u_thickness, u_antialias, u_border, u_leftCap, u_rigthCap);
+    gl_Position = calculateLines(p0_px, p1_px, uv, v_length, u_thickness, u_antialias, u_border, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap);
 }
  

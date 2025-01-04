@@ -1,26 +1,25 @@
 $input v_color, v_uv, v_length
 #include <bgfx_shader.sh>
 
+#include "../../lines.sh"
+
 uniform vec4 u_data1;
 uniform vec4 u_data2;
+uniform vec4 u_borderColor;
 
 #define u_thickness           u_data1.z
 #define u_leftCap             u_data1.w
 #define u_rigthCap            u_data2.x
 
+#define u_antialias           u_data2.y
+#define u_border              u_data2.z
+
 void main() {
-	float d = -1;
+	vec4 color = calculateLinesColor(v_uv, v_length, u_thickness, u_antialias, u_border, u_leftCap, u_rigthCap, v_color, u_borderColor);
 
-	if(v_uv.x < 0) {
-		if(u_leftCap == 2)
-			d = length(v_uv) - (u_thickness/2);
-	} else if(v_uv.x > v_length) {
-		if(u_rigthCap == 2)
-			d = length(v_uv - vec4(v_length, 0, 0, 0)) - (u_thickness/2);
-	}
-
-	if(d > 0)
+	if(color.w == 0) 
 		discard;
 	else
-		gl_FragColor = v_color;
+		gl_FragColor = color;
+
 }
