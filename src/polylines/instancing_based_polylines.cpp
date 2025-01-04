@@ -10,8 +10,8 @@ namespace lines {
         m_JoinsProgram = vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines");
         m_Vertices = {
             0.0f, 0.0f,
-            0.0f, 1.0f, 
-            1.0f, 0.0f, 
+            0.0f, 1.0f,
+            1.0f, 0.0f,
             1.0f, 1.0f,
         };
 
@@ -84,7 +84,7 @@ namespace lines {
     }
 
     void InstancingBasedPolylines::generateIDBSegments(const std::vector<Point> &points) {
-        const uint16_t stride = sizeof(float) * 24;
+        const uint16_t stride = sizeof(float) * 20;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer(points.size() - 1, stride);
         bgfx::allocInstanceDataBuffer(&m_IDBSegments, linesNum, stride);
@@ -115,18 +115,22 @@ namespace lines {
             next_next[2] = points[i + 1 + (!!(linesNum - 1 - i))].z;
             next_next[3] = 0.0f;
 
-            float* color0 = (float*)&data[64];
-            color0[0] = points[i].color.r;
-            color0[1] = points[i].color.g;
-            color0[2] = points[i].color.b;
-            color0[3] = points[i].color.a;
+            uint32_t color0_hex = static_cast<uint8_t>(std::round(points[i].color.r * 255)) << 24 |
+                                  static_cast<uint8_t>(std::round(points[i].color.g * 255)) << 16 |
+                                  static_cast<uint8_t>(std::round(points[i].color.b * 255)) << 8  |
+                                  static_cast<uint8_t>(std::round(points[i].color.a * 255));
 
-            float* color1 = (float*)&data[80];
-            color1[0] = points[i + 1].color.r;
-            color1[1] = points[i + 1].color.g;
-            color1[2] = points[i + 1].color.b;
-            color1[3] = points[i + 1].color.a;
+            uint32_t color1_hex = static_cast<uint8_t>(std::round(points[i + 1].color.r * 255)) << 24 |
+                                  static_cast<uint8_t>(std::round(points[i + 1].color.g * 255)) << 16 |
+                                  static_cast<uint8_t>(std::round(points[i + 1].color.b * 255)) << 8  |
+                                  static_cast<uint8_t>(std::round(points[i + 1].color.a * 255));
 
+            float* color = (float*)&data[64];
+            color[0] = static_cast<float>(color0_hex);
+            color[1] = static_cast<float>(color1_hex);
+            color[2] = 0.0;
+            color[3] = 0.0;
+        
             data+=stride;
         }
     }
@@ -157,17 +161,11 @@ namespace lines {
             next[2] = points[i + 1].z;
             next[3] = 0.0f;
 
-            float* color0 = (float*)&data[48];
-            color0[0] = points[i].color.r;
-            color0[1] = points[i].color.g;
-            color0[2] = points[i].color.b;
-            color0[3] = points[i].color.a;
-
-            float* color1= (float*)&data[64];
-            color1[0] = points[i + 1].color.r;
-            color1[1] = points[i + 1].color.g;
-            color1[2] = points[i + 1].color.b;
-            color1[3] = points[i + 1].color.a;
+            float* color = (float*)&data[48];
+            color[0] = points[i].color.r;
+            color[1] = points[i].color.g;
+            color[2] = points[i].color.b;
+            color[3] = points[i].color.a;
 
             data+=stride;
         }
