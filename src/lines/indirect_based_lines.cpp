@@ -57,7 +57,6 @@ namespace lines {
         layout
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
          .end();
 
@@ -67,7 +66,7 @@ namespace lines {
     }
 
     void IndirectBasedLines::generateIndirectBuffer() {
-        float data[] = {static_cast<float>(m_PointsSize), 0, 0, 0};
+        float data[] = {static_cast<float>(m_PointsSize / 2), 0, 0, 0};
         bgfx::setUniform(m_IndirectDataUniform, data);
 		bgfx::setBuffer(0, m_IndirectBuffer, bgfx::Access::Write);
 		bgfx::dispatch(0, m_ComputeIndirect);

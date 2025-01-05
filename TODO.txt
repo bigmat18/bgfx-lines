@@ -19,8 +19,8 @@
         - [] Compute shaders calculation
 
 - EFFECTS
-    - [] Outside color
-    - [] Antialias
+    - [X] Outside color
+    - [X] Antialias
     - [] Patters
     - [] Different thickness
     - Caps
