@@ -38,6 +38,8 @@ namespace lines {
 
             void setRigthCap(const Caps& cap) { m_Data.rigthCap = cap; }
 
+            void setAntialias(float antialias) { m_Data.antialias = antialias; }
+
             void setBorder(float border) { m_Data.border = border; }
 
             void setBorderColor(const Color& color) { m_Data.borderColor = color; }

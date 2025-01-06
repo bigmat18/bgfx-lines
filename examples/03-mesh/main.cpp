@@ -23,6 +23,8 @@ int main(int argc, char** argv)
     // options of the mesh
     // default is what we want: color per vertex, smooth shading, no wireframe
     vcl::MeshRenderSettings settings(m);
+    settings.setWireframeVisibility(true);
+    settings.setWireframeWidth(10);
 
     // create a DrawableMesh object from the mesh
     vcl::DrawableMesh<vcl::TriMesh> drawable(m);
