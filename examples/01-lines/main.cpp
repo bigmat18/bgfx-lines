@@ -21,9 +21,9 @@ int main(int argc, char** argv)
     // generatePointsInCube(points, 3, 10000);
 
     auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::Types::CPU_GENERATED);
-    line->setThickness(5);
-    line->setBorder(1);
-    line->setAntialias(2);
+    line->setThickness(1);
+    // line->setBorder(1);
+    // line->setAntialias(2);
 
     line->setLeftCap(lines::Caps::ROUND_CAP);
     line->setRigthCap(lines::Caps::ROUND_CAP);
