@@ -2,7 +2,7 @@
 #include <vclib/bgfx/context/load_program.h>
 
 namespace lines {
-    GPUGeneratedLines::GPUGeneratedLines(const std::vector<Point> &points, const float width, const float heigth) : 
+    GPUGeneratedLines::GPUGeneratedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) : 
         Lines(width, heigth, "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
         m_PointsSize(points.size())
     {
@@ -23,13 +23,7 @@ namespace lines {
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
-        float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.thickness, static_cast<float>(m_Data.leftCap)};
-        bgfx::setUniform(m_UniformData1, data1);
-
-        float data2[] = {static_cast<float>(m_Data.rigthCap), m_Data.antialias, m_Data.border, 0};
-        bgfx::setUniform(m_UniformData2, data2);
-
-        bgfx::setUniform(m_UniformBorderColor, &m_Data.borderColor);
+        m_Settings.bindUniformLines();
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB

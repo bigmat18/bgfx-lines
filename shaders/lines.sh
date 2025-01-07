@@ -54,14 +54,14 @@ vec4 calculateLinesColor(vec4 uv, float length_px, float thickness, float antial
 	if(d > antialias + border)
 		return color;
 
-	else if(d > 0) {
+	else if(d > antialias) {
+		return final_border_color;
+
+	} else if (d > 0) {
 		d /= 2;
 		return vec4(final_border_color.xyz, d);
 
-	} else if (d > border)
-		return final_border_color;
-
-	else {
+	} else {
 		if(uv.x < 0 && leftCap != 2) {
 
 			if(abs(uv.x) < (thickness / 2) && abs(uv.y) < (thickness / 2))

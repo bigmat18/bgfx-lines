@@ -6,7 +6,7 @@
 
 namespace lines {
 
-    class Settings {
+    class LinesSettings {
         private:
             uint8_t m_Thickness;
             uint8_t m_Antialias;
@@ -23,13 +23,15 @@ namespace lines {
             bgfx::UniformHandle m_UniformData;
 
         public:
-            Settings(uint16_t width, uint16_t heigth) : 
+            LinesSettings() = default;
+
+            LinesSettings(uint16_t width, uint16_t heigth) : 
                 m_Thickness(5),
                 m_Antialias(0),
                 m_Border(0),
                 m_ScreenWidth(width),
                 m_ScreenHeigth(heigth),
-                m_BorderColor(COLOR(1, 1, 1, 1)),
+                m_BorderColor(COLOR(0, 0, 0, 1)),
                 m_MiterLimit(m_Thickness * 2),
                 m_LeftCap(Caps::ROUND_CAP),
                 m_RigthCap(Caps::ROUND_CAP),
@@ -63,8 +65,9 @@ namespace lines {
 
             void setJoin(Joins join) { m_Join = join; }
 
-            void bindUniformLines() {
-                uint32_t screenSize = m_ScreenWidth << 16 | m_ScreenWidth;
+        public:
+            void bindUniformLines() const {
+                uint32_t screenSize = m_ScreenWidth << 16 | m_ScreenHeigth;
                 uint32_t thickness_antialias_border_caps = (
                     m_Thickness                       << 24 |
                     m_Antialias                       << 16 |
@@ -76,8 +79,8 @@ namespace lines {
                 bgfx::setUniform(m_UniformData, data);
             }
 
-            void bindUniformPolylines() {
-                uint32_t screenSize = m_ScreenWidth << 16 | m_ScreenWidth;
+            void bindUniformPolylines() const {
+                uint32_t screenSize = m_ScreenWidth << 16 | m_ScreenHeigth;
                 uint32_t thickness_antialias_border_miterlimit = (
                     m_Thickness                       << 24 |
                     m_Antialias                       << 16 |

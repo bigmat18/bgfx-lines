@@ -5,7 +5,7 @@ namespace lines {
     class GPUGeneratedLines : public Lines {
 
         public:
-            GPUGeneratedLines(const std::vector<Point> &points, const float width, const float heigth);
+            GPUGeneratedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
 
             ~GPUGeneratedLines();
 

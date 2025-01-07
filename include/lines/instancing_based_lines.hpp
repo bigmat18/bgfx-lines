@@ -4,7 +4,7 @@
 namespace lines {
     class InstancingBasedLines : public Lines {
         public:
-            InstancingBasedLines(const std::vector<Point> &points, const float width, const float heigth);
+            InstancingBasedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
 
             ~InstancingBasedLines();
 

@@ -4,7 +4,7 @@
 namespace lines {
     class TextureBasedLines : public Lines {
         public:
-            TextureBasedLines(const std::vector<Point> &points, const float width, const float heigth, const uint32_t maxTextureSize);
+            TextureBasedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize);
 
             ~TextureBasedLines();
 
