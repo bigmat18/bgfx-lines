@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     // std::vector<lines::Point> points;
     // generatePointsInCube(points, 3, 10000);
 
-    auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::Types::GPU_GENERATED);
+    auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->getSettings().setBorder(10);
     // line->setThickness(1);
     // line->setBorder(1);

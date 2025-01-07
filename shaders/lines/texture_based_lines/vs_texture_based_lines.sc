@@ -4,27 +4,27 @@ $output v_color, v_uv, v_length
 #include <bgfx_compute.sh>
 #include "../../lines.sh"
 
-uniform vec4 u_data1;
-uniform vec4 u_data2;
-
+uniform vec4 u_data;
 uniform vec4 u_IndirectData;
 
 #define maxTextureSize        u_IndirectData.x
 #define uv                    a_position
 
-#define u_screenWidth         u_data1.x
-#define u_screenHeigth        u_data1.y
-#define u_thickness           u_data1.z
-
-#define u_leftCap             u_data1.w
-#define u_rigthCap            u_data2.x
-
-#define u_antialias           u_data2.y
-#define u_border              u_data2.z
-
 IMAGE2D_RO(textureBuffer, rgba32f, 0);
 
 void main() {
+    uint screenSize = floatBitsToUint(u_data.x);
+    uint thickness_antialias_border_caps = floatBitsToUint(u_data.y);
+    
+    float u_screenWidth  = float((screenSize >> uint(16)) & uint(0xFFFF));
+    float u_screenHeigth = float(screenSize & uint(0xFFFF));
+
+    float u_thickness    = float((thickness_antialias_border_caps >> uint(24)) & uint(0xFF));
+    float u_antialias    = float((thickness_antialias_border_caps >> uint(16)) & uint(0xFF));
+    float u_border       = float((thickness_antialias_border_caps >> uint(8))  & uint(0xFF));
+    float u_leftCap      = float((thickness_antialias_border_caps >> uint(2))  & uint(0x2));
+    float u_rigthCap     = float(thickness_antialias_border_caps               & uint(0x2));
+
     uint p0_Y = (gl_InstanceID * 4) / maxTextureSize;
     uint p0_X = (gl_InstanceID * 4) - (p0_Y * maxTextureSize);
     

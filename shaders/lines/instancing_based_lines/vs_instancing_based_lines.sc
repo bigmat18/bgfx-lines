@@ -4,8 +4,7 @@ $output v_color, v_uv, v_length
 #include <bgfx_shader.sh>
 #include "../../lines.sh"
 
-uniform vec4 u_data1;
-uniform vec4 u_data2;
+uniform vec4 u_data;
 
 #define p0                    i_data0
 #define p1                    i_data1
@@ -13,17 +12,19 @@ uniform vec4 u_data2;
 #define color1                i_data3
 #define uv                    a_position
 
-#define u_screenWidth         u_data1.x
-#define u_screenHeigth        u_data1.y
-#define u_thickness           u_data1.z
-
-#define u_leftCap             u_data1.w
-#define u_rigthCap            u_data2.x
-
-#define u_antialias           u_data2.y
-#define u_border              u_data2.z
-
 void main() {
+    uint screenSize = floatBitsToUint(u_data.x);
+    uint thickness_antialias_border_caps = floatBitsToUint(u_data.y);
+    
+    float u_screenWidth  = float((screenSize >> uint(16)) & uint(0xFFFF));
+    float u_screenHeigth = float(screenSize & uint(0xFFFF));
+
+    float u_thickness    = float((thickness_antialias_border_caps >> uint(24)) & uint(0xFF));
+    float u_antialias    = float((thickness_antialias_border_caps >> uint(16)) & uint(0xFF));
+    float u_border       = float((thickness_antialias_border_caps >> uint(8))  & uint(0xFF));
+    float u_leftCap      = float((thickness_antialias_border_caps >> uint(2))  & uint(0x2));
+    float u_rigthCap     = float(thickness_antialias_border_caps               & uint(0x2));
+
     vec4 p0_px = calculatePointWithMVP(p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = calculatePointWithMVP(p1, u_screenWidth, u_screenHeigth);
     
