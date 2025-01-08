@@ -8,10 +8,8 @@ namespace lines {
         m_PointsSize(points.size()),
         m_MaxTextureSize(maxTextureSize)
     {
-        assert(m_PointsSize <= (maxTextureSize * maxTextureSize) / 4);
         m_IndirectBuffer = bgfx::createIndirectBuffer(1);
         m_IndirectDataUniform = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
-        m_ComputeIndirect = bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_indirect"), true);
         m_ComputeTexture = bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_texture"), true);
 
         m_Vertices = {
@@ -41,7 +39,6 @@ namespace lines {
             bgfx::makeRef(&m_Indices[0], sizeof(uint32_t) * m_Indices.size()),
             BGFX_BUFFER_INDEX32
         );
-        generateIndirectBuffer();
 
         allocatePointsBuffer();
         bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
@@ -56,7 +53,6 @@ namespace lines {
         bgfx::destroy(m_PointsBuffer); 
         bgfx::destroy(m_IndirectBuffer);
         bgfx::destroy(m_TextureBuffer);
-        bgfx::destroy(m_ComputeIndirect);
         bgfx::destroy(m_IndirectDataUniform);
     }
 
@@ -86,27 +82,17 @@ namespace lines {
         if(oldSize < m_PointsSize) {
             allocateTextureBuffer();
         }
-
-        if(oldSize != m_PointsSize) {
-            generateIndirectBuffer();
-        }
         
         generateTextureBuffer();
     }
 
-    void TextureBasedLines::generateIndirectBuffer() {
-        float data[] = {static_cast<float>(m_PointsSize), 0, 0, 0};
-        bgfx::setUniform(m_IndirectDataUniform, data);
-		bgfx::setBuffer(0, m_IndirectBuffer, bgfx::Access::Write);
-		bgfx::dispatch(0, m_ComputeIndirect);
-    }
-
     void TextureBasedLines::generateTextureBuffer() {
-        float data[] = {static_cast<float>(m_MaxTextureSize), 0, 0, 0};
+        float data[] = {static_cast<float>(m_MaxTextureSize), static_cast<float>(m_PointsSize / 2), 0, 0};
         bgfx::setUniform(m_IndirectDataUniform, data);
 
         bgfx::setBuffer(0, m_PointsBuffer, bgfx::Access::Read);
         bgfx::setImage(1, m_TextureBuffer, 0, bgfx::Access::Write);
+		bgfx::setBuffer(2, m_IndirectBuffer, bgfx::Access::ReadWrite);
         bgfx::dispatch(0, m_ComputeTexture, (m_PointsSize / 2), 1, 1);
     }
 

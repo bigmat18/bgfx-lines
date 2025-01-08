@@ -8,21 +8,21 @@ int main(int argc, char** argv)
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
     // vcl::Context::instance().requestViewId();
     
-    std::vector<lines::Point> points = {
-        lines::Point(0.0, 0.0f, 0.0f, lines::Color(1, 0, 0, 1)),
-        lines::Point(0.5, 0.5f, 0.0f, lines::Color(1.0, 0.0, 1.0, 1)),
-        // lines::Point(1.0f, -1.0f, 0.0f, lines::Color(0.0, 1.0, 0.0, 1.0)),
-        // lines::Point(1.0f, 1.0f, 0.0f, lines::Color(0.0, 1.0, 0.0, 1.0)),
-        // lines::Point(1.5f, -1.0f, 0.0f, lines::Color(1.0, 0.0, 0.5, 1.0)),
-        // lines::Point(1.5f, 0.5f, 0.0f, lines::Color(0.0, 1.0, 1.0, 1.0)),
-    }; 
+    // std::vector<lines::Point> points = {
+    //     lines::Point(0.0, 0.0f, 0.0f, lines::Color(1, 0, 0, 1)),
+    //     lines::Point(0.5, 0.5f, 0.0f, lines::Color(1.0, 0.0, 1.0, 1)),
+    //     lines::Point(1.0f, -1.0f, 0.0f, lines::Color(0.0, 1.0, 0.0, 1.0)),
+    //     lines::Point(1.0f, 1.0f, 0.0f, lines::Color(0.0, 1.0, 0.0, 1.0)),
+    //     lines::Point(1.5f, -1.0f, 0.0f, lines::Color(1.0, 0.0, 0.5, 1.0)),
+    //     lines::Point(1.5f, 0.5f, 0.0f, lines::Color(0.0, 1.0, 1.0, 1.0)),
+    // }; 
 
-    // std::vector<lines::Point> points;
-    // generatePointsInCube(points, 3, 10000);
+    std::vector<lines::Point> points;
+    generatePointsInCube(points, 3, 7);
 
     auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
-    line->getSettings().setBorder(10);
-    line->getSettings().setBorderColor(lines::COLOR(0.0, 0.0, 1.0, 1.0));
+    // line->getSettings().setBorder(10);
+    // line->getSettings().setBorderColor(lines::COLOR(0.0, 0.0, 1.0, 1.0));
     // line->setThickness(1);
     // line->setBorder(1);
     // line->setAntialias(2);
