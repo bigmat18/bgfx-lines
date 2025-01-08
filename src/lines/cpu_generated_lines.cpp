@@ -3,7 +3,7 @@
 
 
 namespace lines {
-    CPUGeneratedLines::CPUGeneratedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) :
+    CPUGeneratedLines::CPUGeneratedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
         Lines(width, heigth, "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
         m_PointsSize(points.size())
     {
@@ -17,7 +17,7 @@ namespace lines {
         bgfx::destroy(m_Ibh);
     }
 
-    void CPUGeneratedLines::update(const std::vector<Point> &points) {
+    void CPUGeneratedLines::update(const std::vector<LinesVertex> &points) {
         m_Vertices.clear();
         m_Indices.clear();
 
@@ -50,25 +50,28 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void CPUGeneratedLines::generateBuffers(const std::vector<Point> points) {
+    void CPUGeneratedLines::generateBuffers(const std::vector<LinesVertex> points) {
         for(uint i = 1; i < points.size(); i+=2) {
 
             for(uint k = 0; k < 2; k++) {
 
                 for(uint j = 0; j < 2; j++) {
 
-                    m_Vertices.push_back(points[i - 1].x);
-                    m_Vertices.push_back(points[i - 1].y);
-                    m_Vertices.push_back(points[i - 1].z);
+                    m_Vertices.push_back(points[i - 1].X);
+                    m_Vertices.push_back(points[i - 1].Y);
+                    m_Vertices.push_back(points[i - 1].Z);
                     
-                    m_Vertices.push_back(points[i].x);
-                    m_Vertices.push_back(points[i].y);
-                    m_Vertices.push_back(points[i].z);
+                    m_Vertices.push_back(points[i].X);
+                    m_Vertices.push_back(points[i].Y);
+                    m_Vertices.push_back(points[i].Z);
 
-                    m_Vertices.push_back(points[i - (1 - k)].color.r);
-                    m_Vertices.push_back(points[i - (1 - k)].color.g);
-                    m_Vertices.push_back(points[i - (1 - k)].color.b);
-                    m_Vertices.push_back(points[i - (1 - k)].color.a);
+                    uint32_t color = std::bit_cast<uint32_t>(points[i - (1 - k)].color);
+
+                    m_Vertices.push_back(points[i - (1 - k)].getReverseColor());
+
+                    m_Vertices.push_back(points[i - (1 - k)].xN);
+                    m_Vertices.push_back(points[i - (1 - k)].yN);
+                    m_Vertices.push_back(points[i - (1 - k)].zN);
 
                     m_Vertices.push_back(k);
                     m_Vertices.push_back(j);
@@ -95,7 +98,8 @@ namespace lines {
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Uint8, true)
+         .add(bgfx::Attrib::Normal,    3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
          .end();
 

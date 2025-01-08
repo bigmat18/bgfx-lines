@@ -1,19 +1,22 @@
 #include "bgfx_compute.sh"
+#include "../../utils.sh"
 
-BUFFER_RO(pointsBuffer,    float,  0);
+BUFFER_RO(pointsBuffer,      float,  0);
 BUFFER_WO(vertexBuffer,      float,  1);
 BUFFER_WO(indexBuffer,       uint,   2);
 
-#define p(pos)      vec3(pointsBuffer[0 + ((pos) * 7)], pointsBuffer[1 + ((pos) * 7)], pointsBuffer[2 + ((pos) * 7)])
-#define color(pos)  vec4(pointsBuffer[3 + ((pos) * 7)], pointsBuffer[4 + ((pos) * 7)], pointsBuffer[5 + ((pos) * 7)], pointsBuffer[6 + ((pos) * 7)])
+#define p(pos)        vec3(pointsBuffer[((pos) * 7) + 0], pointsBuffer[((pos) * 7) + 1], pointsBuffer[((pos) * 7) + 2])
+#define color(pos)    pointsBuffer[((pos) * 7) + 3]
+#define normal(pos)   vec3(pointsBuffer[((pos) * 7) + 4], pointsBuffer[((pos) * 7) + 5], pointsBuffer[((pos) * 7) + 6])     
 
 NUM_THREADS(2, 2, 1)
 void main() {
     uint baseIndex = (gl_WorkGroupID.x * 48) + ((gl_LocalInvocationID.y + (gl_LocalInvocationID.x * 2)) * 12);
 
-    vec3 p0 =    p((gl_WorkGroupID.x * 2));
-    vec3 p1 =    p((gl_WorkGroupID.x * 2) + 1);
-    vec4 color = color((gl_WorkGroupID.x * 2) + (1 - ((gl_LocalInvocationID.x + 1) % 2)));
+    vec3 p0        = p((gl_WorkGroupID.x * 2));
+    vec3 p1        = p((gl_WorkGroupID.x * 2) + 1);
+    float color    = color((gl_WorkGroupID.x * 2) + (1 - ((gl_LocalInvocationID.x + 1) % 2)));
+    vec3 normal    = normal((gl_WorkGroupID.x * 2) + (1 - ((gl_LocalInvocationID.x + 1) % 2)));
 
     vertexBuffer[baseIndex]     = p0.x;
     vertexBuffer[baseIndex + 1] = p0.y;
@@ -23,10 +26,11 @@ void main() {
     vertexBuffer[baseIndex + 4] = p1.y;
     vertexBuffer[baseIndex + 5] = p1.z;
 
-    vertexBuffer[baseIndex + 6] = color.x;
-    vertexBuffer[baseIndex + 7] = color.y;
-    vertexBuffer[baseIndex + 8] = color.z;
-    vertexBuffer[baseIndex + 9] = color.w;
+    vertexBuffer[baseIndex + 6] = uintBitsToFloat(bitfieldReverse(floatBitsToUint(color)));
+
+    vertexBuffer[baseIndex + 7] = normal.x;
+    vertexBuffer[baseIndex + 8] = normal.y;
+    vertexBuffer[baseIndex + 9] = normal.z;
 
     vertexBuffer[baseIndex + 10] = gl_LocalInvocationID.x;
     vertexBuffer[baseIndex + 11] = gl_LocalInvocationID.y;

@@ -3,7 +3,7 @@
 
 
 namespace lines {
-    IndirectBasedLines::IndirectBasedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) :
+    IndirectBasedLines::IndirectBasedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
         Lines(width, heigth, "lines/indirect_based_lines/vs_indirect_based_lines", "lines/indirect_based_lines/fs_indirect_based_lines"),
         m_PointsSize(points.size())
     {
@@ -41,7 +41,7 @@ namespace lines {
 
         generateIndirectBuffer();
         allocatePointsBuffer();
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
     }
 
     IndirectBasedLines::~IndirectBasedLines() {
@@ -57,7 +57,8 @@ namespace lines {
         layout
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Uint8)
+         .add(bgfx::Attrib::Normal,    3, bgfx::AttribType::Float)
          .end();
 
         m_PointsBuffer = bgfx::createDynamicVertexBuffer(m_PointsSize, layout, 
@@ -92,7 +93,7 @@ namespace lines {
         bgfx::submit(viewId, m_Program, m_IndirectBuffer, 0);
     }
 
-    void IndirectBasedLines::update(const std::vector<Point> &points) {
+    void IndirectBasedLines::update(const std::vector<LinesVertex> &points) {
         int oldSize = m_PointsSize;
         m_PointsSize = points.size();
 
@@ -100,6 +101,6 @@ namespace lines {
             generateIndirectBuffer();
         }
          
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
     }
 }

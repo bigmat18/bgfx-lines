@@ -5,7 +5,7 @@ namespace lines {
     class GPUGeneratedLines : public Lines {
 
         public:
-            GPUGeneratedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
+            GPUGeneratedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth);
 
             ~GPUGeneratedLines();
 
@@ -15,7 +15,7 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Point> &points) override;
+            void update(const std::vector<LinesVertex> &points) override;
 
         private:
             void generateBuffers();

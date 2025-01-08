@@ -25,10 +25,13 @@ void main() {
     float u_leftCap      = float((thickness_antialias_border_caps >> uint(2))  & uint(0x2));
     float u_rigthCap     = float(thickness_antialias_border_caps               & uint(0x2));
 
-    vec4 p0     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4), maxTextureSize));
-    vec4 p1     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 1, maxTextureSize));
-    vec4 color0 = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 2, maxTextureSize));
-    vec4 color1 = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 3, maxTextureSize));
+    vec4 p0          = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4), maxTextureSize));
+    vec4 p1          = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 1, maxTextureSize));
+    // vec4 normal0     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 2, maxTextureSize));
+    // vec4 normal1     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 3, maxTextureSize));
+
+    vec4 color0 = uintToVec4FloatColor(floatBitsToUint(p0.w));
+    vec4 color1 = uintToVec4FloatColor(floatBitsToUint(p1.w));
 
     vec4 p0_px = calculatePointWithMVP(p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = calculatePointWithMVP(p1, u_screenWidth, u_screenHeigth);

@@ -11,7 +11,7 @@ namespace lines {
 
         public:
 
-            static std::unique_ptr<Lines> create(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth, Types type = Types::CPU_GENERATED);
+            static std::unique_ptr<Lines> create(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth, Types type = Types::CPU_GENERATED);
 
             static std::unique_ptr<Lines> create(bgfx::VertexBufferHandle vbh);
 
@@ -31,7 +31,7 @@ namespace lines {
 
             LinesSettings& getSettings() { return m_Settings; }
 
-            virtual void update(const std::vector<Point> &points) = 0;
+            virtual void update(const std::vector<LinesVertex> &points) = 0;
 
         protected: 
             bgfx::ProgramHandle m_Program;

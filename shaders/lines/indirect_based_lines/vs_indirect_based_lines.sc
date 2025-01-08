@@ -6,8 +6,9 @@ $output v_color, v_uv, v_length
 
 BUFFER_RO(pointsBuffer, float, 1);
 
-#define p(pos)      vec4(pointsBuffer[0 + ((pos) * 7)], pointsBuffer[1 + ((pos) * 7)], pointsBuffer[2 + ((pos) * 7)], 0.0)
-#define color(pos)  vec4(pointsBuffer[3 + ((pos) * 7)], pointsBuffer[4 + ((pos) * 7)], pointsBuffer[5 + ((pos) * 7)], pointsBuffer[6 + ((pos) * 7)])
+#define p(pos)        vec4(pointsBuffer[((pos) * 7) + 0], pointsBuffer[((pos) * 7) + 1], pointsBuffer[((pos) * 7) + 2], 0)
+#define color(pos)    pointsBuffer[((pos) * 7) + 3]
+#define normal(pos)   vec3(pointsBuffer[((pos) * 7) + 4], pointsBuffer[((pos) * 7) + 5], pointsBuffer[((pos) * 7) + 6]) 
 
 uniform vec4 u_data;
 
@@ -26,9 +27,9 @@ void main() {
     float u_leftCap      = float((thickness_antialias_border_caps >> uint(2))  & uint(0x2));
     float u_rigthCap     = float(thickness_antialias_border_caps               & uint(0x2));
 
-    vec4 p0 =    p((gl_InstanceID * 2));
-    vec4 p1 =    p((gl_InstanceID * 2) + 1);
-    vec4 color = color((gl_InstanceID * 2) + (1 * uv.x));
+    vec4 p0      = p((gl_InstanceID * 2));
+    vec4 p1      = p((gl_InstanceID * 2) + 1);
+    vec4 color   = uintToVec4FloatColor(floatBitsToUint(color((gl_InstanceID * 2) + (1 * uv.x))));
 
     vec4 p0_px = calculatePointWithMVP(p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = calculatePointWithMVP(p1, u_screenWidth, u_screenHeigth);

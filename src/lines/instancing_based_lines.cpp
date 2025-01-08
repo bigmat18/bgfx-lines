@@ -1,7 +1,7 @@
 #include <lines/instancing_based_lines.hpp>
 
 namespace lines {
-    InstancingBasedLines::InstancingBasedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) :
+    InstancingBasedLines::InstancingBasedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
         Lines(width, heigth, "lines/instancing_based_lines/vs_instancing_based_lines", "lines/instancing_based_lines/fs_instancing_based_lines") 
     {
 
@@ -60,43 +60,46 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void InstancingBasedLines::update(const std::vector<Point> &points) {
+    void InstancingBasedLines::update(const std::vector<LinesVertex> &points) {
         generateInstanceDataBuffer(points);
     }
 
-    void InstancingBasedLines::generateInstanceDataBuffer(const std::vector<Point> &points) {
-        const uint16_t stride = sizeof(float) * 8;
+    void InstancingBasedLines::generateInstanceDataBuffer(const std::vector<LinesVertex> &points) {
+        const uint16_t stride = sizeof(float) * 16;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer((points.size() / 2), stride);
         bgfx::allocInstanceDataBuffer(&m_IDBPoints, linesNum, stride);
 
         uint8_t* data = m_IDBPoints.data;
         for(uint32_t i = 1; i < points.size(); i+=2) {
-            uint32_t color0_hex = static_cast<uint32_t>(std::round(points[i-1].color.r * 255)) << 24 |
-                                  static_cast<uint32_t>(std::round(points[i-1].color.g * 255)) << 16 |
-                                  static_cast<uint32_t>(std::round(points[i-1].color.b * 255)) << 8  |
-                                  static_cast<uint32_t>(std::round(points[i-1].color.a * 255));
-
-            uint32_t color1_hex = static_cast<uint32_t>(std::round(points[i].color.r * 255)) << 24 |
-                                  static_cast<uint32_t>(std::round(points[i].color.g * 255)) << 16 |
-                                  static_cast<uint32_t>(std::round(points[i].color.b * 255)) << 8  |
-                                  static_cast<uint32_t>(std::round(points[i].color.a * 255));
 
             float* p0 = reinterpret_cast<float*>(data);
-            p0[0] = points[i-1].x;
-            p0[1] = points[i-1].y;
-            p0[2] = points[i-1].z;
+            p0[0] = points[i-1].X;
+            p0[1] = points[i-1].Y;
+            p0[2] = points[i-1].Z;
 
             uint32_t* color0 = (uint32_t*)&data[12];
-            color0[0] = color0_hex;
+            color0[0] = points[i-1].getUintColor();
 
             float* p1 = (float*)&data[16];
-            p1[0] = points[i].x;
-            p1[1] = points[i].y;
-            p1[2] = points[i].z;
+            p1[0] = points[i].X;
+            p1[1] = points[i].Y;
+            p1[2] = points[i].Z;
 
             uint32_t* color1 = (uint32_t*)&data[28];
-            color1[0] = color1_hex;
+            color1[0] = points[i].getUintColor();
+
+            float* n0 = (float*)&data[32];
+            n0[0] = points[i-1].xN;
+            n0[1] = points[i-1].yN;
+            n0[2] = points[i-1].zN;
+            n0[3] = 0;
+
+            float* n1 = (float*)&data[48];
+            n1[0] = points[i].xN;
+            n1[1] = points[i].yN;
+            n1[2] = points[i].zN;
+            n1[3] = 0;
 
             data += stride;
         }

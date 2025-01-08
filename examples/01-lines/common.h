@@ -4,7 +4,7 @@
 #include <cmath>
 #include <lines.hpp>
 
-void generatePointsInSphere(std::vector<lines::Point> &points, float radius, float n) {
+void generatePointsInSphere(std::vector<lines::LinesVertex> &points, float radius, float n) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis_phi(0.0, 2 * M_PI);
@@ -30,19 +30,19 @@ void generatePointsInSphere(std::vector<lines::Point> &points, float radius, flo
         y1 = radius * cos(theta1) * sin(phi1);
         z1 = radius * sin(theta1);
 
-        points.push_back(lines::Point(x0, y0, z0, lines::Color(color(gen), color(gen), color(gen), 1.0)));
-        points.push_back(lines::Point(x1, y1, z1, lines::Color(color(gen), color(gen), color(gen), 1.0)));
+        points.push_back(lines::LinesVertex(x0, y0, z0, lines::COLOR(color(gen), color(gen), color(gen), 1.0)));
+        points.push_back(lines::LinesVertex(x1, y1, z1, lines::COLOR(color(gen), color(gen), color(gen), 1.0)));
     }
 }
 
-void generatePointsInCube(std::vector<lines::Point> &points, float size, float n) {
+void generatePointsInCube(std::vector<lines::LinesVertex> &points, float size, float n) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> color(0, 1);
     std::uniform_real_distribution<> coord(size, -size);
 
     for (int i = 0; i < n; i++) {
-        points.push_back(lines::Point(coord(gen), coord(gen), coord(gen), lines::Color(color(gen), color(gen), color(gen), 1.0)));
-        points.push_back(lines::Point(coord(gen), coord(gen), coord(gen), lines::Color(color(gen), color(gen), color(gen), 1.0)));
+        points.push_back(lines::LinesVertex(coord(gen), coord(gen), coord(gen), lines::COLOR(color(gen), color(gen), color(gen), 1.0)));
+        points.push_back(lines::LinesVertex(coord(gen), coord(gen), coord(gen), lines::COLOR(color(gen), color(gen), color(gen), 1.0)));
     }
 }

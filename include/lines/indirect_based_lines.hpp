@@ -4,7 +4,7 @@
 namespace lines {
 class IndirectBasedLines : public Lines {
         public:
-            IndirectBasedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
+            IndirectBasedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth);
 
             ~IndirectBasedLines();
 
@@ -14,7 +14,7 @@ class IndirectBasedLines : public Lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Point> &points) override;
+            void update(const std::vector<LinesVertex> &points) override;
 
         private:
 

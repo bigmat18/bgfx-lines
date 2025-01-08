@@ -1,4 +1,4 @@
-$input a_position, a_texcoord0, a_color0, a_texcoord1
+$input a_position, a_texcoord0, a_color0, a_normal, a_texcoord1
 $output v_color, v_uv, v_length
 
 #include <bgfx_shader.sh>
@@ -8,7 +8,7 @@ uniform vec4 u_data;
 
 #define p0                    a_position
 #define p1                    a_texcoord0
-#define uv                    a_texcoord1
+#define uv                    vec2(float(a_texcoord1.x), float(a_texcoord1.y))
 
 void main() {
     uint screenSize = floatBitsToUint(u_data.x);

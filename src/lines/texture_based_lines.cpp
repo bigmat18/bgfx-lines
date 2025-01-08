@@ -3,7 +3,7 @@
 #include <assert.h>
 
 namespace lines {
-    TextureBasedLines::TextureBasedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize) :
+    TextureBasedLines::TextureBasedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize) :
         Lines(width, heigth, "lines/texture_based_lines/vs_texture_based_lines", "lines/texture_based_lines/fs_texture_based_lines"),
         m_PointsSize(points.size()),
         m_MaxTextureSize(maxTextureSize)
@@ -41,7 +41,7 @@ namespace lines {
         );
 
         allocatePointsBuffer();
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
 
         allocateTextureBuffer();
         generateTextureBuffer();
@@ -74,10 +74,10 @@ namespace lines {
         bgfx::submit(viewId, m_Program, m_IndirectBuffer, 0);
     }
 
-    void TextureBasedLines::update(const std::vector<Point> &Points) {
+    void TextureBasedLines::update(const std::vector<LinesVertex> &points) {
         int oldSize = m_PointsSize;
-        m_PointsSize = Points.size();
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&Points[0], sizeof(Point) * Points.size()));
+        m_PointsSize = points.size();
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
 
         if(oldSize < m_PointsSize) {
             allocateTextureBuffer();
@@ -111,8 +111,8 @@ namespace lines {
         layout
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Uint8)
+         .add(bgfx::Attrib::Normal,    3, bgfx::AttribType::Float)
          .end();
 
         m_PointsBuffer = bgfx::createDynamicVertexBuffer(

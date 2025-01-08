@@ -30,13 +30,30 @@ namespace lines {
     }
     struct LinesVertex {
         float X, Y, Z;
-        uint32_t color;
+        float color;
         float xN, yN, zN;
 
-        LinesVertex(float x, float y, float z) :
+        LinesVertex(float x, float y, float z, 
+                    uint32_t color = COLOR(1, 1, 1, 1), 
+                    float xn = 0, float yn = 0, float zn = 0) :
             X(x), Y(y), Z(z),
-            color(COLOR(1, 1, 1, 1)),
-            xN(0), yN(0), zN(0) {}
+            color(std::bit_cast<float>(color)),
+            xN(xn), yN(yn), zN(zn) {}
+
+        uint32_t getUintColor() const {
+            return std::bit_cast<uint32_t>(color);
+        }
+
+        float getReverseColor() const {
+            uint32_t int_color = getUintColor();
+
+            return std::bit_cast<float>(
+                ((int_color & 0xFF000000) >> 24) | 
+                ((int_color & 0x00FF0000) >> 8)  |
+                ((int_color & 0x0000FF00) << 8)  |
+                ((int_color & 0x000000FF) << 24)
+            );
+        }
     };
 
     enum Types {

@@ -6,7 +6,7 @@ namespace lines {
     class CPUGeneratedLines : public Lines {
 
         public:
-            CPUGeneratedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
+            CPUGeneratedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth);
 
             ~CPUGeneratedLines();
 
@@ -16,10 +16,10 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Point> &points) override;
+            void update(const std::vector<LinesVertex> &points) override;
 
         private:
-            void generateBuffers(const std::vector<Point> points);
+            void generateBuffers(const std::vector<LinesVertex> points);
 
             void allocateVertexBuffer();
 

@@ -2,7 +2,7 @@
 #include <vclib/bgfx/context/load_program.h>
 
 namespace lines {
-    GPUGeneratedLines::GPUGeneratedLines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) : 
+    GPUGeneratedLines::GPUGeneratedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) : 
         Lines(width, heigth, "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
         m_PointsSize(points.size())
     {
@@ -12,7 +12,7 @@ namespace lines {
         allocateVertexBuffer();
         allocateIndexBuffer();
 
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
         generateBuffers();
     }
 
@@ -39,7 +39,7 @@ namespace lines {
         bgfx::submit(viewId, m_Program);
     }
 
-    void GPUGeneratedLines::update(const std::vector<Point> &points) {
+    void GPUGeneratedLines::update(const std::vector<LinesVertex> &points) {
         int oldSize = m_PointsSize;
         m_PointsSize = points.size();
 
@@ -58,7 +58,7 @@ namespace lines {
             allocatePointsBuffer();
         }
 
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
         generateBuffers();
     }
 
@@ -75,7 +75,8 @@ namespace lines {
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Uint8, true)
+         .add(bgfx::Attrib::Normal,    3, bgfx::AttribType::Float)
          .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
          .end();
 
@@ -97,7 +98,8 @@ namespace lines {
         layout
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
-         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Uint8)
+         .add(bgfx::Attrib::Normal,    3, bgfx::AttribType::Float)
          .end();
 
         m_PointsBuffer = bgfx::createDynamicVertexBuffer(
