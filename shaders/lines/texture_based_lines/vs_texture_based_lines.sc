@@ -25,22 +25,10 @@ void main() {
     float u_leftCap      = float((thickness_antialias_border_caps >> uint(2))  & uint(0x2));
     float u_rigthCap     = float(thickness_antialias_border_caps               & uint(0x2));
 
-    uint p0_Y = (gl_InstanceID * 4) / maxTextureSize;
-    uint p0_X = (gl_InstanceID * 4) - (p0_Y * maxTextureSize);
-    
-    uint p1_Y = ((gl_InstanceID * 4) + 1) / maxTextureSize;
-    uint p1_X = ((gl_InstanceID * 4) + 1) - (p1_Y * maxTextureSize);
-
-    uint color0_Y = ((gl_InstanceID * 4) + 2) / maxTextureSize;
-    uint color0_X = ((gl_InstanceID * 4) + 2) - (color0_Y * maxTextureSize);
-
-    uint color1_Y = ((gl_InstanceID * 4) + 3) / maxTextureSize;
-    uint color1_X = ((gl_InstanceID * 4) + 3) - (color1_Y * maxTextureSize);
-
-    vec4 p0     = imageLoad(textureBuffer, ivec2(p0_X, p0_Y));
-    vec4 p1     = imageLoad(textureBuffer, ivec2(p1_X, p1_Y));
-    vec4 color0 = imageLoad(textureBuffer, ivec2(color0_X, color0_Y));
-    vec4 color1 = imageLoad(textureBuffer, ivec2(color1_X, color1_Y));
+    vec4 p0     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4), maxTextureSize));
+    vec4 p1     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 1, maxTextureSize));
+    vec4 color0 = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 2, maxTextureSize));
+    vec4 color1 = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 3, maxTextureSize));
 
     vec4 p0_px = calculatePointWithMVP(p0, u_screenWidth, u_screenHeigth);
     vec4 p1_px = calculatePointWithMVP(p1, u_screenWidth, u_screenHeigth);

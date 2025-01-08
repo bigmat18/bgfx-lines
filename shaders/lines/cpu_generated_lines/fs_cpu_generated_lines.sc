@@ -7,7 +7,7 @@ uniform vec4 u_data;
 
 void main() {
     uint thickness_antialias_border_caps = floatBitsToUint(u_data.y);
-	uint borderColor = floatBitsToUint(u_data.z);
+	vec4 u_borderColor   = uintToVec4FloatColor(floatBitsToUint(u_data.z));
 
     float u_thickness    = float((thickness_antialias_border_caps >> uint(24)) & uint(0xFF));
     float u_antialias    = float((thickness_antialias_border_caps >> uint(16)) & uint(0xFF));
@@ -15,17 +15,10 @@ void main() {
     float u_leftCap      = float((thickness_antialias_border_caps >> uint(2))  & uint(0x2));
     float u_rigthCap     = float(thickness_antialias_border_caps               & uint(0x2));
 
-	vec4 u_borderColor   = vec4(
-		float((borderColor >> uint(24)) & uint(0xFFFF)),
-		float((borderColor >> uint(16)) & uint(0xFFFF)),
-		float((borderColor >> uint(8))  & uint(0xFFFF)),
-		float(borderColor & uint(0xFFFF))
-	);
-
 	vec4 color = calculateLinesColor(v_uv, v_length, u_thickness, u_antialias, u_border, u_leftCap, u_rigthCap, v_color, u_borderColor);
 
 	if(color.w == 0) 
 		discard;
 	else
 		gl_FragColor = color;
-}
+} 

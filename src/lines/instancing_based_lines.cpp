@@ -65,36 +65,38 @@ namespace lines {
     }
 
     void InstancingBasedLines::generateInstanceDataBuffer(const std::vector<Point> &points) {
-        const uint16_t stride = sizeof(float) * 16;
+        const uint16_t stride = sizeof(float) * 8;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer((points.size() / 2), stride);
         bgfx::allocInstanceDataBuffer(&m_IDBPoints, linesNum, stride);
 
         uint8_t* data = m_IDBPoints.data;
         for(uint32_t i = 1; i < points.size(); i+=2) {
+            uint32_t color0_hex = static_cast<uint32_t>(std::round(points[i-1].color.r * 255)) << 24 |
+                                  static_cast<uint32_t>(std::round(points[i-1].color.g * 255)) << 16 |
+                                  static_cast<uint32_t>(std::round(points[i-1].color.b * 255)) << 8  |
+                                  static_cast<uint32_t>(std::round(points[i-1].color.a * 255));
+
+            uint32_t color1_hex = static_cast<uint32_t>(std::round(points[i].color.r * 255)) << 24 |
+                                  static_cast<uint32_t>(std::round(points[i].color.g * 255)) << 16 |
+                                  static_cast<uint32_t>(std::round(points[i].color.b * 255)) << 8  |
+                                  static_cast<uint32_t>(std::round(points[i].color.a * 255));
+
             float* p0 = reinterpret_cast<float*>(data);
             p0[0] = points[i-1].x;
             p0[1] = points[i-1].y;
             p0[2] = points[i-1].z;
-            p0[3] = 0.0f;
+
+            uint32_t* color0 = (uint32_t*)&data[12];
+            color0[0] = color0_hex;
 
             float* p1 = (float*)&data[16];
             p1[0] = points[i].x;
             p1[1] = points[i].y;
             p1[2] = points[i].z;
-            p1[3] = 0.0f;
 
-            float* color0 = (float*)&data[32];
-            color0[0] = points[i-1].color.r;
-            color0[1] = points[i-1].color.g;
-            color0[2] = points[i-1].color.b;
-            color0[3] = points[i-1].color.a;
-
-            float* color1 = (float*)&data[48];
-            color1[0] = points[i].color.r;
-            color1[1] = points[i].color.g;
-            color1[2] = points[i].color.b;
-            color1[3] = points[i].color.a;
+            uint32_t* color1 = (uint32_t*)&data[28];
+            color1[0] = color1_hex;
 
             data += stride;
         }
