@@ -4,7 +4,7 @@
 namespace lines {
     class GPUGeneratedPolylines : public Polylines {
         public:
-            GPUGeneratedPolylines(const std::vector<Point> &points, const float width, const float heigth);
+            GPUGeneratedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
 
             ~GPUGeneratedPolylines();
 

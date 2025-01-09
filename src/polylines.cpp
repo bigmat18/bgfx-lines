@@ -9,7 +9,7 @@
 
 namespace lines {
 
-    std::unique_ptr<Polylines> Polylines::create(const std::vector<Point> &points, const float width, const float heigth, Types type) {
+    std::unique_ptr<Polylines> Polylines::create(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth, Types type) {
         const bgfx::Caps* caps = bgfx::getCaps();
         
         switch (type) {
@@ -61,19 +61,12 @@ namespace lines {
         return nullptr;
     }
 
-    Polylines::Polylines(const float width, const float heigth, const std::string& vs_name,  const std::string& fs_name) {
-        setScreenSize(width, heigth);
-
+    Polylines::Polylines(const uint16_t width, const uint16_t heigth, const std::string& vs_name,  const std::string& fs_name) {
         m_Program = vcl::loadProgram(vs_name, fs_name);
-        m_UniformData1 = bgfx::createUniform("u_data1", bgfx::UniformType::Vec4);
-        m_UniformData2 = bgfx::createUniform("u_data2", bgfx::UniformType::Vec4);
-        m_UniformColor = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
+        m_Settings = LinesSettings(width, heigth);
     }
 
     Polylines::~Polylines() {
-        bgfx::destroy(m_UniformData1);
-        bgfx::destroy(m_UniformData2);
-        bgfx::destroy(m_UniformColor);
         bgfx::destroy(m_Program);
     }
 }

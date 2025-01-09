@@ -2,7 +2,7 @@
 #include <vclib/bgfx/context/load_program.h>
 
 namespace lines { 
-    GPUGeneratedPolylines::GPUGeneratedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
+    GPUGeneratedPolylines::GPUGeneratedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) :
         Polylines(width, heigth, "polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines"),
         m_PointsSize(points.size())
     {
@@ -26,13 +26,7 @@ namespace lines {
     }
 
     void GPUGeneratedPolylines::draw(uint viewId) const {
-        float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
-        bgfx::setUniform(m_UniformData1, data1);
-
-        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), static_cast<float>(m_Data.join), 0};
-        bgfx::setUniform(m_UniformData2, data2);
-        
-        bgfx::setUniform(m_UniformColor, &m_Data.color);
+        m_Settings.bindUniformPolylines();
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -47,7 +41,7 @@ namespace lines {
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
 
-        if(m_Data.join != 0) {
+        if(m_Settings.getJoin() != 0) {
             bgfx::setVertexBuffer(0, m_DVbh);
             bgfx::setIndexBuffer(m_JoinsDIbh);
             bgfx::setState(state);

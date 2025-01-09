@@ -7,23 +7,27 @@ int main(int argc, char** argv)
 {
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
 
-    // std::vector<lines::Point> points = {
-    //     lines::Point(0.0f, 0.0f, 0.0f, lines::Color(0.0, 0.0, 1.0, 1.0)),
-    //     lines::Point(0.5f, 0.0f, 0.0f, lines::Color(0.0, 1.0, 0.0, 1.0)),
-    //     lines::Point(1.0f, 1.0f, 0.0f, lines::Color(0.0, 1.0, 0.5, 1.0)),
-    //     lines::Point(1.0f, 1.5f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
-    // };
+    std::vector<lines::Point> points = {
+        lines::Point(0.0f, 0.0f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
+        lines::Point(0.5f, 0.0f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
+        lines::Point(1.0f, 1.0f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
+        lines::Point(1.0f, 1.5f, 0.0f, lines::Color(1.0, 0.0, 0.0, 1.0)),
+    };
 
-    std::vector<lines::Point> points;
-    generateSegmentsInCube(points, 3, 100);
+    // std::vector<lines::Point> points;
+    // generateSegmentsInCube(points, 3, 100);
 
-    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::INSTANCING_BASED);
-    line->setThickness(5);
-    line->setMiterLimit(10);
+    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
+    line->getSettings().setThickness(10);
+    line->getSettings().setMiterLimit(20);
+    line->getSettings().setJoin(lines::Joins::MITER_JOIN);
+
+    // line->setThickness(5);
+    // line->setMiterLimit(10);
 
     // line->setJoin(lines::Joins::ROUND_JOIN);
-    line->setLeftCap(lines::Caps::ROUND_CAP);
-    line->setRigthCap(lines::Caps::ROUND_CAP);
+    // line->setLeftCap(lines::Caps::ROUND_CAP);
+    // line->setRigthCap(lines::Caps::ROUND_CAP);
 
     // std::vector<lines::Point> points2 = {
     //     lines::Point(0.0f, 0.0f, 1.0f),

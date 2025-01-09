@@ -18,18 +18,13 @@ int main(int argc, char** argv)
     // }; 
 
     std::vector<lines::LinesVertex> points;
-    generatePointsInCube(points, 3, 500000);
+    generatePointsInSphere(points, 3, 100);
 
     auto line = lines::Lines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->getSettings().setThickness(5);
-    // line->getSettings().setBorderColor(lines::COLOR(0.0, 0.0, 1.0, 1.0));
-    // line->setThickness(1);
-    // line->setBorder(1);
-    // line->setAntialias(2);
+    line->getSettings().setBorder(1);
 
-    // line->setLeftCap(lines::Caps::ROUND_CAP);
-    // line->setRigthCap(lines::Caps::ROUND_CAP);
-    // line->setBorderColor(lines::Color(0.0, 0.0, 1.0, 1.0));
+    line->getSettings().setBorderColor(lines::COLOR(0.0, 0.0, 1.0, 1.0));
 
     // std::vector<lines::Segment> segments1;
     // generateSegmentsInCube(segments1, 3, 10000);

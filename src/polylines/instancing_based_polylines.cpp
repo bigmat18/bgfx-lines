@@ -3,7 +3,7 @@
 #include <cmath>
 
 namespace lines {
-    InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<Point> &points, const float width, const float heigth) :
+    InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) :
         Polylines(width, heigth, "polylines/instancing_based_polylines/vs_instancing_based_segments", "polylines/instancing_based_polylines/fs_instancing_based_polylines")
 
     {
@@ -46,13 +46,7 @@ namespace lines {
     }
 
     void InstancingBasedPolylines::draw(uint viewId) const {
-        float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
-        bgfx::setUniform(m_UniformData1, data1);
-
-        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), static_cast<float>(m_Data.join), 0};
-        bgfx::setUniform(m_UniformData2, data2);
-        
-        bgfx::setUniform(m_UniformColor, &m_Data.color);
+        m_Settings.bindUniformPolylines();
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -68,7 +62,7 @@ namespace lines {
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
 
-        if(m_Data.join != 0) {
+        if(m_Settings.getJoin() != 0) {
             bgfx::setVertexBuffer(0, m_Vbh);
             bgfx::setIndexBuffer(m_Ibh);
             bgfx::setInstanceDataBuffer(&m_IDBJoins);

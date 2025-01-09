@@ -4,9 +4,7 @@ $output v_color, v_uv, v_length
 #include <bgfx_compute.sh>
 #include "../../polylines.sh"
 
-uniform vec4 u_data1;
-uniform vec4 u_data2;
-uniform vec4 u_color;
+uniform vec4 u_data;
 
 #define a_uv                    a_position
 #define a_prev                  i_data0
@@ -15,16 +13,23 @@ uniform vec4 u_color;
 #define a_nextnext              i_data3
 #define color                   i_data4
 
-#define u_screenWidth           u_data1.x
-#define u_screenHeigth          u_data1.y
-#define u_miter_limit           u_data1.z
-#define u_thickness             u_data1.w
-
-#define u_leftCap               u_data2.x
-#define u_rigthCap              u_data2.y
-#define u_join                  u_data2.z
-
 void main() {
+    uint screenSize = floatBitsToUint(u_data.x);
+    uint thickness_antialias_border_miterlimit = floatBitsToUint(u_data.y);
+    uint caps_join = floatBitsToUint(u_data.w);
+    
+    float u_screenWidth  = float((screenSize >> uint(16)) & uint(0xFFFF));
+    float u_screenHeigth = float(screenSize & uint(0xFFFF));
+
+    float u_thickness    = float((thickness_antialias_border_miterlimit >> uint(24)) & uint(0xFF));
+    float u_antialias    = float((thickness_antialias_border_miterlimit >> uint(16)) & uint(0xFF));
+    float u_border       = float((thickness_antialias_border_miterlimit >> uint(8))  & uint(0xFF));
+    float u_miter_limit  = float(thickness_antialias_border_miterlimit               & uint(0xFF));
+    
+    float u_leftCap      = float((caps_join >> uint(4))  & uint(0x3));
+    float u_rigthCap     = float((caps_join >> uint(2))  & uint(0x3));
+    float u_join         = float(caps_join               & uint(0x3));
+
     vec4 prev = ((1 - a_uv.x) * a_prev) + (a_uv.x * a_curr);
     vec4 curr = ((1 - a_uv.x) * a_curr) + (a_uv.x * a_next);
     vec4 next = ((1 - a_uv.x) * a_next) + (a_uv.x * a_nextnext);

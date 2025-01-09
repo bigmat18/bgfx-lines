@@ -5,7 +5,7 @@ namespace lines {
     class TextureBasedPolylines : public Polylines {
 
         public:
-            TextureBasedPolylines(const std::vector<Point> &points, const float width, const float heigth, const uint32_t maxTextureSize);
+            TextureBasedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize);
 
             ~TextureBasedPolylines();
 

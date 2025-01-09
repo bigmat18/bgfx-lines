@@ -4,7 +4,7 @@
 namespace lines {
     class InstancingBasedPolylines : public Polylines {
         public:
-            InstancingBasedPolylines(const std::vector<Point> &points, const float width, const float heigth);
+            InstancingBasedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
 
             ~InstancingBasedPolylines();
 

@@ -3,7 +3,7 @@
 
 namespace lines {
 
-    TextureBasedPolylines::TextureBasedPolylines(const std::vector<Point> &points, const float width, const float heigth, const uint32_t maxTextureSize) :
+    TextureBasedPolylines::TextureBasedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize) :
         Polylines(width, heigth, "polylines/texture_based_polylines/vs_texture_based_segments", "polylines/texture_based_polylines/fs_texture_based_polylines"),
         m_PointsSize(points.size()),
         m_MaxTextureSize(maxTextureSize)
@@ -69,16 +69,10 @@ namespace lines {
     }
 
     void TextureBasedPolylines::draw(uint viewId) const {
-        float data1[] = {m_Data.screenSize[0], m_Data.screenSize[1], m_Data.miterLimit, m_Data.thickness};
-        bgfx::setUniform(m_UniformData1, data1);
-
-        float data2[] = {static_cast<float>(m_Data.leftCap), static_cast<float>(m_Data.rigthCap), static_cast<float>(m_Data.join), 0};
-        bgfx::setUniform(m_UniformData2, data2);
+        m_Settings.bindUniformPolylines();
 
         float indirectData[] = {static_cast<float>(m_PointsSize - 1), static_cast<float>(m_MaxTextureSize), 0, 0};
         bgfx::setUniform(m_IndirectDataUniform, indirectData);
-
-        bgfx::setUniform(m_UniformColor, &m_Data.color);
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -94,7 +88,7 @@ namespace lines {
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program, m_SegmentsIndirectBuffer, 0);
 
-        if(m_Data.join != 0) {
+        if(m_Settings.getJoin() != 0) {
             bgfx::setVertexBuffer(0, m_Vbh);
             bgfx::setIndexBuffer(m_Ibh);
             bgfx::setImage(0, m_TextureBuffer, 0, bgfx::Access::Read, bgfx::TextureFormat::RGBA32F);

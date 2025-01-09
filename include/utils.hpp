@@ -73,6 +73,6 @@ namespace lines {
     enum Joins {
         ROUND_JOIN          = 0x00000000, // Join with round shape
         BEVEL_JOIN          = 0x00000001, // Join with square shape
-        MITER_JOIN          = 0x00000003, // Join with a miter
+        MITER_JOIN          = 0x00000002, // Join with a miter
     };
 }

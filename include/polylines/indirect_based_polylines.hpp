@@ -4,7 +4,7 @@
 namespace lines {
     class IndirectBasedPolylines : public Polylines {
         public:
-            IndirectBasedPolylines(const std::vector<Point> &points, const float width, const float heigth);
+            IndirectBasedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
 
             ~IndirectBasedPolylines();
 

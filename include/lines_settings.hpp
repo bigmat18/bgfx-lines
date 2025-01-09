@@ -40,6 +40,8 @@ namespace lines {
                 m_UniformData = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
             }
 
+            Joins getJoin() const { return m_Join; }
+
             void setThickness(uint8_t thickness) { m_Thickness = thickness; }
 
             void setAntialias(uint8_t antialias) { m_Antialias = antialias; }
@@ -67,8 +69,9 @@ namespace lines {
 
         public:
             void bindUniformLines() const {
-                uint32_t screenSize = m_ScreenWidth << 16 | m_ScreenHeigth;
-                uint32_t thickness_antialias_border_caps = (
+                uint32_t screenSize = 0 | m_ScreenWidth << 16 | m_ScreenHeigth;
+                uint32_t thickness_antialias_border_caps = ( 
+                                                          0 |
                     m_Thickness                       << 24 |
                     m_Antialias                       << 16 |
                     m_Border                          << 8  |
@@ -80,17 +83,18 @@ namespace lines {
             }
 
             void bindUniformPolylines() const {
-                uint32_t screenSize = m_ScreenWidth << 16 | m_ScreenHeigth;
-                uint32_t thickness_antialias_border_miterlimit = (
+                uint32_t screenSize = 0 | m_ScreenWidth << 16 | m_ScreenHeigth;
+                uint32_t thickness_antialias_border_miterlimit = ( 
+                                                          0 |
                     m_Thickness                       << 24 |
                     m_Antialias                       << 16 |
                     m_Border                          << 8  |
                     m_MiterLimit                      << 0 
                 );
 
-                uint32_t caps_join = (
-                   static_cast<uint8_t>(m_LeftCap)   << 4  |
-                   static_cast<uint8_t>(m_RigthCap)  << 2  |
+                uint32_t caps_join = (                  0 |
+                   static_cast<uint8_t>(m_LeftCap)   << 4 |
+                   static_cast<uint8_t>(m_RigthCap)  << 2 |
                    static_cast<uint8_t>(m_Join)      << 0  
                 );
 
