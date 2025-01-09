@@ -9,7 +9,7 @@
 
 namespace lines {
 
-    std::unique_ptr<Polylines> Polylines::create(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth, Types type) {
+    std::unique_ptr<Polylines> Polylines::create(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth, Types type) {
         const bgfx::Caps* caps = bgfx::getCaps();
         
         switch (type) {

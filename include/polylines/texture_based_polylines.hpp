@@ -5,7 +5,7 @@ namespace lines {
     class TextureBasedPolylines : public Polylines {
 
         public:
-            TextureBasedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize);
+            TextureBasedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize);
 
             ~TextureBasedPolylines();
 
@@ -15,7 +15,7 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Point> &points) override;
+            void update(const std::vector<LinesVertex> &points) override;
 
         private:
             void generateIndirectBuffers();  

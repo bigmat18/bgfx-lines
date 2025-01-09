@@ -5,7 +5,7 @@ namespace lines {
     class CPUGeneratedPolylines : public Polylines {
 
         public:
-            CPUGeneratedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
+            CPUGeneratedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth);
 
             ~CPUGeneratedPolylines();
 
@@ -15,10 +15,10 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Point> &points) override;
+            void update(const std::vector<LinesVertex> &points) override;
 
         private:
-            void generateBuffers(const std::vector<Point> points);
+            void generateBuffers(const std::vector<LinesVertex> points);
 
             std::vector<float> m_Vertices;
             std::vector<uint32_t> m_SegmentsIndices;

@@ -1,7 +1,7 @@
 #include <polylines/cpu_generated_polylines.hpp>
 
 namespace lines {
-    CPUGeneratedPolylines::CPUGeneratedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) :
+    CPUGeneratedPolylines::CPUGeneratedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
         Polylines(width, heigth, "polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines")
     {
         generateBuffers(points);
@@ -37,7 +37,7 @@ namespace lines {
         }
     }
 
-    void CPUGeneratedPolylines::update(const std::vector<Point> &points) {
+    void CPUGeneratedPolylines::update(const std::vector<LinesVertex> &points) {
         bgfx::destroy(m_Vbh);
         bgfx::destroy(m_SegmentsIbh);
         bgfx::destroy(m_JoinsIbh);
@@ -49,7 +49,7 @@ namespace lines {
         generateBuffers(points);
     }
 
-    void CPUGeneratedPolylines::generateBuffers(const std::vector<Point> points) {
+    void CPUGeneratedPolylines::generateBuffers(const std::vector<LinesVertex> points) {
 
         for(uint i = 0; i < points.size() - 1; i++) {
 
@@ -60,27 +60,24 @@ namespace lines {
                     uint prev_index = curr_index - (curr_index == 0 ? 0 : 1);
                     uint next_index = curr_index + (curr_index == points.size() - 1 ? 0 : 1);
 
-                    // a_position ==> prev(x,y,z)
-                    m_Vertices.push_back(points[prev_index].x);
-                    m_Vertices.push_back(points[prev_index].y);
-                    m_Vertices.push_back(points[prev_index].z);
+                    m_Vertices.push_back(points[prev_index].X);
+                    m_Vertices.push_back(points[prev_index].Y);
+                    m_Vertices.push_back(points[prev_index].Z);
 
-                    // a_texcoord0 ==> curr(x,y,z)
-                    m_Vertices.push_back(points[curr_index].x);
-                    m_Vertices.push_back(points[curr_index].y);
-                    m_Vertices.push_back(points[curr_index].z);
+                    m_Vertices.push_back(points[curr_index].X);
+                    m_Vertices.push_back(points[curr_index].Y);
+                    m_Vertices.push_back(points[curr_index].Z);
 
-                    // a_texcoord1 ==> next(x,y,z)
-                    m_Vertices.push_back(points[next_index].x);
-                    m_Vertices.push_back(points[next_index].y);
-                    m_Vertices.push_back(points[next_index].z);
+                    m_Vertices.push_back(points[next_index].X);
+                    m_Vertices.push_back(points[next_index].Y);
+                    m_Vertices.push_back(points[next_index].Z);
 
-                    m_Vertices.push_back(points[curr_index].color.r);
-                    m_Vertices.push_back(points[curr_index].color.g);
-                    m_Vertices.push_back(points[curr_index].color.b);
-                    m_Vertices.push_back(points[curr_index].color.a);
+                    m_Vertices.push_back(points[curr_index].getReverseColor());
 
-                    // a_texcoord2 ==> uv(x,y)
+                    m_Vertices.push_back(points[curr_index].xN);
+                    m_Vertices.push_back(points[curr_index].yN);
+                    m_Vertices.push_back(points[curr_index].zN);
+
                     m_Vertices.push_back(static_cast<float>(k));
                     m_Vertices.push_back(static_cast<float>(j));
                 }
@@ -108,10 +105,11 @@ namespace lines {
         bgfx::VertexLayout layout;
         layout
             .begin()
-            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float)
-            .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Uint8, true)
+            .add(bgfx::Attrib::Normal,    3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
             .end();
 
@@ -125,9 +123,10 @@ namespace lines {
             BGFX_BUFFER_INDEX32
         );
 
-        m_JoinsIbh = bgfx::createIndexBuffer(
-            bgfx::makeRef(&m_JoinsIndices[0], sizeof(uint32_t) * m_JoinsIndices.size()),
-            BGFX_BUFFER_INDEX32
-        );
+        if(m_JoinsIndices.size() != 0)
+            m_JoinsIbh = bgfx::createIndexBuffer(
+                bgfx::makeRef(&m_JoinsIndices[0], sizeof(uint32_t) * m_JoinsIndices.size()),
+                BGFX_BUFFER_INDEX32
+            );
     }
 }

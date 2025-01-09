@@ -65,8 +65,6 @@ namespace lines {
                     m_Vertices.push_back(points[i].Y);
                     m_Vertices.push_back(points[i].Z);
 
-                    uint32_t color = std::bit_cast<uint32_t>(points[i - (1 - k)].color);
-
                     m_Vertices.push_back(points[i - (1 - k)].getReverseColor());
 
                     m_Vertices.push_back(points[i - (1 - k)].xN);

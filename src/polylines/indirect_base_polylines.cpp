@@ -2,13 +2,12 @@
 #include <polylines/indirect_based_polylines.hpp>
 
 namespace lines {
-    IndirectBasedPolylines::IndirectBasedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth) :
+    IndirectBasedPolylines::IndirectBasedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
         Polylines(width, heigth, "polylines/indirect_based_polylines/vs_indirect_based_segments", "polylines/indirect_based_polylines/fs_indirect_based_polylines"),
         m_PointsSize(points.size())
     {
         m_JoinsIndirectBuffer = bgfx::createIndirectBuffer(1);
         m_SegmentsIndirectBuffer = bgfx::createIndirectBuffer(1);
-
 
         m_IndirectDataUniform = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
         m_JoinsProgram = vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines");
@@ -57,7 +56,6 @@ namespace lines {
         bgfx::destroy(m_ComputeIndirect);
     }
 
-
     void IndirectBasedPolylines::draw(uint viewId) const {
         m_Settings.bindUniformPolylines();
 
@@ -87,7 +85,7 @@ namespace lines {
         }
     }
 
-    void IndirectBasedPolylines::update(const std::vector<Point> &points) {
+    void IndirectBasedPolylines::update(const std::vector<LinesVertex> &points) {
         int oldSize = m_PointsSize;
         m_PointsSize = points.size();
         
@@ -95,7 +93,7 @@ namespace lines {
             generateIndirectBuffers();
         }
 
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
     }
 
     void IndirectBasedPolylines::allocatePointsBuffer() {
@@ -103,6 +101,8 @@ namespace lines {
         layout
          .begin()
          .add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
+         .add(bgfx::Attrib::Color0,    4, bgfx::AttribType::Uint8)
+         .add(bgfx::Attrib::Normal,    3, bgfx::AttribType::Float)
          .end();
 
         m_PointsBuffer = bgfx::createDynamicVertexBuffer(m_PointsSize, layout, 

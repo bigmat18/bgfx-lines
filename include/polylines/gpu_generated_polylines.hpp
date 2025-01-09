@@ -4,7 +4,7 @@
 namespace lines {
     class GPUGeneratedPolylines : public Polylines {
         public:
-            GPUGeneratedPolylines(const std::vector<Point> &points, const uint16_t width, const uint16_t heigth);
+            GPUGeneratedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth);
 
             ~GPUGeneratedPolylines();
 
@@ -14,7 +14,7 @@ namespace lines {
 
             void draw(uint viewId) const override;
 
-            void update(const std::vector<Point> &points) override;
+            void update(const std::vector<LinesVertex> &points) override;
 
         private:
 

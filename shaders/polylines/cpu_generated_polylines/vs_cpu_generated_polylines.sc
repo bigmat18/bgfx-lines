@@ -1,4 +1,4 @@
-$input a_position, a_texcoord0, a_texcoord1, a_color0, a_texcoord2
+$input a_position, a_texcoord0, a_texcoord1, a_color0, a_normal, a_texcoord2
 $output v_color, v_uv, v_length
 
 #include "../../polylines.sh"

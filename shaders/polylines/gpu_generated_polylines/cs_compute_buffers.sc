@@ -8,8 +8,9 @@ BUFFER_WO(joinsIndexBuffer,          uint,   3);
 uniform vec4 u_numWorksGroups;
 #define numWorksGroups u_numWorksGroups.x
 
-#define p(pos)      vec3(pointsBuffer[0 + ((pos) * 7)], pointsBuffer[1 + ((pos) * 7)], pointsBuffer[2 + ((pos) * 7)])
-#define color(pos)  vec4(pointsBuffer[3 + ((pos) * 7)], pointsBuffer[4 + ((pos) * 7)], pointsBuffer[5 + ((pos) * 7)], pointsBuffer[6 + ((pos) * 7)])
+#define p(pos)        vec3(pointsBuffer[((pos) * 7) + 0], pointsBuffer[((pos) * 7) + 1], pointsBuffer[((pos) * 7) + 2])
+#define color(pos)    pointsBuffer[((pos) * 7) + 3]
+#define normal(pos)   vec3(pointsBuffer[((pos) * 7) + 4], pointsBuffer[((pos) * 7) + 5], pointsBuffer[((pos) * 7) + 6]) 
 
 NUM_THREADS(2, 2, 1)
 void main() {
@@ -17,10 +18,11 @@ void main() {
     uint actualPoint = gl_WorkGroupID.x + gl_LocalInvocationID.x;
     uint numPoints = numWorksGroups;
 
-    vec3 prev = p(actualPoint - sign(actualPoint));
-    vec3 curr = p(actualPoint);
-    vec3 next = p(actualPoint + sign(numPoints - actualPoint));
-    vec4 color = color(actualPoint);
+    vec3 prev       = p(actualPoint - sign(actualPoint));
+    vec3 curr       = p(actualPoint);
+    vec3 next       = p(actualPoint + sign(numPoints - actualPoint));
+    float color     = color(actualPoint);
+    vec3 normal     = normal(actualPoint);
 
     vertexBuffer[baseIndex + 0] = prev.x;
     vertexBuffer[baseIndex + 1] = prev.y;
@@ -34,10 +36,11 @@ void main() {
     vertexBuffer[baseIndex + 7] = next.y;
     vertexBuffer[baseIndex + 8] = next.z;
 
-    vertexBuffer[baseIndex + 9]  = color.x;
-    vertexBuffer[baseIndex + 10] = color.y;
-    vertexBuffer[baseIndex + 11] = color.z;
-    vertexBuffer[baseIndex + 12] = color.w;
+    vertexBuffer[baseIndex + 9]  = uintBitsToFloat(bitfieldReverse(floatBitsToUint(color)));
+
+    vertexBuffer[baseIndex + 10] = normal.x;
+    vertexBuffer[baseIndex + 11] = normal.y;
+    vertexBuffer[baseIndex + 12] = normal.z;
 
     vertexBuffer[baseIndex + 13] = gl_LocalInvocationID.x;
     vertexBuffer[baseIndex + 14] = gl_LocalInvocationID.y;
