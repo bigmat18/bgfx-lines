@@ -7,11 +7,14 @@ $output v_color, v_uv, v_length
 uniform vec4 u_data;
 
 #define a_uv                    a_position
-#define a_prev                  i_data0
-#define a_curr                  i_data1
-#define a_next                  i_data2
-#define a_nextnext              i_data3
-#define color                   i_data4
+#define a_prev                  vec4(i_data0.xyz, 0.0)
+#define a_curr                  vec4(i_data1.xyz, 0.0)
+#define a_next                  vec4(i_data2.xyz, 0.0)
+#define a_nextnext              vec4(i_data3.xyz, 0.0)
+#define color0                  uintToVec4FloatColor(floatBitsToUint(i_data1.w))
+#define color1                  uintToVec4FloatColor(floatBitsToUint(i_data2.w))
+#define normal0                 vec3(i_data0.w, i_data3.w, i_data4.x)
+#define normal1                 vec3(i_data4.y, i_data4.z, i_data4.w)
 
 void main() {
     uint screenSize = floatBitsToUint(u_data.x);
@@ -37,20 +40,6 @@ void main() {
     vec4 prev_px = calculatePointWithMVP(prev, u_screenWidth, u_screenHeigth);
     vec4 curr_px = calculatePointWithMVP(curr, u_screenWidth, u_screenHeigth);
     vec4 next_px = calculatePointWithMVP(next, u_screenWidth, u_screenHeigth);
-
-    vec4 color0 = vec4(
-        float(((uint(color.x)) >> 24) & uint(255)) / 255.0,
-        float(((uint(color.x)) >> 16) & uint(255)) / 255.0,
-        float(((uint(color.x)) >> 8)  & uint(255)) / 255.0,
-        1.0
-    );
-
-    vec4 color1 = vec4(
-        float(((uint(color.y)) >> 24) & uint(255)) / 255.0,
-        float(((uint(color.y)) >> 16) & uint(255)) / 255.0,
-        float(((uint(color.y)) >> 8)  & uint(255)) / 255.0,
-        1.0
-    );
 
     v_color = (color0 * (1 - a_uv.x)) + (color1 * a_uv.x);
     v_length = length(((next_px - curr_px) * (1 - a_uv.x)) + ((curr_px - prev_px) * (a_uv.x)));

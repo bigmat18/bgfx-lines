@@ -17,9 +17,7 @@ namespace lines {
             void update(const std::vector<LinesVertex> &points) override;
 
         private:
-            void generateIDBSegments(const std::vector<LinesVertex> &points);
-
-            void generateIDBJoins(const std::vector<LinesVertex> &points);
+            void generateInstanceBuffer(const std::vector<LinesVertex> &points);
 
             bgfx::InstanceDataBuffer m_IDBSegments;
             bgfx::InstanceDataBuffer m_IDBJoins;

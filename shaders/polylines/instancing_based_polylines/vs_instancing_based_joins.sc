@@ -7,10 +7,12 @@ $output v_color, v_uv, v_length
 uniform vec4 u_data;
 
 #define a_uv                    a_position
+
 #define a_prev                  i_data0
-#define a_curr                  i_data1
+#define a_curr                  vec4(i_data1.xyz, 0.0)
 #define a_next                  i_data2
-#define color                   i_data3
+#define color                   uintToVec4FloatColor(floatBitsToUint(i_data1.w))
+#define normal                  vec3(i_data3.xyz)
 
 void main() {
     uint screenSize = floatBitsToUint(u_data.x);
