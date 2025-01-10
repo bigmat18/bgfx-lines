@@ -1,5 +1,5 @@
 $input a_position, a_texcoord0, a_texcoord1, a_color0, a_normal, a_texcoord2
-$output v_color, v_uv, v_length
+$output v_color, v_uv, v_length, v_is_start_end, v_normal
 
 #include "../../polylines.sh"
 
@@ -38,5 +38,7 @@ void main() {
 
     bool is_start = a_curr.x == a_prev.x && a_curr.y == a_prev.y;
     bool is_end = a_curr.x == a_next.x && a_curr.y == a_next.y;
+    v_is_start_end = (sign(length(a_curr - a_prev)) * (1 - a_uv.x)) + (sign(length(a_curr-a_next)) * a_uv.x);
+    v_normal = a_normal;
     gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap, u_join, is_start, is_end);
 } 

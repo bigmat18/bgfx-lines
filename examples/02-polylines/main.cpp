@@ -17,11 +17,11 @@ int main(int argc, char** argv)
     // std::vector<lines::LinesVertex> points;
     // generateSegmentsInCube(points, 3, 100);
 
-    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::CPU_GENERATED);
+    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->getSettings().setThickness(10);
     line->getSettings().setMiterLimit(20);
     line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
-    line->getSettings().setRigthCap(lines::Caps::TRIANGLE_CAP);
+    line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
     line->getSettings().setJoin(lines::Joins::ROUND_JOIN);
 
     // line->setThickness(5);

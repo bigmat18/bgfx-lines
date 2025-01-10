@@ -1,5 +1,5 @@
 $input a_position
-$output v_color, v_uv, v_normal, v_length
+$output v_color, v_uv, v_length, v_is_start_end, v_normal
 
 #include <bgfx_compute.sh>
 #include "../../polylines.sh"
@@ -60,5 +60,6 @@ void main() {
 
     bool is_start = curr.x == prev.x && curr.y == prev.y;
     bool is_end = curr.x == next.x && curr.y == next.y;
+    v_is_start_end = (sign(length(curr - prev)) * (1 - a_uv.x)) + (sign(length(curr-next)) * a_uv.x);
     gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap, u_join, is_start, is_end);
 }
