@@ -1,4 +1,4 @@
-$input v_color, v_uv, v_length
+$input v_color, v_uv, v_normal, v_length
 #include <bgfx_shader.sh>
 
 #include "../../polylines.sh"

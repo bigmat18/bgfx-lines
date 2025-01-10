@@ -1,12 +1,14 @@
 $input a_position
-$output v_color, v_uv, v_length
+$output v_color, v_uv, v_normal, v_length
 
 #include <bgfx_compute.sh>
 #include "../../polylines.sh"
 
 BUFFER_RO(pointsBuffer, float, 1);
-#define p(pos)      vec4(pointsBuffer[0 + ((pos) * 7)], pointsBuffer[1 + ((pos) * 7)], pointsBuffer[2 + ((pos) * 7)], 0.0)
-#define color(pos)  vec4(pointsBuffer[3 + ((pos) * 7)], pointsBuffer[4 + ((pos) * 7)], pointsBuffer[5 + ((pos) * 7)], pointsBuffer[6 + ((pos) * 7)])
+
+#define p(pos)        vec4(pointsBuffer[((pos) * 7) + 0], pointsBuffer[((pos) * 7) + 1], pointsBuffer[((pos) * 7) + 2], 0)
+#define color(pos)    pointsBuffer[((pos) * 7) + 3]
+#define normal(pos)   vec3(pointsBuffer[((pos) * 7) + 4], pointsBuffer[((pos) * 7) + 5], pointsBuffer[((pos) * 7) + 6])
 
 uniform vec4 u_data;
 uniform vec4 u_IndirectData;
@@ -36,8 +38,11 @@ void main() {
     vec4 a_next = p(gl_InstanceID + 1);
     vec4 a_nextnext = p(gl_InstanceID + 1 + sign(u_maxInstanceSize - 1 - gl_InstanceID));
 
-    vec4 color0 = color(gl_InstanceID);
-    vec4 color1 = color(gl_InstanceID + 1);
+    vec4 color0 = uintToVec4FloatColor(floatBitsToUint(color(gl_InstanceID)));
+    vec4 color1 = uintToVec4FloatColor(floatBitsToUint(color(gl_InstanceID + 1)));
+
+    vec3 normal0 = normal(gl_InstanceID);
+    vec3 normal1 = normal(gl_InstanceID + 1);
 
     vec4 prev = ((1 - a_uv.x) * a_prev) + (a_uv.x * a_curr);
     vec4 curr = ((1 - a_uv.x) * a_curr) + (a_uv.x * a_next);
@@ -48,6 +53,7 @@ void main() {
     vec4 next_px = calculatePointWithMVP(next, u_screenWidth, u_screenHeigth);
 
     v_color = (color0 * (1 - a_uv.x)) + (color1 * a_uv.x);
+    v_normal = (normal0 * (1 - a_uv.x)) + (normal1 * a_uv.x);
     v_length = length(((next_px - curr_px) * (1 - a_uv.x)) + ((curr_px - prev_px) * (a_uv.x)));
 
     v_uv = calculatePolylinesUV(prev, curr, next, a_uv, u_thickness, v_length, u_leftCap, u_rigthCap, u_join);

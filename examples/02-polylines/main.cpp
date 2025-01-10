@@ -9,15 +9,15 @@ int main(int argc, char** argv)
 
     // std::vector<lines::LinesVertex> points = {
     //     lines::LinesVertex(0.0f, 0.0f, 0.0f, lines::COLOR(1.0, 0.0, 0.0, 1.0)),
-    //     lines::LinesVertex(0.5f, 0.0f, 0.0f, lines::COLOR(1.0, 0.0, 0.0, 1.0)),
+    //     lines::LinesVertex(0.5f, 0.0f, 0.0f, lines::COLOR(0.0, 0.0, 1.0, 1.0)),
     //     lines::LinesVertex(1.0f, 1.0f, 0.0f, lines::COLOR(1.0, 0.0, 0.0, 1.0)),
-    //     // lines::LinesVertex(1.0f, 1.5f, 0.0f, lines::COLOR(1.0, 0.0, 0.0, 1.0)),
+    //     lines::LinesVertex(1.0f, 1.5f, 0.0f, lines::COLOR(1.0, 0.0, 0.0, 1.0)),
     // };
 
     std::vector<lines::LinesVertex> points;
     generateSegmentsInCube(points, 3, 100);
 
-    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::INSTANCING_BASED);
+    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
     line->getSettings().setThickness(10);
     line->getSettings().setMiterLimit(20);
     line->getSettings().setJoin(lines::Joins::MITER_JOIN);

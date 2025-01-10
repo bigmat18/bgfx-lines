@@ -1,12 +1,14 @@
 $input a_position
-$output v_color, v_uv, v_length
+$output v_color, v_uv, v_normal, v_length
 
 #include <bgfx_compute.sh>
 #include "../../polylines.sh"
 
 BUFFER_RO(pointsBuffer, float, 1);
-#define p(pos)      vec4(pointsBuffer[0 + ((pos) * 7)], pointsBuffer[1 + ((pos) * 7)], pointsBuffer[2 + ((pos) * 7)], 0.0)
-#define color(pos)  vec4(pointsBuffer[3 + ((pos) * 7)], pointsBuffer[4 + ((pos) * 7)], pointsBuffer[5 + ((pos) * 7)], pointsBuffer[6 + ((pos) * 7)])
+
+#define p(pos)        vec4(pointsBuffer[((pos) * 7) + 0], pointsBuffer[((pos) * 7) + 1], pointsBuffer[((pos) * 7) + 2], 0)
+#define color(pos)    pointsBuffer[((pos) * 7) + 3]
+#define normal(pos)   vec3(pointsBuffer[((pos) * 7) + 4], pointsBuffer[((pos) * 7) + 5], pointsBuffer[((pos) * 7) + 6])
 
 uniform vec4 u_data;
 
@@ -35,13 +37,13 @@ void main() {
     vec4 curr = p(index);
     vec4 next = p(index + 1);
 
-    vec4 color = color(index);
 
     vec4 prev_px = calculatePointWithMVP(prev, u_screenWidth, u_screenHeigth);
     vec4 curr_px = calculatePointWithMVP(curr, u_screenWidth, u_screenHeigth);
     vec4 next_px = calculatePointWithMVP(next, u_screenWidth, u_screenHeigth);
 
-    v_color = color;
+    v_color = uintToVec4FloatColor(floatBitsToUint(color(index)));
+    v_normal = normal(index);
     v_uv = vec4(0);
     v_length = 0;
 

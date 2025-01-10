@@ -18,7 +18,6 @@ namespace lines {
             void update(const std::vector<LinesVertex> &points) override;
 
         private:
-            void generateIndirectBuffers();  
 
             void generateTextureBuffer();
 
@@ -35,13 +34,14 @@ namespace lines {
             bgfx::IndirectBufferHandle m_SegmentsIndirectBuffer;
             bgfx::IndirectBufferHandle m_JoinsIndirectBuffer;
 
-            bgfx::ProgramHandle m_JoinsProgram;
-            bgfx::ProgramHandle m_ComputeIndirect;            
-            bgfx::UniformHandle m_IndirectDataUniform;
+            bgfx::ProgramHandle m_JoinsProgram;      
 
-            bgfx::TextureHandle m_TextureBuffer;
+            bgfx::TextureHandle m_TextureBufferSegments;
+            bgfx::TextureHandle m_TextureBufferJoins;
+            
             bgfx::DynamicVertexBufferHandle m_PointsBuffer;
-            bgfx::ProgramHandle m_ComputeTexture;         
+            bgfx::ProgramHandle m_ComputeTexture; 
+            bgfx::UniformHandle m_ComputeDataUniform;        
 
             uint32_t m_PointsSize;
             uint32_t m_MaxTextureSize;

@@ -30,13 +30,20 @@ void main() {
     float u_rigthCap     = float((caps_join >> uint(2))  & uint(0x3));
     float u_join         = float(caps_join               & uint(0x3));
 
-    vec4 a_prev     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID - sign(gl_InstanceID)) * 2, maxTextureSize));
-    vec4 a_curr     = imageLoad(textureBuffer, calculateTextureCoord(gl_InstanceID * 2, maxTextureSize));
-    vec4 a_next     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID + 1) * 2, maxTextureSize));
-    vec4 a_nextnext = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID + 1 + sign(maxInstancingNum - 1 - gl_InstanceID)) * 2, maxTextureSize));
+    vec4 element0     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 5), maxTextureSize));
+    vec4 element1     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 5) + 1, maxTextureSize));
+    vec4 element2     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 5) + 2, maxTextureSize));
+    vec4 element3     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 5) + 3, maxTextureSize));
+    vec4 element4     = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 5) + 4, maxTextureSize));
 
-    vec4 color0 = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 2) + 1, maxTextureSize));
-    vec4 color1 = imageLoad(textureBuffer, calculateTextureCoord(((gl_InstanceID + 1) * 2) + 1, maxTextureSize));
+    vec4 a_prev     = vec4(element0.xyz, 0);
+    vec4 a_curr     = vec4(element1.xyz, 0);
+    vec4 a_next     = vec4(element2.xyz, 0);
+    vec4 a_nextnext = vec4(element3.xyz, 0);
+    vec4 color0     = uintToVec4FloatColor(floatBitsToUint(element3.w));
+    vec4 color1     = uintToVec4FloatColor(floatBitsToUint(element4.w));
+    vec3 normal0    = vec3(element0.w, element1.w, element2.w);
+    vec3 normal1    = vec3(element4.xyz);
 
     vec4 prev = ((1 - a_uv.x) * a_prev) + (a_uv.x * a_curr);
     vec4 curr = ((1 - a_uv.x) * a_curr) + (a_uv.x * a_next);

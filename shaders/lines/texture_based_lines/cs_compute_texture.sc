@@ -25,8 +25,8 @@ void main() {
 
     imageStore(textureBuffer, calculateTextureCoord((gl_WorkGroupID.x * 4) , maxTextureSize),    vec4(p0.xyz, color0));
     imageStore(textureBuffer, calculateTextureCoord((gl_WorkGroupID.x * 4) + 1, maxTextureSize), vec4(p1.xyz, color1));
-    // imageStore(textureBuffer, calculateTextureCoord((gl_WorkGroupID.x * 4) + 2, maxTextureSize), vec4(normal0.xyz, 0));
-    // imageStore(textureBuffer, calculateTextureCoord((gl_WorkGroupID.x * 4) + 3, maxTextureSize), vec4(normal1.xyz, 0));
+    imageStore(textureBuffer, calculateTextureCoord((gl_WorkGroupID.x * 4) + 2, maxTextureSize), vec4(normal0.xyz, 0));
+    imageStore(textureBuffer, calculateTextureCoord((gl_WorkGroupID.x * 4) + 3, maxTextureSize), vec4(normal1.xyz, 0));
     
     if(gl_WorkGroupID.x == 0)
 	    drawIndexedIndirect(indirectBuffer, 0, 6, floor(instancingNum), 0, 0, 0);

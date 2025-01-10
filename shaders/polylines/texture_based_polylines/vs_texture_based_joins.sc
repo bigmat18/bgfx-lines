@@ -30,13 +30,13 @@ void main() {
     float u_rigthCap     = float((caps_join >> uint(2))  & uint(0x3));
     float u_join         = float(caps_join               & uint(0x3));
 
-    uint index = gl_InstanceID + 1;
-
-    vec4 prev = imageLoad(textureBuffer, calculateTextureCoord((index - 1) * 2, maxTextureSize));
-    vec4 curr = imageLoad(textureBuffer, calculateTextureCoord(index * 2, maxTextureSize));
-    vec4 next = imageLoad(textureBuffer, calculateTextureCoord((index + 1) * 2, maxTextureSize));
-
-    vec4 color = imageLoad(textureBuffer, calculateTextureCoord((index * 2) + 1, maxTextureSize));
+    vec4 prev    = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4), maxTextureSize));
+    vec4 curr    = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 1, maxTextureSize));
+    vec4 next    = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 4) + 2, maxTextureSize));
+    vec4 normal  = imageLoad(textureBuffer, calculateTextureCoord((gl_InstanceID * 2) + 3, maxTextureSize));
+    vec4 color   = uintToVec4FloatColor(floatBitsToUint(curr.w));
+    
+    curr.w = 0;
 
     vec4 prev_px = calculatePointWithMVP(prev, u_screenWidth, u_screenHeigth);
     vec4 curr_px = calculatePointWithMVP(curr, u_screenWidth, u_screenHeigth);
@@ -45,6 +45,7 @@ void main() {
     v_color = color;
     v_uv = vec4(0);
     v_length = 0;
+    
     bool is_start = curr.x == prev.x && curr.y == prev.y;
     bool is_end = curr.x == next.x && curr.y == next.y;
     gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap, u_join, is_start, is_end);
