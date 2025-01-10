@@ -4,21 +4,6 @@
 #include <cmath>
 
 namespace lines {
-    struct Color {
-        float r, g, b, a;
-
-        Color() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
-
-        Color(float rr, float gg, float bb, float aa)
-            : r(rr), g(gg), b(bb), a(aa) {}
-    };
-    struct Point {
-        float x, y, z;
-        Color color;
-
-        Point(float xx, float yy, float zz, Color c = Color())
-            : x(xx), y(yy), z(zz), color(c) {}
-    };
 
     inline uint32_t COLOR(float r, float g, float b, float a) {
         return static_cast<uint32_t>(
@@ -68,6 +53,7 @@ namespace lines {
         BUTT_CAP            = 0x00000000, // No extra space on caps
         SQUARE_CAP          = 0x00000001, // Extra space with square shape
         ROUND_CAP           = 0x00000002, // Extra space with round shape
+        TRIANGLE_CAP        = 0x00000003  // Extra space with triangle
     };
 
     enum Joins {

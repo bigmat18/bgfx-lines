@@ -24,8 +24,8 @@ void main() {
     float u_thickness    = float((thickness_antialias_border_caps >> uint(24)) & uint(0xFF));
     float u_antialias    = float((thickness_antialias_border_caps >> uint(16)) & uint(0xFF));
     float u_border       = float((thickness_antialias_border_caps >> uint(8))  & uint(0xFF));
-    float u_leftCap      = float((thickness_antialias_border_caps >> uint(2))  & uint(0x2));
-    float u_rigthCap     = float(thickness_antialias_border_caps               & uint(0x2));
+    float u_leftCap      = float((thickness_antialias_border_caps >> uint(2))  & uint(0x3));
+    float u_rigthCap     = float(thickness_antialias_border_caps               & uint(0x3));
 
     vec4 p0      = p((gl_InstanceID * 2));
     vec4 p1      = p((gl_InstanceID * 2) + 1);

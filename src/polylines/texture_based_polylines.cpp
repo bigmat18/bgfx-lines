@@ -43,8 +43,6 @@ namespace lines {
             BGFX_BUFFER_INDEX32
         );
 
-        // generateIndirectBuffers();
-
         allocatePointsBuffer();
         bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
         

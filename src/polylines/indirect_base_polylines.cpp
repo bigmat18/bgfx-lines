@@ -44,7 +44,7 @@ namespace lines {
         generateIndirectBuffers();
 
         allocatePointsBuffer();
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(Point) * points.size()));
+        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
     }
 
     IndirectBasedPolylines::~IndirectBasedPolylines() {

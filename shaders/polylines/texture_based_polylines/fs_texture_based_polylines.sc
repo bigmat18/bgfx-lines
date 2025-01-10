@@ -22,4 +22,4 @@ void main() {
 		discard;
 	else
 		gl_FragColor = color;
-} 
+}
