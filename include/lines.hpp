@@ -11,13 +11,9 @@ namespace lines {
 
         public:
 
-            static std::unique_ptr<Lines> create(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth, Types type = Types::CPU_GENERATED);
+            static std::unique_ptr<Lines> create(const std::vector<LinesVertex> &points, Types type = Types::CPU_GENERATED);
 
-            static std::unique_ptr<Lines> create(bgfx::VertexBufferHandle vbh);
-
-            static std::unique_ptr<Lines> create(bgfx::VertexBufferHandle vbh, bgfx::IndexBufferHandle ivh);
-
-            Lines(const uint16_t width, const uint16_t heigth, const std::string& vs_name, const std::string& fs_name);
+            Lines(const std::string& vs_name, const std::string& fs_name);
 
             virtual ~Lines();
 

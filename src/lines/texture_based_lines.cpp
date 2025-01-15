@@ -3,8 +3,8 @@
 #include <assert.h>
 
 namespace lines {
-    TextureBasedLines::TextureBasedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize) :
-        Lines(width, heigth, "lines/texture_based_lines/vs_texture_based_lines", "lines/texture_based_lines/fs_texture_based_lines"),
+    TextureBasedLines::TextureBasedLines(const std::vector<LinesVertex> &points, const uint32_t maxTextureSize) :
+        Lines("lines/texture_based_lines/vs_texture_based_lines", "lines/texture_based_lines/fs_texture_based_lines"),
         m_PointsSize(points.size()),
         m_MaxTextureSize(maxTextureSize)
     {
@@ -48,12 +48,23 @@ namespace lines {
     }
 
     TextureBasedLines::~TextureBasedLines() {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
-        bgfx::destroy(m_PointsBuffer); 
-        bgfx::destroy(m_IndirectBuffer);
-        bgfx::destroy(m_TextureBuffer);
-        bgfx::destroy(m_IndirectDataUniform);
+        if(bgfx::isValid(m_Vbh))
+            bgfx::destroy(m_Vbh);
+
+        if(bgfx::isValid(m_Ibh))
+            bgfx::destroy(m_Ibh);
+
+        if(bgfx::isValid(m_PointsBuffer))
+            bgfx::destroy(m_PointsBuffer);
+
+        if(bgfx::isValid(m_IndirectBuffer))
+            bgfx::destroy(m_IndirectBuffer);
+
+        if(bgfx::isValid(m_TextureBuffer))
+            bgfx::destroy(m_TextureBuffer);
+
+        if(bgfx::isValid(m_IndirectDataUniform))
+            bgfx::destroy(m_IndirectDataUniform);
     }
 
     void TextureBasedLines::draw(uint viewId) const {

@@ -1,16 +1,21 @@
 #include <polylines/cpu_generated_polylines.hpp>
 
 namespace lines {
-    CPUGeneratedPolylines::CPUGeneratedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
-        Polylines(width, heigth, "polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines")
+    CPUGeneratedPolylines::CPUGeneratedPolylines(const std::vector<LinesVertex> &points) :
+        Polylines("polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines")
     {
         generateBuffers(points);
     }
 
     CPUGeneratedPolylines::~CPUGeneratedPolylines() {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_SegmentsIbh);
-        bgfx::destroy(m_JoinsIbh);
+        if(bgfx::isValid(m_Vbh))
+            bgfx::destroy(m_Vbh);
+        
+        if(bgfx::isValid(m_SegmentsIbh))
+            bgfx::destroy(m_SegmentsIbh);
+
+        if(bgfx::isValid(m_JoinsIbh))
+            bgfx::destroy(m_JoinsIbh);
     }
 
     void CPUGeneratedPolylines::draw(uint viewId) const {

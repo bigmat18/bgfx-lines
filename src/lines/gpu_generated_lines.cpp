@@ -2,8 +2,8 @@
 #include <vclib/bgfx/context/load_program.h>
 
 namespace lines {
-    GPUGeneratedLines::GPUGeneratedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) : 
-        Lines(width, heigth, "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
+    GPUGeneratedLines::GPUGeneratedLines(const std::vector<LinesVertex> &points) : 
+        Lines("lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
         m_PointsSize(points.size())
     {
         m_ComputeProgram = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
@@ -17,9 +17,14 @@ namespace lines {
     }
 
     GPUGeneratedLines::~GPUGeneratedLines() {
-        bgfx::destroy(m_DIbh);
-        bgfx::destroy(m_DVbh);
-        bgfx::destroy(m_PointsBuffer);
+        if(bgfx::isValid(m_DIbh))
+            bgfx::destroy(m_DIbh);
+
+        if(bgfx::isValid(m_DVbh))
+            bgfx::destroy(m_DVbh);
+
+        if(bgfx::isValid(m_PointsBuffer))
+            bgfx::destroy(m_PointsBuffer);
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {

@@ -2,8 +2,8 @@
 #include <polylines/indirect_based_polylines.hpp>
 
 namespace lines {
-    IndirectBasedPolylines::IndirectBasedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
-        Polylines(width, heigth, "polylines/indirect_based_polylines/vs_indirect_based_segments", "polylines/indirect_based_polylines/fs_indirect_based_polylines"),
+    IndirectBasedPolylines::IndirectBasedPolylines(const std::vector<LinesVertex> &points) :
+        Polylines("polylines/indirect_based_polylines/vs_indirect_based_segments", "polylines/indirect_based_polylines/fs_indirect_based_polylines"),
         m_PointsSize(points.size())
     {
         m_JoinsIndirectBuffer = bgfx::createIndirectBuffer(1);
@@ -48,12 +48,26 @@ namespace lines {
     }
 
     IndirectBasedPolylines::~IndirectBasedPolylines() {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
-        bgfx::destroy(m_PointsBuffer);
-        bgfx::destroy(m_SegmentsIndirectBuffer);
-        bgfx::destroy(m_JoinsIndirectBuffer);
-        bgfx::destroy(m_ComputeIndirect);
+        if(bgfx::isValid(m_Vbh))
+            bgfx::destroy(m_Vbh);
+        
+        if(bgfx::isValid(m_Ibh))
+            bgfx::destroy(m_Ibh);
+
+        if(bgfx::isValid(m_PointsBuffer))
+            bgfx::destroy(m_PointsBuffer);
+
+        if(bgfx::isValid(m_SegmentsIndirectBuffer))
+            bgfx::destroy(m_SegmentsIndirectBuffer);
+
+        if(bgfx::isValid(m_JoinsIndirectBuffer))
+            bgfx::destroy(m_JoinsIndirectBuffer);
+
+        if(bgfx::isValid(m_ComputeIndirect))
+            bgfx::destroy(m_ComputeIndirect);
+
+        if(bgfx::isValid(m_IndirectDataUniform))
+            bgfx::destroy(m_IndirectDataUniform);
     }
 
     void IndirectBasedPolylines::draw(uint viewId) const {

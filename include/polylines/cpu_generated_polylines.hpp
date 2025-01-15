@@ -5,7 +5,7 @@ namespace lines {
     class CPUGeneratedPolylines : public Polylines {
 
         public:
-            CPUGeneratedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth);
+            CPUGeneratedPolylines(const std::vector<LinesVertex> &points);
 
             ~CPUGeneratedPolylines();
 

@@ -4,15 +4,6 @@
 #include <cmath>
 
 namespace lines {
-
-    inline uint32_t COLOR(float r, float g, float b, float a) {
-        return static_cast<uint32_t>(
-                (static_cast<uint8_t>(std::round((r) * 255)) << 24) |
-                (static_cast<uint8_t>(std::round((g) * 255)) << 16) |
-                (static_cast<uint8_t>(std::round((b) * 255)) << 8)  | 
-                (static_cast<uint8_t>(std::round((a) * 255)))
-            );
-    }
     struct LinesVertex {
         float X, Y, Z;
         float color;
@@ -24,6 +15,7 @@ namespace lines {
             X(x), Y(y), Z(z),
             color(std::bit_cast<float>(color)),
             xN(xn), yN(yn), zN(zn) {}
+
 
         uint32_t getUintColor() const {
             return std::bit_cast<uint32_t>(color);
@@ -39,6 +31,15 @@ namespace lines {
                 ((int_color & 0x000000FF) << 24)
             );
         }
+
+        static inline uint32_t COLOR(float r, float g, float b, float a) {
+            return static_cast<uint32_t>(
+                    (static_cast<uint8_t>(std::round((r) * 255)) << 24) |
+                    (static_cast<uint8_t>(std::round((g) * 255)) << 16) |
+                    (static_cast<uint8_t>(std::round((b) * 255)) << 8)  | 
+                    (static_cast<uint8_t>(std::round((a) * 255)))
+                );
+        }
     };
 
     enum Types {
@@ -47,18 +48,5 @@ namespace lines {
         INSTANCING_BASED    = 0x00000002, // generated lines by instancing buffer
         INDIRECT_BASED      = 0x00000003, // instancing with indirect buffer filled with compute 
         TEXTURE_BASED       = 0x00000004, // instancing with indirect usning text buffer
-    };
-
-    enum Caps {
-        BUTT_CAP            = 0x00000000, // No extra space on caps
-        SQUARE_CAP          = 0x00000001, // Extra space with square shape
-        ROUND_CAP           = 0x00000002, // Extra space with round shape
-        TRIANGLE_CAP        = 0x00000003  // Extra space with triangle
-    };
-
-    enum Joins {
-        ROUND_JOIN          = 0x00000000, // Join with round shape
-        BEVEL_JOIN          = 0x00000001, // Join with square shape
-        MITER_JOIN          = 0x00000002, // Join with a miter
     };
 }

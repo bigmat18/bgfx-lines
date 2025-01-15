@@ -11,6 +11,6 @@ void generateSegmentsInCube(std::vector<lines::LinesVertex> &points, float size,
     std::uniform_real_distribution<> coord(size, -size);
 
     for (int i = 0; i < n; i++) {
-        points.push_back(lines::LinesVertex(coord(gen), coord(gen), coord(gen), lines::COLOR(color(gen), color(gen), color(gen), 1.0)));
+        points.push_back(lines::LinesVertex(coord(gen), coord(gen), coord(gen), lines::LinesVertex::COLOR(color(gen), color(gen), color(gen), 1.0)));
     }
 }

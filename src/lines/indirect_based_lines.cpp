@@ -3,8 +3,8 @@
 
 
 namespace lines {
-    IndirectBasedLines::IndirectBasedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
-        Lines(width, heigth, "lines/indirect_based_lines/vs_indirect_based_lines", "lines/indirect_based_lines/fs_indirect_based_lines"),
+    IndirectBasedLines::IndirectBasedLines(const std::vector<LinesVertex> &points) :
+        Lines("lines/indirect_based_lines/vs_indirect_based_lines", "lines/indirect_based_lines/fs_indirect_based_lines"),
         m_PointsSize(points.size())
     {
         m_IndirectBuffer = bgfx::createIndirectBuffer(1);
@@ -45,11 +45,20 @@ namespace lines {
     }
 
     IndirectBasedLines::~IndirectBasedLines() {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
-        bgfx::destroy(m_PointsBuffer);
-        bgfx::destroy(m_IndirectBuffer);
-        bgfx::destroy(m_ComputeIndirect);
+        if(bgfx::isValid(m_Vbh))
+            bgfx::destroy(m_Vbh);
+
+        if(bgfx::isValid(m_Ibh))
+            bgfx::destroy(m_Ibh);
+
+        if(bgfx::isValid(m_PointsBuffer))
+            bgfx::destroy(m_PointsBuffer);
+
+        if(bgfx::isValid(m_IndirectBuffer))
+            bgfx::destroy(m_IndirectBuffer);
+
+        if(bgfx::isValid(m_ComputeIndirect))
+            bgfx::destroy(m_ComputeIndirect);
     }
 
     void IndirectBasedLines::allocatePointsBuffer() {

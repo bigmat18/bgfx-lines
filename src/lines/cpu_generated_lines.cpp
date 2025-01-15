@@ -3,8 +3,8 @@
 
 
 namespace lines {
-    CPUGeneratedLines::CPUGeneratedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
-        Lines(width, heigth, "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
+    CPUGeneratedLines::CPUGeneratedLines(const std::vector<LinesVertex> &points) :
+        Lines("lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
         m_PointsSize(points.size())
     {
         allocateVertexBuffer();
@@ -13,8 +13,11 @@ namespace lines {
     }
 
     CPUGeneratedLines::~CPUGeneratedLines() {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
+        if(bgfx::isValid(m_Vbh))
+            bgfx::destroy(m_Vbh);
+
+        if(bgfx::isValid(m_Ibh))
+            bgfx::destroy(m_Ibh);
     }
 
     void CPUGeneratedLines::update(const std::vector<LinesVertex> &points) {

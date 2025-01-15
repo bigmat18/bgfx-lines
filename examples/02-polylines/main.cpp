@@ -8,21 +8,22 @@ int main(int argc, char** argv)
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
 
     std::vector<lines::LinesVertex> points = {
-        lines::LinesVertex(0.0f, 0.0f, 0.0f, lines::COLOR(1.0, 0.0, 0.0, 1.0)),
-        lines::LinesVertex(0.5f, 0.0f, 0.0f, lines::COLOR(0.0, 0.0, 1.0, 1.0)),
-        lines::LinesVertex(1.0f, 1.0f, 0.0f, lines::COLOR(1.0, 0.0, 0.0, 1.0)),
-        lines::LinesVertex(1.0f, 1.5f, 0.0f, lines::COLOR(1.0, 0.0, 0.0, 1.0)),
+        lines::LinesVertex(0.0f, 0.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
+        lines::LinesVertex(0.5f, 0.0f, 0.0f, lines::LinesVertex::COLOR(0.0, 0.0, 1.0, 1.0)),
+        lines::LinesVertex(1.0f, 1.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
+        // lines::LinesVertex(1.0f, 1.5f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
     };
-
     // std::vector<lines::LinesVertex> points;
     // generateSegmentsInCube(points, 3, 100);
 
-    auto line = lines::Polylines::create(points, tw.width(), tw.height(), lines::Types::TEXTURE_BASED);
-    line->getSettings().setThickness(10);
-    line->getSettings().setMiterLimit(20);
-    line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
-    line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
-    line->getSettings().setJoin(lines::Joins::ROUND_JOIN);
+    auto line = lines::Polylines::create(points, lines::Types::TEXTURE_BASED);
+    line->getSettings().setThickness(5);
+    // line->getSettings().setMiterLimit(20);
+    // line->getSettings().setBorderColor(lines::LinesVertex::COLOR(1.0, 0.0, 1.0, 1.0));
+    // line->getSettings().setBorder(2);
+    // line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
+    // line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
+    // line->getSettings().setJoin(lines::Joins::ROUND_JOIN);
 
     // line->setThickness(5);
     // line->setMiterLimit(10);

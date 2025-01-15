@@ -1,8 +1,8 @@
 #include <lines/instancing_based_lines.hpp>
 
 namespace lines {
-    InstancingBasedLines::InstancingBasedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
-        Lines(width, heigth, "lines/instancing_based_lines/vs_instancing_based_lines", "lines/instancing_based_lines/fs_instancing_based_lines") 
+    InstancingBasedLines::InstancingBasedLines(const std::vector<LinesVertex> &points) :
+        Lines("lines/instancing_based_lines/vs_instancing_based_lines", "lines/instancing_based_lines/fs_instancing_based_lines") 
     {
 
         m_Vertices = {
@@ -37,8 +37,11 @@ namespace lines {
     }
 
     InstancingBasedLines::~InstancingBasedLines() {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
+        if(bgfx::isValid(m_Vbh))
+            bgfx::destroy(m_Vbh);
+
+        if(bgfx::isValid(m_Ibh))
+            bgfx::destroy(m_Ibh);
     }
 
     void InstancingBasedLines::draw(uint viewId) const {

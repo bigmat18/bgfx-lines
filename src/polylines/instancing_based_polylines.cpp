@@ -3,8 +3,8 @@
 #include <cmath>
 
 namespace lines {
-    InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
-        Polylines(width, heigth, "polylines/instancing_based_polylines/vs_instancing_based_segments", "polylines/instancing_based_polylines/fs_instancing_based_polylines")
+    InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<LinesVertex> &points) :
+        Polylines("polylines/instancing_based_polylines/vs_instancing_based_segments", "polylines/instancing_based_polylines/fs_instancing_based_polylines")
 
     {
         m_JoinsProgram = vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines");
@@ -40,8 +40,11 @@ namespace lines {
     }
 
     InstancingBasedPolylines::~InstancingBasedPolylines() {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
+        if(bgfx::isValid(m_Vbh))
+            bgfx::destroy(m_Vbh);
+        
+        if(bgfx::isValid(m_Ibh))
+            bgfx::destroy(m_Ibh);
     }
 
     void InstancingBasedPolylines::draw(uint viewId) const {

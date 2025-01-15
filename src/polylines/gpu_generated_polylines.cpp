@@ -2,8 +2,8 @@
 #include <vclib/bgfx/context/load_program.h>
 
 namespace lines { 
-    GPUGeneratedPolylines::GPUGeneratedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth) :
-        Polylines(width, heigth, "polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines"),
+    GPUGeneratedPolylines::GPUGeneratedPolylines(const std::vector<LinesVertex> &points) :
+        Polylines("polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines"),
         m_PointsSize(points.size())
     {
         m_ComputeProgram = bgfx::createProgram(vcl::loadShader("polylines/gpu_generated_polylines/cs_compute_buffers"), true);
@@ -18,11 +18,23 @@ namespace lines {
     }
 
     GPUGeneratedPolylines::~GPUGeneratedPolylines() {
-        bgfx::destroy(m_DVbh);
-        bgfx::destroy(m_SegmentsDIbh);
-        bgfx::destroy(m_JoinsDIbh);
-        bgfx::destroy(m_PointsBuffer);
-        bgfx::destroy(m_ComputeProgram);
+        if(bgfx::isValid(m_DVbh))
+            bgfx::destroy(m_DVbh);
+        
+        if(bgfx::isValid(m_SegmentsDIbh))
+            bgfx::destroy(m_SegmentsDIbh);
+
+        if(bgfx::isValid(m_JoinsDIbh))
+            bgfx::destroy(m_JoinsDIbh);
+
+        if(bgfx::isValid(m_PointsBuffer))
+            bgfx::destroy(m_PointsBuffer);
+
+        if(bgfx::isValid(m_ComputeProgram))
+            bgfx::destroy(m_ComputeProgram);
+
+        if(bgfx::isValid(m_NumWorksGroupUniform))
+            bgfx::destroy(m_NumWorksGroupUniform);
     }
 
     void GPUGeneratedPolylines::draw(uint viewId) const {

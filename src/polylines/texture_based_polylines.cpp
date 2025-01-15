@@ -3,8 +3,8 @@
 
 namespace lines {
 
-    TextureBasedPolylines::TextureBasedPolylines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth, const uint32_t maxTextureSize) :
-        Polylines(width, heigth, "polylines/texture_based_polylines/vs_texture_based_segments", "polylines/texture_based_polylines/fs_texture_based_polylines"),
+    TextureBasedPolylines::TextureBasedPolylines(const std::vector<LinesVertex> &points, const uint32_t maxTextureSize) :
+        Polylines("polylines/texture_based_polylines/vs_texture_based_segments", "polylines/texture_based_polylines/fs_texture_based_polylines"),
         m_PointsSize(points.size()),
         m_MaxTextureSize(maxTextureSize)
     {
@@ -51,18 +51,35 @@ namespace lines {
     }
 
     TextureBasedPolylines::~TextureBasedPolylines() {
-        bgfx::destroy(m_Vbh);
-        bgfx::destroy(m_Ibh);
-        bgfx::destroy(m_SegmentsIndirectBuffer);
-        bgfx::destroy(m_JoinsIndirectBuffer);
+        if(bgfx::isValid(m_Vbh))
+            bgfx::destroy(m_Vbh);
+        
+        if(bgfx::isValid(m_Ibh))
+            bgfx::destroy(m_Ibh);
 
-        bgfx::destroy(m_JoinsProgram);
-        bgfx::destroy(m_ComputeDataUniform);
+        if(bgfx::isValid(m_SegmentsIndirectBuffer))
+            bgfx::destroy(m_SegmentsIndirectBuffer);
 
-        bgfx::destroy(m_TextureBufferSegments);
-        bgfx::destroy(m_TextureBufferJoins);
-        bgfx::destroy(m_PointsBuffer);
-        bgfx::destroy(m_ComputeTexture);
+        if(bgfx::isValid(m_JoinsIndirectBuffer))
+            bgfx::destroy(m_JoinsIndirectBuffer);
+
+        if(bgfx::isValid(m_JoinsProgram))
+            bgfx::destroy(m_JoinsProgram);
+
+        if(bgfx::isValid(m_ComputeDataUniform))
+            bgfx::destroy(m_ComputeDataUniform);
+
+        if(bgfx::isValid(m_TextureBufferSegments))
+            bgfx::destroy(m_TextureBufferSegments);
+
+        if(bgfx::isValid(m_TextureBufferJoins))
+            bgfx::destroy(m_TextureBufferJoins);
+
+        if(bgfx::isValid(m_PointsBuffer))
+            bgfx::destroy(m_PointsBuffer);
+
+        if(bgfx::isValid(m_ComputeTexture))
+            bgfx::destroy(m_ComputeTexture);
     }
 
     void TextureBasedPolylines::draw(uint viewId) const {

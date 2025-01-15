@@ -8,13 +8,9 @@ namespace lines {
     class Polylines : public vcl::DrawableObjectI {
 
         public:
-            static std::unique_ptr<Polylines> create(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth, Types type = Types::CPU_GENERATED);
+            static std::unique_ptr<Polylines> create(const std::vector<LinesVertex> &points, Types type = Types::CPU_GENERATED);
 
-            static std::unique_ptr<Polylines> create(bgfx::VertexBufferHandle vbh);
-
-            static std::unique_ptr<Polylines> create(bgfx::VertexBufferHandle vbh, bgfx::IndexBufferHandle ivh);
-
-            Polylines(const uint16_t width, const uint16_t heigth, const std::string& vs_name,  const std::string& fs_name);
+            Polylines(const std::string& vs_name, const std::string& fs_name);
 
             virtual ~Polylines();
 

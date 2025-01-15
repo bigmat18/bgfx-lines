@@ -4,7 +4,7 @@
 namespace lines {
 class IndirectBasedLines : public Lines {
         public:
-            IndirectBasedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth);
+            IndirectBasedLines(const std::vector<LinesVertex> &points);
 
             ~IndirectBasedLines();
 

@@ -6,7 +6,7 @@ namespace lines {
     class CPUGeneratedLines : public Lines {
 
         public:
-            CPUGeneratedLines(const std::vector<LinesVertex> &points, const uint16_t width, const uint16_t heigth);
+            CPUGeneratedLines(const std::vector<LinesVertex> &points);
 
             ~CPUGeneratedLines();
 
