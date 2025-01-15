@@ -4,27 +4,59 @@
 namespace lines {
     GPUGeneratedLines::GPUGeneratedLines(const std::vector<LinesVertex> &points) : 
         Lines("lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
-        m_PointsSize(points.size())
+        mPoints(points),
+        mComputeVerticesPH(bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true))
     {
-        m_ComputeProgram = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
-
-        allocatePointsBuffer();
         allocateVertexBuffer();
         allocateIndexBuffer();
+        allocatePointsBuffer();
 
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
+        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
         generateBuffers();
     }
 
+    GPUGeneratedLines::GPUGeneratedLines(const GPUGeneratedLines& other) : Lines(other) {
+        mPoints = other.mPoints;
+        mComputeVerticesPH = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
+
+        allocateIndexBuffer();
+        allocateVertexBuffer();
+        allocatePointsBuffer();
+
+        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
+        generateBuffers();
+    }
+
+    GPUGeneratedLines::GPUGeneratedLines(GPUGeneratedLines&& other) : Lines(other) {
+        swap(other);
+    }
+
     GPUGeneratedLines::~GPUGeneratedLines() {
-        if(bgfx::isValid(m_DIbh))
-            bgfx::destroy(m_DIbh);
+        if(bgfx::isValid(mIndexesBH))
+            bgfx::destroy(mIndexesBH);
 
-        if(bgfx::isValid(m_DVbh))
-            bgfx::destroy(m_DVbh);
+        if(bgfx::isValid(mVerticesBH))
+            bgfx::destroy(mVerticesBH);
 
-        if(bgfx::isValid(m_PointsBuffer))
-            bgfx::destroy(m_PointsBuffer);
+        if(bgfx::isValid(mPointsBH))
+            bgfx::destroy(mPointsBH);
+    }
+
+    GPUGeneratedLines& GPUGeneratedLines::operator=(GPUGeneratedLines other) {
+        swap(other);
+        return *this;
+    }
+
+    void GPUGeneratedLines::swap(GPUGeneratedLines& other) {
+        std::swap(mIndexesBH, other.mIndexesBH);
+        std::swap(mVerticesBH, other.mVerticesBH);
+        std::swap(mPoints, other.mPoints);
+        std::swap(mPointsBH, other.mPointsBH);
+        std::swap(mComputeVerticesPH, other.mComputeVerticesPH);
+    }
+
+    std::shared_ptr<vcl::DrawableObjectI> GPUGeneratedLines::clone() const {
+        return std::make_shared<GPUGeneratedLines>(*this);
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
@@ -38,40 +70,43 @@ namespace lines {
             | UINT64_C(0)
             | BGFX_STATE_BLEND_ALPHA;
 
-        bgfx::setVertexBuffer(0, m_DVbh);
-        bgfx::setIndexBuffer(m_DIbh);
+        bgfx::setVertexBuffer(0, mVerticesBH);
+        bgfx::setIndexBuffer(mIndexesBH);
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
     }
 
     void GPUGeneratedLines::update(const std::vector<LinesVertex> &points) {
-        int oldSize = m_PointsSize;
-        m_PointsSize = points.size();
+        int oldSize = mPoints.size();
+        mPoints = points;
 
-        if(oldSize != m_PointsSize) {
-            bgfx::destroy(m_DIbh);
+        if(oldSize != mPoints.size()) {
+            if(bgfx::isValid(mIndexesBH))
+                bgfx::destroy(mIndexesBH);
             allocateIndexBuffer();
         }
 
-        if(oldSize < m_PointsSize) {
-            bgfx::destroy(m_DVbh);
+        if(oldSize < mPoints.size()) {
+            if(bgfx::isValid(mVerticesBH))
+                bgfx::destroy(mVerticesBH);
             allocateVertexBuffer();
         } 
 
-        if(oldSize > m_PointsSize) {
-            bgfx::destroy(m_PointsBuffer);
+        if(oldSize > mPoints.size()) {
+            if(bgfx::isValid(mPointsBH))
+                bgfx::destroy(mPointsBH);
             allocatePointsBuffer();
         }
 
-        bgfx::update(m_PointsBuffer, 0, bgfx::makeRef(&points[0], sizeof(LinesVertex) * points.size()));
+        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
         generateBuffers();
     }
 
     void GPUGeneratedLines::generateBuffers() {
-        bgfx::setBuffer(0, m_PointsBuffer, bgfx::Access::Read);
-        bgfx::setBuffer(1, m_DVbh, bgfx::Access::Write);
-        bgfx::setBuffer(2, m_DIbh, bgfx::Access::Write);
-        bgfx::dispatch(0, m_ComputeProgram, (m_PointsSize / 2), 1, 1);
+        bgfx::setBuffer(0, mPointsBH, bgfx::Access::Read);
+        bgfx::setBuffer(1, mVerticesBH, bgfx::Access::Write);
+        bgfx::setBuffer(2, mIndexesBH, bgfx::Access::Write);
+        bgfx::dispatch(0, mComputeVerticesPH, (mPoints.size() / 2), 1, 1);
     }
 
     void GPUGeneratedLines::allocateVertexBuffer() {
@@ -85,15 +120,15 @@ namespace lines {
          .add(bgfx::Attrib::TexCoord1, 2, bgfx::AttribType::Float)
          .end();
 
-        m_DVbh = bgfx::createDynamicVertexBuffer(
-            m_PointsSize * 4, layout, 
+        mVerticesBH = bgfx::createDynamicVertexBuffer(
+            (mPoints.size() / 2) * 4, layout, 
             BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE
         );
     }
 
     void GPUGeneratedLines::allocateIndexBuffer() {
-        m_DIbh = bgfx::createDynamicIndexBuffer(
-            m_PointsSize * 6, 
+        mIndexesBH = bgfx::createDynamicIndexBuffer(
+            (mPoints.size() / 2) * 6, 
             BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32
         );
     }
@@ -107,8 +142,8 @@ namespace lines {
          .add(bgfx::Attrib::Normal,    3, bgfx::AttribType::Float)
          .end();
 
-        m_PointsBuffer = bgfx::createDynamicVertexBuffer(
-            m_PointsSize, layout, 
+        mPointsBH = bgfx::createDynamicVertexBuffer(
+            mPoints.size(), layout, 
             BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE
         );
     }

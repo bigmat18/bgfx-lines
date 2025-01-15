@@ -8,7 +8,7 @@ namespace lines {
     class Polylines : public vcl::DrawableObjectI {
 
         public:
-            static std::unique_ptr<Polylines> create(const std::vector<LinesVertex> &points, Types type = Types::CPU_GENERATED);
+            static std::unique_ptr<Polylines> create(const std::vector<LinesVertex> &points, LinesTypes type = LinesTypes::CPU_GENERATED);
 
             Polylines(const std::string& vs_name, const std::string& fs_name);
 

@@ -3,14 +3,38 @@
 
 namespace lines {
     class TextureBasedLines : public Lines {
+
+        uint32_t mMaxTextureSize;
+
+        std::vector<float>                  mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
+        std::vector<uint32_t>               mIndexes = {0, 1, 2, 1, 3, 2};
+        std::vector<LinesVertex>            mPoints;
+
+        bgfx::TextureHandle                 mTextureBH;
+        bgfx::DynamicVertexBufferHandle     mPointsBH;
+        bgfx::ProgramHandle                 mComputeTexturePH;
+
+        bgfx::IndirectBufferHandle          mIndirectBH;      
+        bgfx::UniformHandle                 mIndirectDataUH;
+
+        bgfx::VertexBufferHandle            mVerticesBH;
+        bgfx::IndexBufferHandle             mIndexesBH;
+
+
         public:
             TextureBasedLines(const std::vector<LinesVertex> &points, const uint32_t maxTextureSize);
 
+            TextureBasedLines(const TextureBasedLines& other);
+
+            TextureBasedLines(TextureBasedLines&& other);
+
             ~TextureBasedLines();
 
-            std::shared_ptr<vcl::DrawableObjectI> clone() const override {
-                return std::make_shared<TextureBasedLines>(*this);
-            }
+            TextureBasedLines& operator=(TextureBasedLines other);
+
+            void swap(TextureBasedLines& other);
+
+            std::shared_ptr<vcl::DrawableObjectI> clone() const override;
 
             void draw(uint viewId) const override;
 
@@ -23,21 +47,9 @@ namespace lines {
             void allocateTextureBuffer();
 
             void allocatePointsBuffer();
+            
+            void allocateVerticesBuffer();
 
-            std::vector<float> m_Vertices;
-            std::vector<uint32_t> m_Indices;
-
-            bgfx::TextureHandle m_TextureBuffer;
-            bgfx::DynamicVertexBufferHandle m_PointsBuffer;
-            bgfx::ProgramHandle m_ComputeTexture;
-
-            bgfx::IndirectBufferHandle m_IndirectBuffer;      
-            bgfx::UniformHandle m_IndirectDataUniform;
-
-            bgfx::VertexBufferHandle m_Vbh;
-            bgfx::IndexBufferHandle m_Ibh;
-
-            uint32_t m_PointsSize;
-            uint32_t m_MaxTextureSize;
+            void allocateIndexesBuffer();
     };
 }

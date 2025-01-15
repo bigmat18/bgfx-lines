@@ -1,6 +1,7 @@
 #include <vclib/glfw/viewer_window.h>
 #include <vclib/bgfx/context.h>
 #include <lines.hpp>
+#include <lines/cpu_generated_lines.hpp>
 #include "common.h"
 
 int main(int argc, char** argv)
@@ -20,10 +21,11 @@ int main(int argc, char** argv)
     // std::vector<lines::LinesVertex> points;
     // generatePointsInCube(points, 3, 100);
 
-    auto line = lines::Lines::create(points, lines::Types::TEXTURE_BASED);
+    auto line = lines::Lines::create(points, lines::LinesTypes::TEXTURE_BASED);
     line->getSettings().setThickness(10);
     line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
     line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
+    line->getSettings().setColorToUse(lines::ColorToUse::PER_VERTEX_COLOR);
     line->getSettings().setBorder(1);
 
 

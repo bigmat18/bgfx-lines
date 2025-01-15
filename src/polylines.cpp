@@ -9,27 +9,27 @@
 
 namespace lines {
 
-    std::unique_ptr<Polylines> Polylines::create(const std::vector<LinesVertex> &points, Types type) {
+    std::unique_ptr<Polylines> Polylines::create(const std::vector<LinesVertex> &points, LinesTypes type) {
         const bgfx::Caps* caps = bgfx::getCaps();
         
         switch (type) {
-            case Types::CPU_GENERATED: {
+            case LinesTypes::CPU_GENERATED: {
                 return std::make_unique<CPUGeneratedPolylines>(points);
             }
 
-            case Types::GPU_GENERATED: {
+            case LinesTypes::GPU_GENERATED: {
                 bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 assert((void("GPU compute not supported"), computeSupported));
                 return std::make_unique<GPUGeneratedPolylines>(points);
             }
 
-            case Types::INSTANCING_BASED: {
+            case LinesTypes::INSTANCING_BASED: {
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
                 assert((void("Instancing not supported"), instancingSupported));
                 return std::make_unique<InstancingBasedPolylines>(points);
             }
 
-            case Types::INDIRECT_BASED: {
+            case LinesTypes::INDIRECT_BASED: {
                 const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 const bool indirectSupported = !!(caps->supported & BGFX_CAPS_DRAW_INDIRECT);
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
@@ -37,7 +37,7 @@ namespace lines {
                 assert((void("Instancing or compute are not supported"), instancingSupported && computeSupported && indirectSupported));
                 return std::make_unique<IndirectBasedPolylines>(points);
             }
-            case Types::TEXTURE_BASED: {
+            case LinesTypes::TEXTURE_BASED: {
                 const bool computeSupported  = !!(caps->supported & BGFX_CAPS_COMPUTE);
                 const bool indirectSupported = !!(caps->supported & BGFX_CAPS_DRAW_INDIRECT);
                 const bool instancingSupported = !!(caps->supported & BGFX_CAPS_INSTANCING);
@@ -48,7 +48,7 @@ namespace lines {
             }
         }
         assert((void("Lines type is incorrect"), true));
-        return nullptr;
+        throw std::invalid_argument("Invalid enum case");
     }
 
     Polylines::Polylines(const std::string& vs_name,  const std::string& fs_name) {

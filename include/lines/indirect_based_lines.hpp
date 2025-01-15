@@ -2,15 +2,34 @@
 #include "../lines.hpp"
 
 namespace lines {
-class IndirectBasedLines : public Lines {
+    class IndirectBasedLines : public Lines {
+
+        std::vector<float>                  mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
+        std::vector<uint32_t>               mIndexes = {0, 1, 2, 1, 3, 2};
+        std::vector<LinesVertex>            mPoints;
+
+        bgfx::VertexBufferHandle            mVerticesBH;
+        bgfx::IndexBufferHandle             mIndexesBH;
+        bgfx::DynamicVertexBufferHandle     mPointsBH;
+
+        bgfx::IndirectBufferHandle          mIndirectBH;
+        bgfx::ProgramHandle                 mComputeIndirectPH;            
+        bgfx::UniformHandle                 mIndirectDataUH;
+
         public:
             IndirectBasedLines(const std::vector<LinesVertex> &points);
 
+            IndirectBasedLines(const IndirectBasedLines& other);
+
+            IndirectBasedLines(IndirectBasedLines&& other);
+
             ~IndirectBasedLines();
 
-            std::shared_ptr<vcl::DrawableObjectI> clone() const override {
-                return std::make_shared<IndirectBasedLines>(*this);
-            }
+            IndirectBasedLines& operator=(IndirectBasedLines other);
+
+            void swap(IndirectBasedLines& other);
+
+            std::shared_ptr<vcl::DrawableObjectI> clone() const override;
 
             void draw(uint viewId) const override;
 
@@ -20,19 +39,10 @@ class IndirectBasedLines : public Lines {
 
             void allocatePointsBuffer();
 
+            void allocateVerticesBuffer();
+
+            void allocateIndexesBuffer();
+
             void generateIndirectBuffer();
-
-            std::vector<float> m_Vertices;
-            std::vector<uint32_t> m_Indices;
-
-            bgfx::VertexBufferHandle m_Vbh;
-            bgfx::IndexBufferHandle m_Ibh;
-            bgfx::DynamicVertexBufferHandle m_PointsBuffer;
-
-            bgfx::IndirectBufferHandle m_IndirectBuffer;
-            bgfx::ProgramHandle m_ComputeIndirect;            
-            bgfx::UniformHandle m_IndirectDataUniform;
-
-            uint32_t m_PointsSize;
     };  
 }

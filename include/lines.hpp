@@ -11,9 +11,13 @@ namespace lines {
 
         public:
 
-            static std::unique_ptr<Lines> create(const std::vector<LinesVertex> &points, Types type = Types::CPU_GENERATED);
+            static std::unique_ptr<Lines> create(const std::vector<LinesVertex> &points, LinesTypes type = LinesTypes::CPU_GENERATED);
 
             Lines(const std::string& vs_name, const std::string& fs_name);
+
+            Lines(const Lines& other);
+
+            Lines(Lines&& other);
 
             virtual ~Lines();
 
@@ -31,9 +35,8 @@ namespace lines {
 
         protected: 
             bgfx::ProgramHandle m_Program;
-            vcl::Box3d m_BoundingBox;
-
             LinesSettings m_Settings;
+            
             bool m_Visible = true;
     };
 }

@@ -3,28 +3,41 @@
 
 namespace lines {
     class InstancingBasedLines : public Lines {
+
+
+        std::vector<float>          mVertices = { 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f };
+        std::vector<uint32_t>       mIndexes = { 0, 1, 2, 1, 3, 2 };
+        std::vector<LinesVertex>    mPoints;
+
+        bgfx::VertexBufferHandle    mVerticesBH;
+        bgfx::IndexBufferHandle     mIndexesBH;
+        bgfx::InstanceDataBuffer    mInstanceDB;
+
         public:
             InstancingBasedLines(const std::vector<LinesVertex> &points);
 
+            InstancingBasedLines(const InstancingBasedLines& other);
+
+            InstancingBasedLines(InstancingBasedLines&& other);
+
             ~InstancingBasedLines();
 
-            std::shared_ptr<vcl::DrawableObjectI> clone() const override {
-                return std::make_shared<InstancingBasedLines>(*this);
-            }
+            InstancingBasedLines& operator=(InstancingBasedLines other);
+
+            void swap(InstancingBasedLines& other);
+
+            std::shared_ptr<vcl::DrawableObjectI> clone() const override;
 
             void draw(uint viewId) const override;
 
             void update(const std::vector<LinesVertex> &points) override;
 
         private:
-            void generateInstanceDataBuffer(const std::vector<LinesVertex> &points);
 
-            bgfx::InstanceDataBuffer m_IDBPoints;
-            std::vector<float> m_Vertices;
-            std::vector<uint32_t> m_Indices;
+            void generateInstanceDataBuffer();
 
-            bgfx::VertexBufferHandle m_Vbh;
-            bgfx::IndexBufferHandle m_Ibh;
+            void allocateVerticesBuffer();
 
+            void allocateIndexesBuffer();
     }; 
 }
