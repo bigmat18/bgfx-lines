@@ -7,17 +7,18 @@ int main(int argc, char** argv)
 {
     vcl::glfw::ViewerWindow tw("Viewer GLFW");
 
-    std::vector<lines::LinesVertex> points = {
-        lines::LinesVertex(0.0f, 0.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
-        lines::LinesVertex(0.5f, 0.0f, 0.0f, lines::LinesVertex::COLOR(0.0, 0.0, 1.0, 1.0)),
-        lines::LinesVertex(1.0f, 1.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
-        // lines::LinesVertex(1.0f, 1.5f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
-    };
-    // std::vector<lines::LinesVertex> points;
-    // generateSegmentsInCube(points, 3, 100);
+    // std::vector<lines::LinesVertex> points = {
+    //     lines::LinesVertex(0.0f, 0.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
+    //     lines::LinesVertex(0.5f, 0.0f, 0.0f, lines::LinesVertex::COLOR(0.0, 0.0, 1.0, 1.0)),
+    //     lines::LinesVertex(1.0f, 1.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
+    //     // lines::LinesVertex(1.0f, 1.5f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
+    // };
+    std::vector<lines::LinesVertex> points;
+    generateSegmentsInCube(points, 3, 1000);
 
-    auto line = lines::Polylines::create(points);
+    auto line = lines::Polylines::create(points, lines::LinesTypes::INSTANCING_BASED);
     line->getSettings().setThickness(5);
+    line->getSettings().setColorToUse(lines::ColorToUse::PER_VERTEX_COLOR);
     // line->getSettings().setMiterLimit(20);
     // line->getSettings().setBorderColor(lines::LinesVertex::COLOR(1.0, 0.0, 1.0, 1.0));
     // line->getSettings().setBorder(2);
@@ -44,9 +45,9 @@ int main(int argc, char** argv)
     // line2->setMiterLimit(50);
     // line2->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
 
-    // std::vector<lines::Point> points1;
-    // generateSegmentsInCube(points1, 3, 1000);
-    // line->update(points1);
+    std::vector<lines::LinesVertex> points1;
+    generateSegmentsInCube(points1, 3, 10);
+    line->update(points1);
     
     tw.pushDrawableObject(*line.get());
     // tw.pushDrawableObject(*line2.get());

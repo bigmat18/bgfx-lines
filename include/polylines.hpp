@@ -12,6 +12,10 @@ namespace lines {
 
             Polylines(const std::string& vs_name, const std::string& fs_name);
 
+            Polylines(const Polylines& other);
+
+            Polylines(Polylines&& other);
+
             virtual ~Polylines();
 
             vcl::Box3d boundingBox() const override { 

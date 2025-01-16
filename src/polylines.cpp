@@ -56,6 +56,18 @@ namespace lines {
         assert(bgfx::isValid(m_Program));
     }
 
+    Polylines::Polylines(const Polylines& other) {
+        m_Program = other.m_Program;
+        m_Settings = other.m_Settings;
+        assert(bgfx::isValid(m_Program));
+    }
+
+    Polylines::Polylines(Polylines&& other) {
+        m_Program = other.m_Program;
+        m_Settings = other.m_Settings;
+        assert(bgfx::isValid(m_Program));
+    }
+
     Polylines::~Polylines() {
         if(bgfx::isValid(m_Program))
             bgfx::destroy(m_Program);

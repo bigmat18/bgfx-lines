@@ -4,47 +4,63 @@
 
 namespace lines {
     InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<LinesVertex> &points) :
-        Polylines("polylines/instancing_based_polylines/vs_instancing_based_segments", "polylines/instancing_based_polylines/fs_instancing_based_polylines")
-
+        Polylines("polylines/instancing_based_polylines/vs_instancing_based_segments", "polylines/instancing_based_polylines/fs_instancing_based_polylines"),
+        mJoinesPH(vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines"))
     {
-        m_JoinsProgram = vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines");
-        m_Vertices = {
-            0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-        };
-
-        bgfx::VertexLayout layout;
-        layout
-         .begin()
-         .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
-         .end();
-
-        m_Vbh = bgfx::createVertexBuffer(
-            bgfx::makeRef(&m_Vertices[0], sizeof(float) * m_Vertices.size()),
-            layout
-        );
-
-        m_Indices = {
-            0, 3, 1,
-            0, 2, 3,
-        };
-
-        m_Ibh = bgfx::createIndexBuffer(
-            bgfx::makeRef(&m_Indices[0], sizeof(uint32_t) * m_Indices.size()),
-            BGFX_BUFFER_INDEX32
-        );
-
+        allocateVerticesBuffer();
+        allocateIndexesBuffer();
         generateInstanceBuffer(points);
     }
 
+    InstancingBasedPolylines::InstancingBasedPolylines(const InstancingBasedPolylines& other) : Polylines(other) {
+        mJoinesPH = vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines");
+        allocateVerticesBuffer();
+        allocateIndexesBuffer();
+
+        uint32_t linesNumSegments = bgfx::getAvailInstanceDataBuffer(other.mSegmentsInstanceDB.num, other.mSegmentsInstanceDB.stride);
+        bgfx::allocInstanceDataBuffer(&mSegmentsInstanceDB, linesNumSegments, other.mSegmentsInstanceDB.stride);
+
+        for(uint32_t i = 0; i < other.mSegmentsInstanceDB.size; i++) {
+            mSegmentsInstanceDB.data[i] = other.mSegmentsInstanceDB.data[i];
+        }
+
+        uint32_t linesNumJoins = bgfx::getAvailInstanceDataBuffer(other.mJoinsInstanceDB.num, other.mJoinsInstanceDB.stride);
+        bgfx::allocInstanceDataBuffer(&mJoinsInstanceDB, linesNumSegments, other.mJoinsInstanceDB.stride);
+
+        for(uint32_t i = 0; i < other.mJoinsInstanceDB.size; i++) {
+            mJoinsInstanceDB.data[i] = other.mJoinsInstanceDB.data[i];
+        }
+    }
+
+    InstancingBasedPolylines::InstancingBasedPolylines(InstancingBasedPolylines&& other) : Polylines(other) {
+        swap(other);
+    }
+
     InstancingBasedPolylines::~InstancingBasedPolylines() {
-        if(bgfx::isValid(m_Vbh))
-            bgfx::destroy(m_Vbh);
+        if(bgfx::isValid(mVerticesBH))
+            bgfx::destroy(mVerticesBH);
         
-        if(bgfx::isValid(m_Ibh))
-            bgfx::destroy(m_Ibh);
+        if(bgfx::isValid(mIndexesBH))
+            bgfx::destroy(mIndexesBH);
+    }
+
+    InstancingBasedPolylines& InstancingBasedPolylines::operator=(InstancingBasedPolylines other) {
+        swap(other);
+        return *this;
+    }
+
+    void InstancingBasedPolylines::swap(InstancingBasedPolylines& other) {
+        std::swap(mSegmentsInstanceDB, other.mSegmentsInstanceDB);
+        std::swap(mJoinsInstanceDB, other.mJoinsInstanceDB);
+
+        std::swap(mVerticesBH, other.mVerticesBH);
+        std::swap(mIndexesBH, other.mIndexesBH);
+
+        std::swap(mJoinesPH, other.mJoinesPH);
+    }
+
+    std::shared_ptr<vcl::DrawableObjectI> InstancingBasedPolylines::clone() const {
+        return std::make_shared<InstancingBasedPolylines>(*this);
     }
 
     void InstancingBasedPolylines::draw(uint viewId) const {
@@ -58,20 +74,19 @@ namespace lines {
             | UINT64_C(0)
             | BGFX_STATE_BLEND_ALPHA;
 
-        bgfx::setVertexBuffer(0, m_Vbh);
-        bgfx::setIndexBuffer(m_Ibh);
-        bgfx::setInstanceDataBuffer(&m_IDBSegments);
+        bgfx::setVertexBuffer(0, mVerticesBH);
+        bgfx::setIndexBuffer(mIndexesBH);
+        bgfx::setInstanceDataBuffer(&mSegmentsInstanceDB);
         bgfx::setState(state);
         bgfx::submit(viewId, m_Program);
 
         if(m_Settings.getJoin() != 0) {
-            bgfx::setVertexBuffer(0, m_Vbh);
-            bgfx::setIndexBuffer(m_Ibh);
-            bgfx::setInstanceDataBuffer(&m_IDBJoins);
+            bgfx::setVertexBuffer(0, mVerticesBH);
+            bgfx::setIndexBuffer(mIndexesBH);
+            bgfx::setInstanceDataBuffer(&mJoinsInstanceDB);
             bgfx::setState(state);
-            bgfx::submit(viewId, m_JoinsProgram);
+            bgfx::submit(viewId, mJoinesPH);
         }
-
     }
 
     void InstancingBasedPolylines::update(const std::vector<LinesVertex> &points) {
@@ -81,16 +96,16 @@ namespace lines {
     void InstancingBasedPolylines::generateInstanceBuffer(const std::vector<LinesVertex> &points) {
         const uint16_t strideSegments = sizeof(float) * 20;
         uint32_t linesNumSegments = bgfx::getAvailInstanceDataBuffer(points.size() - 1, strideSegments);
-        bgfx::allocInstanceDataBuffer(&m_IDBSegments, linesNumSegments, strideSegments);
+        bgfx::allocInstanceDataBuffer(&mSegmentsInstanceDB, linesNumSegments, strideSegments);
 
         const uint16_t strideJoins = sizeof(float) * 16;
         if(points.size() > 2) {
             uint32_t linesNumJoins = bgfx::getAvailInstanceDataBuffer(points.size() - 2, strideJoins);
-            bgfx::allocInstanceDataBuffer(&m_IDBJoins, linesNumJoins, strideJoins);
+            bgfx::allocInstanceDataBuffer(&mJoinsInstanceDB, linesNumJoins, strideJoins);
         } 
 
-        uint8_t* dataSegments = m_IDBSegments.data;
-        uint8_t* dataJoins    = m_IDBJoins.data;
+        uint8_t* dataSegments = mSegmentsInstanceDB.data;
+        uint8_t* dataJoins    = mJoinsInstanceDB.data;
 
         for(uint32_t i = 0; i < linesNumSegments; i++) {
             float* prevSegments = reinterpret_cast<float*>(dataSegments);
@@ -159,5 +174,25 @@ namespace lines {
         
             dataSegments+=strideSegments;
         }
+    }
+
+    void InstancingBasedPolylines::allocateVerticesBuffer() {
+        bgfx::VertexLayout layout;
+        layout
+         .begin()
+         .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
+         .end();
+
+        mVerticesBH = bgfx::createVertexBuffer(
+            bgfx::makeRef(&mVertices[0], sizeof(float) * mVertices.size()),
+            layout
+        );
+    }
+
+    void InstancingBasedPolylines::allocateIndexesBuffer() {
+        mIndexesBH = bgfx::createIndexBuffer(
+            bgfx::makeRef(&mIndexes[0], sizeof(uint32_t) * mIndexes.size()),
+            BGFX_BUFFER_INDEX32
+        );
     }
 }
