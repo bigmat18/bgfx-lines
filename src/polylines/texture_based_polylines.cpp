@@ -104,7 +104,7 @@ namespace lines {
     }
 
     void TextureBasedPolylines::draw(uint viewId) const {
-        m_Settings.bindUniformPolylines();
+        mSettings.bindUniformPolylines();
 
         float indirectData[] = {static_cast<float>(mPoints.size() - 1), static_cast<float>(mMaxTextureSize), 0, 0};
         bgfx::setUniform(mComputeDataUH, indirectData);
@@ -121,9 +121,9 @@ namespace lines {
         bgfx::setIndexBuffer(mIndexesBH);
         bgfx::setImage(0, mSegmentsTextureBH, 0, bgfx::Access::Read, bgfx::TextureFormat::RGBA32F);
         bgfx::setState(state);
-        bgfx::submit(viewId, m_Program, mSegmentsIndirectBH, 0);
+        bgfx::submit(viewId, mLinesPH, mSegmentsIndirectBH, 0);
 
-        if(m_Settings.getJoin() != 0 && mPoints.size() > 2) {
+        if(mSettings.getJoin() != 0 && mPoints.size() > 2) {
             bgfx::setVertexBuffer(0, mVerticesBH);
             bgfx::setIndexBuffer(mIndexesBH);
             bgfx::setImage(0, mJoinesTextureBH, 0, bgfx::Access::Read, bgfx::TextureFormat::RGBA32F);

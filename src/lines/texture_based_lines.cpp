@@ -90,7 +90,7 @@ namespace lines {
     }
 
     void TextureBasedLines::draw(uint viewId) const {
-        m_Settings.bindUniformLines();
+        mSettings.bindUniformLines();
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -104,7 +104,7 @@ namespace lines {
         bgfx::setIndexBuffer(mIndexesBH);
         bgfx::setImage(0, mTextureBH, 0, bgfx::Access::Read, bgfx::TextureFormat::RGBA32F);
         bgfx::setState(state);
-        bgfx::submit(viewId, m_Program, mIndirectBH, 0);
+        bgfx::submit(viewId, mLinesPH, mIndirectBH, 0);
     }
 
     void TextureBasedLines::update(const std::vector<LinesVertex> &points) {

@@ -64,7 +64,7 @@ namespace lines {
     }
 
     void InstancingBasedPolylines::draw(uint viewId) const {
-        m_Settings.bindUniformPolylines();
+        mSettings.bindUniformPolylines();
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -78,9 +78,9 @@ namespace lines {
         bgfx::setIndexBuffer(mIndexesBH);
         bgfx::setInstanceDataBuffer(&mSegmentsInstanceDB);
         bgfx::setState(state);
-        bgfx::submit(viewId, m_Program);
+        bgfx::submit(viewId, mLinesPH);
 
-        if(m_Settings.getJoin() != 0) {
+        if(mSettings.getJoin() != 0) {
             bgfx::setVertexBuffer(0, mVerticesBH);
             bgfx::setIndexBuffer(mIndexesBH);
             bgfx::setInstanceDataBuffer(&mJoinsInstanceDB);

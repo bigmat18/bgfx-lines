@@ -86,7 +86,7 @@ namespace lines {
     }
 
     void IndirectBasedPolylines::draw(uint viewId) const {
-        m_Settings.bindUniformPolylines();
+        mSettings.bindUniformPolylines();
 
         float indirectData[] = {static_cast<float>(mPoints.size() - 1), 0, 0, 0};
         bgfx::setUniform(mComputeIndirectDataUH, indirectData);
@@ -103,9 +103,9 @@ namespace lines {
         bgfx::setIndexBuffer(mIndexesBH);
         bgfx::setBuffer(1, mPointsBH, bgfx::Access::Read);
         bgfx::setState(state);
-        bgfx::submit(viewId, m_Program, mSegmentsIndirectBH, 0);
+        bgfx::submit(viewId, mLinesPH, mSegmentsIndirectBH, 0);
 
-        if(m_Settings.getJoin() != 0) {
+        if(mSettings.getJoin() != 0) {
             bgfx::setVertexBuffer(0, mVerticesBH);
             bgfx::setIndexBuffer(mIndexesBH);
             bgfx::setBuffer(1, mPointsBH, bgfx::Access::Read);

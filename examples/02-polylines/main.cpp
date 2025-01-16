@@ -16,15 +16,15 @@ int main(int argc, char** argv)
     std::vector<lines::LinesVertex> points;
     generateSegmentsInCube(points, 3, 1000);
 
-    auto line = lines::Polylines::create(points, lines::LinesTypes::CPU_GENERATED);
-    line->getSettings().setThickness(5);
+    auto line = lines::Polylines::create(points, lines::LinesTypes::TEXTURE_BASED);
+    line->getSettings().setThickness(10);
     line->getSettings().setColorToUse(lines::ColorToUse::PER_VERTEX_COLOR);
     // line->getSettings().setMiterLimit(20);
     // line->getSettings().setBorderColor(lines::LinesVertex::COLOR(1.0, 0.0, 1.0, 1.0));
     // line->getSettings().setBorder(2);
-    // line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
-    // line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
-    // line->getSettings().setJoin(lines::Joins::ROUND_JOIN);
+    line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
+    line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
+    line->getSettings().setJoin(lines::Joins::ROUND_JOIN);
 
     // line->setThickness(5);
     // line->setMiterLimit(10);

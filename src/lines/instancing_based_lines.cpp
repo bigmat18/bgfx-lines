@@ -47,7 +47,7 @@ namespace lines {
     }
 
     void InstancingBasedLines::draw(uint viewId) const {
-        m_Settings.bindUniformLines();
+        mSettings.bindUniformLines();
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -62,7 +62,7 @@ namespace lines {
         bgfx::setInstanceDataBuffer(&mInstanceDB);
         
         bgfx::setState(state);
-        bgfx::submit(viewId, m_Program);
+        bgfx::submit(viewId, mLinesPH);
     }
 
     void InstancingBasedLines::update(const std::vector<LinesVertex> &points) {

@@ -22,19 +22,18 @@ namespace lines {
                 return vcl::Box3d(vcl::Point3d(-1,-1,-1), vcl::Point3d(1, 1, 1));
             }
 
-            bool isVisible() const override { return m_Visible; }
+            bool isVisible() const override { return mVisible; }
 
-            void setVisibility(bool vis) override { m_Visible = vis; }
+            void setVisibility(bool vis) override { mVisible = vis; }
 
-            LinesSettings& getSettings() { return m_Settings; }
+            LinesSettings& getSettings() { return mSettings; }
 
             virtual void update(const std::vector<LinesVertex> &points) = 0;
 
         protected: 
-            bgfx::ProgramHandle m_Program;
+            bool mVisible = true;
             
-            LinesSettings m_Settings;
-            vcl::Box3d m_BoundingBox;
-            bool m_Visible = true;
+            bgfx::ProgramHandle         mLinesPH;
+            LinesSettings               mSettings;
     };
 }

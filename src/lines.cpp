@@ -54,24 +54,24 @@ namespace lines {
     }
 
     Lines::Lines(const std::string& vs_name,  const std::string& fs_name) {
-        m_Program = vcl::loadProgram(vs_name, fs_name);
-        assert(bgfx::isValid(m_Program));
+        mLinesPH = vcl::loadProgram(vs_name, fs_name);
+        assert(bgfx::isValid(mLinesPH));
     }
 
     Lines::Lines(const Lines& other) {
-        m_Program = other.m_Program;
-        m_Settings = other.m_Settings;
-        assert(bgfx::isValid(m_Program));
+        mLinesPH = other.mLinesPH;
+        mSettings = other.mSettings;
+        assert(bgfx::isValid(mLinesPH));
     }
 
     Lines::Lines(Lines&& other) {
-        m_Program = other.m_Program;
-        m_Settings = other.m_Settings;
-        assert(bgfx::isValid(m_Program));
+        mLinesPH = other.mLinesPH;
+        mSettings = other.mSettings;
+        assert(bgfx::isValid(mLinesPH));
     }
 
     Lines::~Lines() {
-        if(bgfx::isValid(m_Program))
-            bgfx::destroy(m_Program);
+        if(bgfx::isValid(mLinesPH))
+            bgfx::destroy(mLinesPH);
     } 
 }

@@ -60,7 +60,7 @@ namespace lines {
     }
 
     void GPUGeneratedLines::draw(uint viewId) const {
-        m_Settings.bindUniformLines();
+        mSettings.bindUniformLines();
 
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
@@ -73,7 +73,7 @@ namespace lines {
         bgfx::setVertexBuffer(0, mVerticesBH);
         bgfx::setIndexBuffer(mIndexesBH);
         bgfx::setState(state);
-        bgfx::submit(viewId, m_Program);
+        bgfx::submit(viewId, mLinesPH);
     }
 
     void GPUGeneratedLines::update(const std::vector<LinesVertex> &points) {
