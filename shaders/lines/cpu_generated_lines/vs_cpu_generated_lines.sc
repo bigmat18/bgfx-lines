@@ -1,5 +1,5 @@
 $input a_position, a_texcoord0, a_color0, a_normal, a_texcoord1
-$output v_color, v_uv, v_length
+$output v_color, v_uv, v_length, v_normal
 
 #include <bgfx_shader.sh>
 #include "../../lines.sh"
@@ -28,6 +28,7 @@ void main() {
     vec4 p1_px = calculatePointWithMVP(vec4(p1, 0.0), u_screenWidth, u_screenHeigth);
     
     v_color = (a_color0 * (1 - sign(u_color_to_use))) + (u_general_color * sign(u_color_to_use));
+    v_normal = a_normal;
     v_length = length(p1_px - p0_px);
 
     v_uv = calculateLinesUV(p0_px, p1_px, uv, v_length, u_thickness, u_antialias, u_border, u_leftCap, u_rigthCap);
