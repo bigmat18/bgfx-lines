@@ -58,9 +58,50 @@ namespace lines {
                 mDataUH = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
             }
 
+            LinesSettings(const LinesSettings& other) : 
+                mThickness(other.mThickness),
+                mAntialias(other.mAntialias),
+                mBorder(other.mBorder),
+                mBorderColor(other.mBorderColor),
+                mGeneralColor(other.mGeneralColor),
+                mMiterLimit(other.mMiterLimit),
+                mLeftCap(other.mLeftCap),
+                mRigthCap(other.mRigthCap),
+                mJoin(other.mJoin),
+                mColorToUse(other.mColorToUse)
+            {
+                mDataUH = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
+            }
+
+            LinesSettings(LinesSettings&& other) {
+                swap(other);
+            }
+
             ~LinesSettings() {
                 if(bgfx::isValid(mDataUH))
                     bgfx::destroy(mDataUH);
+            }
+
+            LinesSettings& operator=(LinesSettings other) {
+                swap(other);
+                return *this;
+            }
+
+            void swap(LinesSettings& other){
+                std::swap(mThickness, other.mThickness);
+                std::swap(mAntialias, other.mAntialias);
+                std::swap(mBorder, other.mThickness);
+
+                std::swap(mBorderColor, other.mBorderColor);
+                std::swap(mGeneralColor, other.mGeneralColor);
+
+                std::swap(mMiterLimit, other.mMiterLimit);
+                std::swap(mLeftCap, other.mLeftCap);
+                std::swap(mRigthCap, other.mRigthCap);
+                std::swap(mJoin, other.mJoin);
+
+                std::swap(mColorToUse, other.mColorToUse);
+                std::swap(mDataUH, other.mDataUH);
             }
 
             Joins getJoin() const { return mJoin; }
@@ -124,6 +165,5 @@ namespace lines {
                 uint32_t data[] = {mGeneralColor, thickness_antialias_border_miterlimit, mBorderColor, caps_join_color};
                 bgfx::setUniform(mDataUH, data);
             }
-
     };
 }

@@ -4,13 +4,12 @@
 namespace lines {
     class InstancingBasedLines : public Lines {
 
-
         std::vector<float>          mVertices = { 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f };
         std::vector<uint32_t>       mIndexes = { 0, 1, 2, 1, 3, 2 };
         std::vector<LinesVertex>    mPoints;
 
-        bgfx::VertexBufferHandle    mVerticesBH;
-        bgfx::IndexBufferHandle     mIndexesBH;
+        bgfx::VertexBufferHandle    mVerticesBH         = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle     mIndexesBH          = BGFX_INVALID_HANDLE;
         bgfx::InstanceDataBuffer    mInstanceDB;
 
         public:

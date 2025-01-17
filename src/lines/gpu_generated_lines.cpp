@@ -48,6 +48,10 @@ namespace lines {
     }
 
     void GPUGeneratedLines::swap(GPUGeneratedLines& other) {
+        std::swap(mLinesPH, other.mLinesPH);
+        std::swap(mSettings, other.mSettings);
+        std::swap(mVisible, other.mVisible);
+
         std::swap(mIndexesBH, other.mIndexesBH);
         std::swap(mVerticesBH, other.mVerticesBH);
         std::swap(mPoints, other.mPoints);

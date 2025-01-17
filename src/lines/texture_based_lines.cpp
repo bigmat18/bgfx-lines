@@ -69,7 +69,9 @@ namespace lines {
     }
 
     void TextureBasedLines::swap(TextureBasedLines& other) {
-        // std::swap((Lines&)*this, (Lines&)other);
+        std::swap(mLinesPH, other.mLinesPH);
+        std::swap(mSettings, other.mSettings);
+        std::swap(mVisible, other.mVisible);
 
         std::swap(mMaxTextureSize, other.mMaxTextureSize);
         std::swap(mPoints, other.mPoints);

@@ -6,7 +6,6 @@
 #include "utils.hpp"
 
 namespace lines {
-
     class Lines : public vcl::DrawableObjectI {
 
         public:
@@ -35,6 +34,8 @@ namespace lines {
 
         protected: 
             bool mVisible = true;
+            std::string vs_name;
+            std::string fs_name;
 
             bgfx::ProgramHandle         mLinesPH;
             LinesSettings               mSettings;

@@ -9,9 +9,9 @@ namespace lines {
         std::vector<uint32_t>       mSegmentsIndexes;
         std::vector<uint32_t>       mJoinsIndexes;
 
-        bgfx::DynamicVertexBufferHandle    mVerticesBH;
-        bgfx::DynamicIndexBufferHandle     mSegmentsIndexesBH;
-        bgfx::DynamicIndexBufferHandle     mJoinsIndexesBH;
+        bgfx::DynamicVertexBufferHandle    mVerticesBH              = BGFX_INVALID_HANDLE;
+        bgfx::DynamicIndexBufferHandle     mSegmentsIndexesBH       = BGFX_INVALID_HANDLE;
+        bgfx::DynamicIndexBufferHandle     mJoinsIndexesBH          = BGFX_INVALID_HANDLE;
 
         public:
             CPUGeneratedPolylines(const std::vector<LinesVertex> &points);

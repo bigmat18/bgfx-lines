@@ -45,6 +45,10 @@ namespace lines {
     }
 
     void CPUGeneratedPolylines::swap(CPUGeneratedPolylines& other) {
+        std::swap(mLinesPH, other.mLinesPH);
+        std::swap(mSettings, other.mSettings);
+        std::swap(mVisible, other.mVisible);
+
         std::swap(mPointsSize, other.mPointsSize);
 
         std::swap(mVertices, other.mVertices);

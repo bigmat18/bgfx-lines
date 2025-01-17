@@ -42,6 +42,10 @@ namespace lines {
     }
 
     void CPUGeneratedLines::swap(CPUGeneratedLines& other) {
+        std::swap(mLinesPH, other.mLinesPH);
+        std::swap(mSettings, other.mSettings);
+        std::swap(mVisible, other.mVisible);
+
         std::swap(mPointsSize, other.mPointsSize);
         std::swap(mIndexesBH, other.mIndexesBH);
         std::swap(mVerticesBH, other.mVerticesBH);

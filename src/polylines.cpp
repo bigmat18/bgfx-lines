@@ -51,19 +51,27 @@ namespace lines {
         throw std::invalid_argument("Invalid enum case");
     }
 
-    Polylines::Polylines(const std::string& vs_name,  const std::string& fs_name) {
+    Polylines::Polylines(const std::string& vs_name,  const std::string& fs_name) :
+        vs_name(vs_name), fs_name(fs_name)
+    {
         mLinesPH = vcl::loadProgram(vs_name, fs_name);
         assert(bgfx::isValid(mLinesPH));
     }
 
     Polylines::Polylines(const Polylines& other) {
-        mLinesPH = other.mLinesPH;
+        vs_name = other.vs_name;
+        fs_name = other.fs_name;
+
+        mLinesPH = vcl::loadProgram(vs_name, fs_name);
         mSettings = other.mSettings;
         assert(bgfx::isValid(mLinesPH));
     }
 
     Polylines::Polylines(Polylines&& other) {
-        mLinesPH = other.mLinesPH;
+        vs_name = other.vs_name;
+        fs_name = other.fs_name;
+
+        mLinesPH = vcl::loadProgram(vs_name, fs_name);
         mSettings = other.mSettings;
         assert(bgfx::isValid(mLinesPH));
     }

@@ -35,6 +35,10 @@ namespace lines {
     }
 
     void InstancingBasedLines::swap(InstancingBasedLines& other) {
+        std::swap(mLinesPH, other.mLinesPH);
+        std::swap(mSettings, other.mSettings);
+        std::swap(mVisible, other.mVisible);
+
         std::swap(mPoints, other.mPoints);
 
         std::swap(mVerticesBH, other.mVerticesBH);

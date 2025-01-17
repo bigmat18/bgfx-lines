@@ -32,6 +32,8 @@ namespace lines {
 
         protected: 
             bool mVisible = true;
+            std::string vs_name;
+            std::string fs_name;
             
             bgfx::ProgramHandle         mLinesPH;
             LinesSettings               mSettings;
