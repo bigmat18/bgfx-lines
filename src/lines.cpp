@@ -1,4 +1,5 @@
 #include <lines.hpp>
+#include <lines/primitive_lines.hpp>
 #include <lines/cpu_generated_lines.hpp>
 #include <lines/gpu_generated_lines.hpp>
 #include <lines/instancing_based_lines.hpp>
@@ -13,6 +14,10 @@ namespace lines {
         const bgfx::Caps* caps = bgfx::getCaps();
 
         switch (type) {
+            case LinesTypes::PRIMITIVE: {
+                return std::make_unique<PrimitiveLines>(points);
+            }
+
             case LinesTypes::CPU_GENERATED: {
                 return std::make_unique<CPUGeneratedLines>(points);
             }
