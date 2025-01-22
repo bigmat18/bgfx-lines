@@ -46,7 +46,7 @@ namespace lines {
         std::swap(mInstanceDB, other.mInstanceDB);
     }
 
-    std::shared_ptr<vcl::DrawableObjectI> InstancingBasedLines::clone() const {
+    std::shared_ptr<vcl::DrawableObject> InstancingBasedLines::clone() const {
         return std::make_shared<InstancingBasedLines>(*this);
     }
 

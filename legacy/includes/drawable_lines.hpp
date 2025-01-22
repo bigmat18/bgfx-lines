@@ -9,7 +9,7 @@
 namespace Lines
 {
 
-    class DrawableLines : public vcl::DrawableObjectI
+    class DrawableLines : public vcl::DrawableObject
     {
         friend DrawableLines *create(LinesType type, const std::string name);
 

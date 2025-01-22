@@ -24,7 +24,7 @@ namespace Lines
 
         ~PrimitiveDrawableLines() = default;
 
-        std::shared_ptr<vcl::DrawableObjectI> clone() const override { 
+        std::shared_ptr<vcl::DrawableObject> clone() const override { 
             return std::make_shared<PrimitiveDrawableLines>(*this); 
         }
 

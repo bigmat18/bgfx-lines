@@ -1,11 +1,11 @@
 #pragma once
-#include <vclib/render/interfaces/drawable_object_i.h>
+#include <vclib/render/drawable/drawable_object.h>
 #include <bgfx/bgfx.h>
 #include "lines_settings.hpp"
 #include "utils.hpp"
 
 namespace lines {
-    class Polylines : public vcl::DrawableObjectI {
+    class Polylines : public vcl::DrawableObject {
 
         public:
             static std::unique_ptr<Polylines> create(const std::vector<LinesVertex> &points, LinesTypes type = LinesTypes::CPU_GENERATED);

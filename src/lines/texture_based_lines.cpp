@@ -87,7 +87,7 @@ namespace lines {
         std::swap(mIndexesBH, other.mIndexesBH);
     }
 
-    std::shared_ptr<vcl::DrawableObjectI> TextureBasedLines::clone() const {
+    std::shared_ptr<vcl::DrawableObject> TextureBasedLines::clone() const {
         return std::make_shared<TextureBasedLines>(*this);
     }
 

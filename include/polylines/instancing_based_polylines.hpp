@@ -28,7 +28,7 @@ namespace lines {
 
             void swap(InstancingBasedPolylines& other);
 
-            std::shared_ptr<vcl::DrawableObjectI> clone() const override;
+            std::shared_ptr<vcl::DrawableObject> clone() const override;
 
             void draw(uint viewId) const override;
 

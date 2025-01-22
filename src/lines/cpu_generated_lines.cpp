@@ -51,7 +51,7 @@ namespace lines {
         std::swap(mVerticesBH, other.mVerticesBH);
     }
 
-    std::shared_ptr<vcl::DrawableObjectI> CPUGeneratedLines::clone() const {
+    std::shared_ptr<vcl::DrawableObject> CPUGeneratedLines::clone() const {
         return std::make_shared<CPUGeneratedLines>(*this);
     }
 

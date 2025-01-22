@@ -59,7 +59,7 @@ namespace lines {
         std::swap(mComputeVerticesPH, other.mComputeVerticesPH);
     }
 
-    std::shared_ptr<vcl::DrawableObjectI> GPUGeneratedLines::clone() const {
+    std::shared_ptr<vcl::DrawableObject> GPUGeneratedLines::clone() const {
         return std::make_shared<GPUGeneratedLines>(*this);
     }
 

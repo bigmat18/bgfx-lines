@@ -63,7 +63,7 @@ namespace lines {
         std::swap(mJoinesPH, other.mJoinesPH);
     }
 
-    std::shared_ptr<vcl::DrawableObjectI> InstancingBasedPolylines::clone() const {
+    std::shared_ptr<vcl::DrawableObject> InstancingBasedPolylines::clone() const {
         return std::make_shared<InstancingBasedPolylines>(*this);
     }
 

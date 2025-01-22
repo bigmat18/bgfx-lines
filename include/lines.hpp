@@ -1,12 +1,12 @@
 #pragma once
-#include <vclib/render/interfaces/drawable_object_i.h>
+#include <vclib/render/drawable/drawable_object.h>
 #include <bgfx/bgfx.h>
 #include <algorithm>
 #include "lines_settings.hpp"
 #include "utils.hpp"
 
 namespace lines {
-    class Lines : public vcl::DrawableObjectI {
+    class Lines : public vcl::DrawableObject {
 
         public:
 

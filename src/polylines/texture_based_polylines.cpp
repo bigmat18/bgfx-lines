@@ -103,7 +103,7 @@ namespace lines {
         std::swap(mComputeDataUH, other.mComputeDataUH);
     }
 
-    std::shared_ptr<vcl::DrawableObjectI> TextureBasedPolylines::clone() const {
+    std::shared_ptr<vcl::DrawableObject> TextureBasedPolylines::clone() const {
         return std::make_shared<TextureBasedPolylines>(*this);
     }
 

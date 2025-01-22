@@ -32,7 +32,7 @@ namespace Lines
 
         void setThickness(float thickness) { mData.thickness = thickness;}
 
-        std::shared_ptr<vcl::DrawableObjectI> clone() const override { return std::make_shared<TriangulatedDrawableLines>(*this); }
+        std::shared_ptr<vcl::DrawableObject> clone() const override { return std::make_shared<TriangulatedDrawableLines>(*this); }
 
         ~TriangulatedDrawableLines();
 

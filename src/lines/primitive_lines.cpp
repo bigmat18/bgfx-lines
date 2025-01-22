@@ -63,7 +63,7 @@ namespace lines {
         std::swap(mVerticesBH, other.mVerticesBH);
     }
 
-    std::shared_ptr<vcl::DrawableObjectI> PrimitiveLines::clone() const {
+    std::shared_ptr<vcl::DrawableObject> PrimitiveLines::clone() const {
         return std::make_shared<PrimitiveLines>(*this);
     }
 
