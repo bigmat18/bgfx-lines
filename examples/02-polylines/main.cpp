@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     //     // lines::LinesVertex(1.0f, 1.5f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
     // };
     std::vector<lines::LinesVertex> points;
-    generateSegmentsInCube(points, 3, 1000);
+    generateSegmentsInCube(points, 3, 100);
 
     auto line = lines::Polylines::create(points, lines::LinesTypes::TEXTURE_BASED);
     line->getSettings().setThickness(10);
@@ -22,9 +22,9 @@ int main(int argc, char** argv)
     // line->getSettings().setMiterLimit(20);
     // line->getSettings().setBorderColor(lines::LinesVertex::COLOR(1.0, 0.0, 1.0, 1.0));
     // line->getSettings().setBorder(2);
-    line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
-    line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
-    line->getSettings().setJoin(lines::Joins::ROUND_JOIN);
+    // line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
+    // line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
+    // line->getSettings().setJoin(lines::Joins::ROUND_JOIN);
 
     // line->setThickness(5);
     // line->setMiterLimit(10);
@@ -45,9 +45,9 @@ int main(int argc, char** argv)
     // line2->setMiterLimit(50);
     // line2->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
 
-    std::vector<lines::LinesVertex> points1;
-    generateSegmentsInCube(points1, 3, 10);
-    line->update(points1);
+    // std::vector<lines::LinesVertex> points1;
+    // generateSegmentsInCube(points1, 3, 10);
+    // line->update(points1);
     
     tw.pushDrawableObject(*line.get());
     // tw.pushDrawableObject(*line2.get());

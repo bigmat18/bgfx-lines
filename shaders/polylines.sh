@@ -62,7 +62,7 @@ vec4 calculatePolylines(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thicknes
     } 
 
     p = screenToClip(p, screen_width, screen_heigth);
-    return vec4(p.xy, curr.z / curr.w, 1.0);
+    return vec4(p.xy * curr.w, curr.z, curr.w);
 }
 
 vec4 calculatePolylinesUV(vec4 prev, vec4 curr, vec4 next, vec2 uv, float thickness, float length_px, float leftCap, float rigthCap, float join) {

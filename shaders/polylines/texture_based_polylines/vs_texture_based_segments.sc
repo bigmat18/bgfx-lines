@@ -65,4 +65,3 @@ void main() {
     v_is_start_end = (sign(length(curr - prev)) * (1 - a_uv.x)) + (sign(length(curr-next)) * a_uv.x);
     gl_Position = calculatePolylines(prev_px, curr_px, next_px, a_uv, u_thickness, u_miter_limit, u_screenWidth, u_screenHeigth, u_leftCap, u_rigthCap, u_join, is_start, is_end);
 }
-
