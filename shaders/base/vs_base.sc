@@ -5,5 +5,7 @@ $output v_color
 
 void main() {
     v_color = vec4(1,0,1,1);
-    gl_Position = mul(u_modelViewProj, vec4(a_position.xyz, 1.0));
+    vec4 pos = mul(u_modelViewProj, vec4(a_position.xyz, 1.0));
+
+    gl_Position = pos;
 }

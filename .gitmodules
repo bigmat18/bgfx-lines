@@ -1,4 +1,1 @@
 
-[submodule "libs/vclib"]
-	path = libs/vclib
-	url = https://github.com/cnr-isti-vclab/vclib
