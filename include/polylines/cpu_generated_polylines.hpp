@@ -4,10 +4,10 @@
 namespace lines {
     class CPUGeneratedPolylines : public Polylines {
 
-        uint32_t                    mPointsSize;
-        std::vector<float>          mVertices;
-        std::vector<uint32_t>       mSegmentsIndexes;
-        std::vector<uint32_t>       mJoinsIndexes;
+        uint32_t                            mPointsSize;
+        std::vector<float>                  mVertices;
+        std::vector<uint32_t>               mSegmentsIndexes;
+        std::vector<uint32_t>               mJoinsIndexes;
 
         bgfx::DynamicVertexBufferHandle    mVerticesBH              = BGFX_INVALID_HANDLE;
         bgfx::DynamicIndexBufferHandle     mSegmentsIndexesBH       = BGFX_INVALID_HANDLE;

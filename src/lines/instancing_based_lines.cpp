@@ -7,14 +7,14 @@ namespace lines {
     {
         allocateVerticesBuffer();
         allocateIndexesBuffer();
-        generateInstanceDataBuffer();
+        // generateInstanceDataBuffer();
     }
 
     InstancingBasedLines::InstancingBasedLines(const InstancingBasedLines& other) : Lines(other) {
         mPoints = other.mPoints;
         allocateVerticesBuffer();
         allocateIndexesBuffer();
-        generateInstanceDataBuffer();
+        // generateInstanceDataBuffer();
     }
 
     InstancingBasedLines::InstancingBasedLines(InstancingBasedLines&& other) : Lines(other) {
@@ -51,6 +51,7 @@ namespace lines {
     }
 
     void InstancingBasedLines::draw(uint viewId) const {
+        generateInstanceDataBuffer();
         mSettings.bindUniformLines();
 
         uint64_t state = 0
@@ -74,7 +75,7 @@ namespace lines {
         generateInstanceDataBuffer();
     }
 
-    void InstancingBasedLines::generateInstanceDataBuffer() {
+    void InstancingBasedLines::generateInstanceDataBuffer() const {
         const uint16_t stride = sizeof(float) * 16;
 
         uint32_t linesNum = bgfx::getAvailInstanceDataBuffer((mPoints.size() / 2), stride);

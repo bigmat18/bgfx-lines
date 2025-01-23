@@ -4,16 +4,17 @@
 namespace lines {
     class InstancingBasedPolylines : public Polylines {
 
-        std::vector<float>          mVertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
-        std::vector<uint32_t>       mIndexes = {0, 3, 1, 0, 2, 3};
+        static const inline std::vector<float>        mVertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+        static const inline std::vector<uint32_t>     mIndexes = {0, 3, 1, 0, 2, 3};
 
-        bgfx::InstanceDataBuffer    mSegmentsInstanceDB;
-        bgfx::InstanceDataBuffer    mJoinsInstanceDB;
+        std::vector<LinesVertex>                      mPoints;
 
-        bgfx::VertexBufferHandle    mVerticesBH;
-        bgfx::IndexBufferHandle     mIndexesBH;
+        mutable bgfx::InstanceDataBuffer              mSegmentsInstanceDB;
+        mutable bgfx::InstanceDataBuffer              mJoinsInstanceDB;
 
-        bgfx::ProgramHandle         mJoinesPH;
+        bgfx::VertexBufferHandle                      mVerticesBH           = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle                       mIndexesBH            = BGFX_INVALID_HANDLE;
+        bgfx::ProgramHandle                           mJoinesPH             = BGFX_INVALID_HANDLE;
 
         public:
             InstancingBasedPolylines(const std::vector<LinesVertex> &points);
@@ -35,7 +36,7 @@ namespace lines {
             void update(const std::vector<LinesVertex> &points) override;
 
         private:
-            void generateInstanceBuffer(const std::vector<LinesVertex> &points);
+            void generateInstanceBuffer() const;
 
             void allocateVerticesBuffer();
 

@@ -3,9 +3,44 @@
 
 #include "common.h"
 
+#include <vclib/imgui/imgui_drawer.h>
+
+#include <vclib/glfw/window_manager.h>
+#include <vclib/render/canvas.h>
+#include <vclib/render/drawers/viewer_drawer.h>
+#include <vclib/render/render_app.h>
+
+#include <imgui.h>
+
+template<typename DerivedRenderApp>
+class DemoImGuiDrawer : public vcl::imgui::ImGuiDrawer<DerivedRenderApp>
+{
+    using ParentDrawer = vcl::imgui::ImGuiDrawer<DerivedRenderApp>;
+
+public:
+    using ParentDrawer::ParentDrawer;
+
+    virtual void onDraw(vcl::uint viewId) override
+    {
+        // draw the scene
+        ParentDrawer::onDraw(viewId);
+
+        if (!ParentDrawer::isWindowMinimized()) {
+            // imgui demo window
+            ImGui::ShowDemoWindow();
+        }
+    }
+};
+
 int main(int argc, char** argv)
 {
-    vcl::glfw::ViewerWindow tw("Viewer GLFW");
+    using ImGuiDemo = vcl::RenderApp<
+        vcl::glfw::WindowManager,
+        vcl::Canvas,
+        DemoImGuiDrawer,
+        vcl::ViewerDrawer>;
+
+    ImGuiDemo tw("Viewer ImGui GLFW");
 
     // std::vector<lines::LinesVertex> points = {
     //     lines::LinesVertex(0.0f, 0.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
