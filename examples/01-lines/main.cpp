@@ -46,25 +46,27 @@ int main(int argc, char** argv)
     // vcl::Context::instance().requestViewId();
     
     // std::vector<lines::LinesVertex> points = {
-    //     lines::LinesVertex(0.0, 0.0f, -2.0f, lines::LinesVertex::COLOR(0.0, 1.0, 0.0, 1.0)),
+    //     lines::LinesVertex(0.0, 0.0f, 0.0f, lines::LinesVertex::COLOR(0.0, 1.0, 0.0, 1.0)),
     //     lines::LinesVertex(0.5, 0.5f, 0.0f, lines::LinesVertex::COLOR(1.0, 1.0, 0.0, 1.0)),
     //     lines::LinesVertex(1.0f, -1.0f, 0.0f, lines::LinesVertex::COLOR(0.0, 0.0, 0.0, 1.0)),
     //     lines::LinesVertex(1.0f, 1.0f, 0.25f, lines::LinesVertex::COLOR(0.0, 1.0, 0.0, 1.0)),
     //     lines::LinesVertex(1.5f, -1.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.5, 1.0)),
     //     lines::LinesVertex(1.5f, 0.5f, 0.5f, lines::LinesVertex::COLOR(0.0, 1.0, 1.0, 1.0)),
+    //     lines::LinesVertex(-0.5f, 1.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.25, 0.5, 1.0)),
+    //     lines::LinesVertex(-0.5f, 0.5f, 0.5f, lines::LinesVertex::COLOR(0.0, 1.0, 1.0, 1.0)),
     // }; 
 
     std::vector<lines::LinesVertex> points;
     generatePointsInCube(points, 3, 1000);
 
     auto line = lines::Lines::create(points, lines::LinesTypes::TEXTURE_BASED);
+    line->getSettings().setThickness(10);
+    line->getSettings().setLeftCap(lines::Caps::BUTT_CAP);
+    line->getSettings().setRigthCap(lines::Caps::BUTT_CAP);
+    line->getSettings().setColorToUse(lines::ColorToUse::PER_VERTEX_COLOR);
+    tw.pushDrawableObject(*line.get());
 
-    // line->getSettings().setColorToUse(lines::ColorToUse::PER_VERTEX_COLOR); 
-    // line->getSettings().setThickness(10);
-    // line->getSettings().setLeftCap(lines::Caps::ROUND_CAP);
-    // line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
-    // line->getSettings().setColorToUse(lines::ColorToUse::PER_VERTEX_COLOR);
-    // line->getSettings().setBorder(0);
+    // line->getSettings().setBorder(1);
     // line->getSettings().setBorderColor(lines::LinesVertex::COLOR(1, 0, 0, 1));
 
     // std::vector<lines::LinesVertex> points1;
@@ -73,7 +75,7 @@ int main(int argc, char** argv)
 
     // auto line2 = lines::Lines::create(points, lines::LinesTypes::PRIMITIVE);
     
-    tw.pushDrawableObject(*line.get());    
+    // tw.pushDrawableObject(*line.get());    
     // tw.pushDrawableObject(*line2.get());
     tw.fitScene();
 
