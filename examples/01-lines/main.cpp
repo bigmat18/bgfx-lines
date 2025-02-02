@@ -57,13 +57,14 @@ int main(int argc, char** argv)
     // }; 
 
     std::vector<lines::LinesVertex> points;
-    generatePointsInCube(points, 3, 1000);
+    generatePointsInCube(points, 3, 500);
 
     auto line = lines::Lines::create(points, lines::LinesTypes::TEXTURE_BASED);
     line->getSettings().setThickness(10);
     line->getSettings().setLeftCap(lines::Caps::BUTT_CAP);
     line->getSettings().setRigthCap(lines::Caps::BUTT_CAP);
-    line->getSettings().setColorToUse(lines::ColorToUse::PER_VERTEX_COLOR);
+    line->getSettings().setColorToUse(lines::ColorToUse::GENERAL_COLOR);
+    line->getSettings().setGeneralColor(lines::LinesVertex::COLOR(0, 0, 0, 1));
     tw.pushDrawableObject(*line.get());
 
     // line->getSettings().setBorder(1);
