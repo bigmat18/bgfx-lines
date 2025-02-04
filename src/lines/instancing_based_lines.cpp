@@ -82,7 +82,7 @@ namespace lines {
         bgfx::allocInstanceDataBuffer(&mInstanceDB, linesNum, stride);
 
         uint8_t* data = mInstanceDB.data;
-        for(uint32_t i = 1; i < mPoints.size(); i+=2) {
+        for(uint32_t i = 1; i < linesNum * 2; i+=2) {
 
             float* p0 = reinterpret_cast<float*>(data);
             p0[0] = mPoints[i-1].X;

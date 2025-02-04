@@ -73,4 +73,47 @@ vec4 calculateLinesColor(vec4 uv, float length_px, float thickness, float antial
 	}
 }
 
+// vec4 calculateLinesColor(vec4 uv, float length_px, float thickness, float antialias, float border, float leftCap, float rigthCap, vec4 color, vec4 borderColor) {
+// 	float d = -1;
+// 	float width_px = (thickness / 2) + antialias + border;
+// 	vec4 final_border_color = (borderColor * sign(border)) + (color * (1 - sign(border)));
+
+// 	float period = length_px / 3;
+// 	float space = width_px;
+// 	vec2 period_uv = vec2(mod(uv.x, period), uv.y);
+// 	// if(period_uv.x > period - period/3)
+// 	// 	return vec4(0);
+	
+// 	if(period_uv.x < width_px + space) {
+// 		float square_cap    = (width_px - max(abs(period_uv.x), abs(uv.y))) * (1 - sign(abs(leftCap - 1)));
+// 		float round_cap     = (width_px - length(period_uv))  	  			* (1 - sign(abs(leftCap - 2)));
+// 		float triangle_cap  = (width_px - (abs(period_uv.x) + abs(uv.y)))   * (1 - sign(abs(leftCap - 3)));
+
+// 		if(period_uv.x > space)
+// 			d = width_px - length(vec2(period_uv.x - width_px - space, period_uv.y));
+// 	} else if(period_uv.x > period - width_px - space) {
+// 		float square_cap    = (width_px - max(abs(period_uv.x - period), abs(uv.y))) * (1 - sign(abs(rigthCap - 1)));
+// 		float round_cap     = (width_px - length(period_uv - vec4(period, 0, 0, 0))) * (1 - sign(abs(rigthCap - 2)));
+// 		float triangle_cap  = (width_px - (abs(period_uv.x - period) + abs(uv.y)))   * (1 - sign(abs(rigthCap - 3)));
+
+// 		if(period_uv.x < period - space )
+// 			d = width_px - length(period_uv - vec4(period - width_px - space, 0, 0, 0));
+// 	} else
+// 		d = width_px - abs(period_uv.y);
+
+// 	if(d > antialias + border)
+// 		return color;
+
+// 	else if(d > antialias) {
+// 		return final_border_color;
+
+// 	} else if (d > 0) {
+// 		d /= 2;
+// 		return vec4(final_border_color.xyz, d);
+
+// 	} else {
+// 		return vec4(0);
+// 	}
+// }
+
 #endif
