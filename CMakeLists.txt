@@ -14,6 +14,7 @@ project(bgfx-lines)
 set(VCLIB_BUILD_MODULE_RENDER ON)
 set(VCLIB_BUILD_EXAMPLES OFF)
 set(VCLIB_BUILD_TESTS OFF)
+set(VCLIB_ALLOW_SYSTEM_QT OFF)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/vclib)
 
 

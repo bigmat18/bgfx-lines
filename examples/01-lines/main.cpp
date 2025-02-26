@@ -59,7 +59,7 @@ int main(int argc, char** argv)
     std::vector<lines::LinesVertex> points;
     generatePointsInCube(points, 3, 1000000);
 
-    auto line = lines::Lines::create(points, lines::LinesTypes::INSTANCING_BASED);
+    auto line = lines::Lines::create(points, lines::LinesTypes::INDIRECT_BASED);
     line->getSettings().setThickness(10);
     line->getSettings().setLeftCap(lines::Caps::ROUND_CAP);
     line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);

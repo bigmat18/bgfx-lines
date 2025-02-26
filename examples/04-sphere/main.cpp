@@ -46,17 +46,11 @@ void createSphereLines(std::vector<lines::LinesVertex> &points, int n) {
     std::vector<float> T = linespace(n, 0, 20 * 2 * M_PI);
     std::vector<float> R = linespace(n, 0.1, M_PI - 0.1);
     
-    for (int i = 1; i < n; i++) {
-        float X0 = cosf(T[i - 1]) * sinf(R[i - 1]);
-        float Y0 = sinf(T[i - 1]) * sinf(R[i - 1]);
-        float Z0 = cosf(R[i - 1]);
-
+    for (int i = 0; i < n; i++) {
         float X1 = cosf(T[i]) * sinf(R[i]);
         float Y1 = sinf(T[i]) * sinf(R[i]);
         float Z1 = cosf(R[i]);
 
-        
-        points.push_back(lines::LinesVertex(X0, Y0, Z0));
         points.push_back(lines::LinesVertex(X1, Y1, Z1));
     }
 }
@@ -116,7 +110,7 @@ int main(int argc, char** argv)
     ImGuiDemo tw("Viewer ImGui GLFW");
 
     std::vector<lines::LinesVertex> points;
-    createSphereLines(points, 350);
+    generateTourus(points, 10, 20, 100, 100);
 
     auto line = lines::Lines::create(points, lines::LinesTypes::TEXTURE_BASED);
     line->getSettings().setThickness(5);

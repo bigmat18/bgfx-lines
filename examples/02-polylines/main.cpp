@@ -42,51 +42,31 @@ int main(int argc, char** argv)
 
     ImGuiDemo tw("Viewer ImGui GLFW");
 
-    // std::vector<lines::LinesVertex> points = {
-    //     lines::LinesVertex(0.0f, 0.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
-    //     lines::LinesVertex(0.5f, 0.0f, 0.0f, lines::LinesVertex::COLOR(0.0, 0.0, 1.0, 1.0)),
-    //     lines::LinesVertex(1.0f, 1.0f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
-    //     // lines::LinesVertex(1.0f, 1.5f, 0.0f, lines::LinesVertex::COLOR(1.0, 0.0, 0.0, 1.0)),
-    // };
-    std::vector<lines::LinesVertex> points;
-    generateSegmentsInCube(points, 3, 100);
+    std::vector<lines::LinesVertex> points = {
+        lines::LinesVertex(-2, 0.2, 0),
+        lines::LinesVertex(-1.5, -0.2, 0),
+        lines::LinesVertex(-1, 0.2, 0),
+        lines::LinesVertex(-0.5, -0.2, 0),
+        lines::LinesVertex(-0.0, 0.2, 0),
+        lines::LinesVertex(0.5, -0.2, 0),
+        lines::LinesVertex(1.0, 0.2, 0),
+        lines::LinesVertex(1.5, -0.2, 0),
+        lines::LinesVertex(2, 0.2, 0),
+    };
+    // lines::LinesVertex P0(0.0f, 0.0f, 0);
+    // lines::LinesVertex P1(1.0f, 2.0f, 0);
+    // lines::LinesVertex P2(2.0f, 0.0f, 0);
+    // generateBezierCurve(points, P0, P1, P2, 100);
 
-    auto line = lines::Polylines::create(points, lines::LinesTypes::TEXTURE_BASED);
-    line->getSettings().setThickness(10);
-    line->getSettings().setColorToUse(lines::ColorToUse::GENERAL_COLOR);
-    line->getSettings().setGeneralColor(lines::LinesVertex::COLOR(0, 0, 0, 1));
-    // line->getSettings().setMiterLimit(20);
-    // line->getSettings().setBorderColor(lines::LinesVertex::COLOR(1.0, 0.0, 1.0, 1.0));
-    // line->getSettings().setBorder(2);
-    // line->getSettings().setLeftCap(lines::Caps::TRIANGLE_CAP);
-    // line->getSettings().setRigthCap(lines::Caps::ROUND_CAP);
-    // line->getSettings().setJoin(lines::Joins::ROUND_JOIN);
-
-    // line->setThickness(5);
-    // line->setMiterLimit(10);
-
-    // line->setJoin(lines::Joins::ROUND_JOIN);
-    // line->setLeftCap(lines::Caps::ROUND_CAP);
-    // line->setRigthCap(lines::Caps::ROUND_CAP);
-
-    // std::vector<lines::Point> points2 = {
-    //     lines::Point(0.0f, 0.0f, 1.0f),
-    //     lines::Point(0.5f, 0.0f, 1.0f),
-    //     lines::Point(1.0f, 1.0f, 1.0f),
-    //     // lines::Point(1.0f, 1.0f, 0.0f),
-    // };
-
-    // auto line2 = lines::Polylines::create(points2, tw.width(), tw.height(), lines::Types::CPU_GENERATED);
-    // line2->setThickness(20);
-    // line2->setMiterLimit(50);
-    // line2->setColor(lines::Color(1.0, 0.0, 0.0, 1.0));
-
-    // std::vector<lines::LinesVertex> points1;
-    // generateSegmentsInCube(points1, 3, 10);
-    // line->update(points1);
-    
-    tw.pushDrawableObject(*line.get());
-    // tw.pushDrawableObject(*line2.get());
+    auto line1 = lines::Polylines::create(points, lines::LinesTypes::CPU_GENERATED);
+    line1->getSettings().setThickness(30);
+    line1->getSettings().setMiterLimit(60);
+    line1->getSettings().setLeftCap(lines::Caps::BUTT_CAP);
+    line1->getSettings().setRigthCap(lines::Caps::BUTT_CAP);
+    line1->getSettings().setColorToUse(lines::ColorToUse::GENERAL_COLOR);
+    line1->getSettings().setGeneralColor(lines::LinesVertex::COLOR(0, 0, 0, 1));
+    line1->getSettings().setJoin(lines::Joins::ROUND_JOIN);
+    tw.pushDrawableObject(*line1.get());
 
     tw.fitScene();
 
