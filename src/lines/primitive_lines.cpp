@@ -57,17 +57,12 @@ namespace lines {
     void PrimitiveLines::swap(PrimitiveLines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mPoints, other.mPoints);
         std::swap(mVerticesBH, other.mVerticesBH);
     }
 
-    std::shared_ptr<vcl::DrawableObject> PrimitiveLines::clone() const {
-        return std::make_shared<PrimitiveLines>(*this);
-    }
-
-    void PrimitiveLines::draw(uint viewId) const {
+    void PrimitiveLines::draw(uint32_t viewId) const {
         uint64_t state = 0
             | BGFX_STATE_WRITE_RGB
             | BGFX_STATE_WRITE_A

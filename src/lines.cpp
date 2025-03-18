@@ -6,8 +6,6 @@
 #include <lines/indirect_based_lines.hpp>
 #include <lines/texture_based_lines.hpp>
 
-#include <vclib/bgfx/context/load_program.h>
-
 namespace lines {
 
     std::unique_ptr<Lines> Lines::create(const std::vector<LinesVertex> &points, LinesTypes type) {
@@ -61,7 +59,6 @@ namespace lines {
     Lines::Lines(const std::string& vs_name,  const std::string& fs_name) : 
         vs_name(vs_name), fs_name(fs_name)
     {
-        mLinesPH = vcl::loadProgram(vs_name, fs_name);
         assert(bgfx::isValid(mLinesPH));
     }
 
@@ -69,7 +66,6 @@ namespace lines {
         vs_name = other.vs_name;
         fs_name = other.fs_name;
 
-        mLinesPH = vcl::loadProgram(vs_name, fs_name);
         mSettings = other.mSettings;
         assert(bgfx::isValid(mLinesPH));
     }
@@ -78,7 +74,6 @@ namespace lines {
         vs_name = other.vs_name;
         fs_name = other.fs_name;
 
-        mLinesPH = vcl::loadProgram(vs_name, fs_name);
         mSettings = other.mSettings;
         assert(bgfx::isValid(mLinesPH));
     }

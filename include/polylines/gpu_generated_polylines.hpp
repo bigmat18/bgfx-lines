@@ -27,9 +27,7 @@ namespace lines {
 
             void swap(GPUGeneratedPolylines& other);
 
-            std::shared_ptr<vcl::DrawableObject> clone() const override;
-
-            void draw(uint viewId) const override;
+            void draw(uint32_t viewId) const override;
 
             void update(const std::vector<LinesVertex> &points) override;
 

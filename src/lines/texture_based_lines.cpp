@@ -1,5 +1,4 @@
 #include <lines/texture_based_lines.hpp>
-#include <vclib/bgfx/context/load_program.h>
 #include <assert.h>
 
 namespace lines {
@@ -8,8 +7,8 @@ namespace lines {
         mMaxTextureSize(maxTextureSize),
         mPoints(points),
         mIndirectBH(bgfx::createIndirectBuffer(1)),
-        mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4)),
-        mComputeTexturePH(bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_texture"), true))
+        mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
+        // mComputeTexturePH(bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_texture"), true))
     {
         allocateIndexesBuffer();
         allocateVerticesBuffer();
@@ -25,7 +24,7 @@ namespace lines {
         mMaxTextureSize = other.mMaxTextureSize;
         mIndirectBH = bgfx::createIndirectBuffer(1);
         mIndirectDataUH = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
-        mComputeTexturePH = bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_texture"), true);
+        // mComputeTexturePH = bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_texture"), true);
 
         allocateIndexesBuffer();
         allocateVerticesBuffer();
@@ -71,7 +70,6 @@ namespace lines {
     void TextureBasedLines::swap(TextureBasedLines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mMaxTextureSize, other.mMaxTextureSize);
         std::swap(mPoints, other.mPoints);
@@ -87,11 +85,7 @@ namespace lines {
         std::swap(mIndexesBH, other.mIndexesBH);
     }
 
-    std::shared_ptr<vcl::DrawableObject> TextureBasedLines::clone() const {
-        return std::make_shared<TextureBasedLines>(*this);
-    }
-
-    void TextureBasedLines::draw(uint viewId) const {
+    void TextureBasedLines::draw(uint32_t viewId) const {
         mSettings.bindUniformLines();
 
         uint64_t state = 0

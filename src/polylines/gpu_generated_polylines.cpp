@@ -1,11 +1,10 @@
 #include <polylines/gpu_generated_polylines.hpp>
-#include <vclib/bgfx/context/load_program.h>
 
 namespace lines { 
     GPUGeneratedPolylines::GPUGeneratedPolylines(const std::vector<LinesVertex> &points) :
         Polylines("polylines/cpu_generated_polylines/vs_cpu_generated_polylines", "polylines/cpu_generated_polylines/fs_cpu_generated_polylines"),
         mPoints(points),
-        mComputeVertexPH(bgfx::createProgram(vcl::loadShader("polylines/gpu_generated_polylines/cs_compute_buffers"), true)),
+        // mComputeVertexPH(bgfx::createProgram(vcl::loadShader("polylines/gpu_generated_polylines/cs_compute_buffers"), true)),
         mComputeDataUH(bgfx::createUniform("u_numWorksGroups", bgfx::UniformType::Vec4))
     {
         allocatePointsBuffer();
@@ -18,7 +17,7 @@ namespace lines {
 
     GPUGeneratedPolylines::GPUGeneratedPolylines(const GPUGeneratedPolylines& other) : Polylines(other) {
         mPoints = other.mPoints;
-        mComputeVertexPH = bgfx::createProgram(vcl::loadShader("polylines/gpu_generated_polylines/cs_compute_buffers"), true);
+        // mComputeVertexPH = bgfx::createProgram(vcl::loadShader("polylines/gpu_generated_polylines/cs_compute_buffers"), true);
         mComputeDataUH = bgfx::createUniform("u_numWorksGroups", bgfx::UniformType::Vec4);
 
         allocatePointsBuffer();
@@ -61,7 +60,6 @@ namespace lines {
     void GPUGeneratedPolylines::swap(GPUGeneratedPolylines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mPoints, other.mPoints);
 
@@ -74,11 +72,7 @@ namespace lines {
         std::swap(mComputeDataUH, other.mComputeDataUH);
     }
 
-    std::shared_ptr<vcl::DrawableObject> GPUGeneratedPolylines::clone() const {
-        return std::make_shared<GPUGeneratedPolylines>(*this);
-    }
-
-    void GPUGeneratedPolylines::draw(uint viewId) const {
+    void GPUGeneratedPolylines::draw(uint32_t viewId) const {
         mSettings.bindUniformPolylines();
 
         uint64_t state = 0

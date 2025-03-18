@@ -1,4 +1,3 @@
-#include <vclib/bgfx/context/load_program.h>
 #include <polylines/texture_based_polylines.hpp>
 
 namespace lines {
@@ -8,9 +7,9 @@ namespace lines {
         mPoints(points), mMaxTextureSize(maxTextureSize),
         mJoinesIndirectBH(bgfx::createIndirectBuffer(1)),
         mSegmentsIndirectBH(bgfx::createIndirectBuffer(1)),
-        mComputeDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4)),
-        mJoinesPH(vcl::loadProgram("polylines/texture_based_polylines/vs_texture_based_joins", "polylines/texture_based_polylines/fs_texture_based_polylines")),
-        mComputeTexturePH(bgfx::createProgram(vcl::loadShader("polylines/texture_based_polylines/cs_compute_texture"), true))
+        mComputeDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
+        // mJoinesPH(vcl::loadProgram("polylines/texture_based_polylines/vs_texture_based_joins", "polylines/texture_based_polylines/fs_texture_based_polylines")),
+        // mComputeTexturePH(bgfx::createProgram(vcl::loadShader("polylines/texture_based_polylines/cs_compute_texture"), true))
     {
         allocateVerticesBuffer();
         allocateIndexesBuffer();
@@ -27,8 +26,8 @@ namespace lines {
         mJoinesIndirectBH = bgfx::createIndirectBuffer(1);
         mSegmentsIndirectBH = bgfx::createIndirectBuffer(1);
         mComputeDataUH = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
-        mJoinesPH = vcl::loadProgram("polylines/texture_based_polylines/vs_texture_based_joins", "polylines/texture_based_polylines/fs_texture_based_polylines");
-        mComputeTexturePH = bgfx::createProgram(vcl::loadShader("polylines/texture_based_polylines/cs_compute_texture"), true);
+        // mJoinesPH = vcl::loadProgram("polylines/texture_based_polylines/vs_texture_based_joins", "polylines/texture_based_polylines/fs_texture_based_polylines");
+        // mComputeTexturePH = bgfx::createProgram(vcl::loadShader("polylines/texture_based_polylines/cs_compute_texture"), true);
 
         allocateVerticesBuffer();
         allocateIndexesBuffer();
@@ -83,7 +82,6 @@ namespace lines {
     void TextureBasedPolylines::swap(TextureBasedPolylines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mMaxTextureSize, other.mMaxTextureSize);
         std::swap(mPoints, other.mPoints);
@@ -103,11 +101,7 @@ namespace lines {
         std::swap(mComputeDataUH, other.mComputeDataUH);
     }
 
-    std::shared_ptr<vcl::DrawableObject> TextureBasedPolylines::clone() const {
-        return std::make_shared<TextureBasedPolylines>(*this);
-    }
-
-    void TextureBasedPolylines::draw(uint viewId) const {
+    void TextureBasedPolylines::draw(uint32_t viewId) const {
         mSettings.bindUniformPolylines();
 
         float indirectData[] = {static_cast<float>(mPoints.size() - 1), static_cast<float>(mMaxTextureSize), 0, 0};

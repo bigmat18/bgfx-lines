@@ -1,11 +1,10 @@
 #include <lines/gpu_generated_lines.hpp>
-#include <vclib/bgfx/context/load_program.h>
 
 namespace lines {
     GPUGeneratedLines::GPUGeneratedLines(const std::vector<LinesVertex> &points) : 
         Lines("lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
-        mPoints(points),
-        mComputeVerticesPH(bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true))
+        mPoints(points)
+        // mComputeVerticesPH(bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true))
     {
         allocateVertexBuffer();
         allocateIndexBuffer();
@@ -17,7 +16,7 @@ namespace lines {
 
     GPUGeneratedLines::GPUGeneratedLines(const GPUGeneratedLines& other) : Lines(other) {
         mPoints = other.mPoints;
-        mComputeVerticesPH = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
+        // mComputeVerticesPH = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
 
         allocateIndexBuffer();
         allocateVertexBuffer();
@@ -50,7 +49,6 @@ namespace lines {
     void GPUGeneratedLines::swap(GPUGeneratedLines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mIndexesBH, other.mIndexesBH);
         std::swap(mVerticesBH, other.mVerticesBH);
@@ -59,11 +57,7 @@ namespace lines {
         std::swap(mComputeVerticesPH, other.mComputeVerticesPH);
     }
 
-    std::shared_ptr<vcl::DrawableObject> GPUGeneratedLines::clone() const {
-        return std::make_shared<GPUGeneratedLines>(*this);
-    }
-
-    void GPUGeneratedLines::draw(uint viewId) const {
+    void GPUGeneratedLines::draw(uint32_t viewId) const {
         mSettings.bindUniformLines();
 
         uint64_t state = 0

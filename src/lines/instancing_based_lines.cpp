@@ -37,7 +37,6 @@ namespace lines {
     void InstancingBasedLines::swap(InstancingBasedLines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mPoints, other.mPoints);
 
@@ -46,11 +45,7 @@ namespace lines {
         std::swap(mInstanceDB, other.mInstanceDB);
     }
 
-    std::shared_ptr<vcl::DrawableObject> InstancingBasedLines::clone() const {
-        return std::make_shared<InstancingBasedLines>(*this);
-    }
-
-    void InstancingBasedLines::draw(uint viewId) const {
+    void InstancingBasedLines::draw(uint32_t viewId) const {
         generateInstanceDataBuffer();
         mSettings.bindUniformLines();
 

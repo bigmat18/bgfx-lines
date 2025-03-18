@@ -1,5 +1,4 @@
 #include <lines/indirect_based_lines.hpp>
-#include <vclib/bgfx/context/load_program.h>
 
 
 namespace lines {
@@ -7,8 +6,8 @@ namespace lines {
         Lines("lines/indirect_based_lines/vs_indirect_based_lines", "lines/indirect_based_lines/fs_indirect_based_lines"),
         mPoints(points),
         mIndirectBH(bgfx::createIndirectBuffer(1)),
-        mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4)),
-        mComputeIndirectPH(bgfx::createProgram(vcl::loadShader("lines/indirect_based_lines/cs_compute_indirect"), true))
+        mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
+        // mComputeIndirectPH(bgfx::createProgram(vcl::loadShader("lines/indirect_based_lines/cs_compute_indirect"), true))
     {
         allocateVerticesBuffer();
         allocateIndexesBuffer();
@@ -21,7 +20,7 @@ namespace lines {
     IndirectBasedLines::IndirectBasedLines(const IndirectBasedLines& other) : Lines(other) {
         mPoints = other.mPoints;
         mIndirectBH = bgfx::createIndirectBuffer(1);
-        mComputeIndirectPH = bgfx::createProgram(vcl::loadShader("lines/indirect_based_lines/cs_compute_indirect"), true);
+        // mComputeIndirectPH = bgfx::createProgram(vcl::loadShader("lines/indirect_based_lines/cs_compute_indirect"), true);
         mIndirectDataUH = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
 
         allocateVerticesBuffer();
@@ -61,7 +60,6 @@ namespace lines {
     void IndirectBasedLines::swap(IndirectBasedLines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mVerticesBH, other.mVerticesBH);
         std::swap(mIndexesBH, other.mIndexesBH);
@@ -69,10 +67,6 @@ namespace lines {
         std::swap(mIndirectBH, other.mIndirectBH);
         std::swap(mComputeIndirectPH, other.mComputeIndirectPH);
         std::swap(mIndirectDataUH, other.mIndirectDataUH);
-    }
-
-    std::shared_ptr<vcl::DrawableObject> IndirectBasedLines::clone() const {
-        return std::make_shared<IndirectBasedLines>(*this);
     }
 
     void IndirectBasedLines::allocatePointsBuffer() {
@@ -117,7 +111,7 @@ namespace lines {
     }
 
 
-    void IndirectBasedLines::draw(uint viewId) const {
+    void IndirectBasedLines::draw(uint32_t viewId) const {
         mSettings.bindUniformLines();
 
         uint64_t state = 0

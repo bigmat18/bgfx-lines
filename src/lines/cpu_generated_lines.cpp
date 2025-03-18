@@ -1,6 +1,4 @@
 #include <lines/cpu_generated_lines.hpp>
-#include <vclib/bgfx/context/load_program.h>
-
 
 namespace lines {
     CPUGeneratedLines::CPUGeneratedLines(const std::vector<LinesVertex> &points) :
@@ -44,15 +42,10 @@ namespace lines {
     void CPUGeneratedLines::swap(CPUGeneratedLines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mPointsSize, other.mPointsSize);
         std::swap(mIndexesBH, other.mIndexesBH);
         std::swap(mVerticesBH, other.mVerticesBH);
-    }
-
-    std::shared_ptr<vcl::DrawableObject> CPUGeneratedLines::clone() const {
-        return std::make_shared<CPUGeneratedLines>(*this);
     }
 
     void CPUGeneratedLines::update(const std::vector<LinesVertex> &points) {
@@ -71,7 +64,7 @@ namespace lines {
         generateBuffers(points);
     }
 
-    void CPUGeneratedLines::draw(uint viewId) const {
+    void CPUGeneratedLines::draw(uint32_t viewId) const {
         mSettings.bindUniformLines();
 
         uint64_t state = 0

@@ -1,4 +1,3 @@
-#include <vclib/bgfx/context/load_program.h>
 #include <polylines/indirect_based_polylines.hpp>
 
 namespace lines {
@@ -7,9 +6,9 @@ namespace lines {
         mPoints(points),
         mJoinesIndirectBH(bgfx::createIndirectBuffer(1)),
         mSegmentsIndirectBH(bgfx::createIndirectBuffer(1)),
-        mComputeIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4)),
-        mComputeIndirectPH(bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true)),
-        mJoinesPH(vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines"))
+        mComputeIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
+        // mComputeIndirectPH(bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true)),
+        // mJoinesPH(vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines"))
     {
         allocateIndexesBuffers();
         allocateVerticesBuffer();
@@ -24,8 +23,8 @@ namespace lines {
         mJoinesIndirectBH = bgfx::createIndirectBuffer(1);
         mSegmentsIndirectBH = bgfx::createIndirectBuffer(1);
         mComputeIndirectDataUH = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
-        mComputeIndirectPH = bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true);
-        mJoinesPH = vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines");
+        // mComputeIndirectPH = bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true);
+        // mJoinesPH = vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines");
 
         allocateIndexesBuffers();
         allocateVerticesBuffer();
@@ -70,7 +69,6 @@ namespace lines {
     void IndirectBasedPolylines::swap(IndirectBasedPolylines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mPoints, other.mPoints);
         
@@ -85,11 +83,7 @@ namespace lines {
         std::swap(mComputeIndirectDataUH, other.mComputeIndirectDataUH);
     }
 
-    std::shared_ptr<vcl::DrawableObject> IndirectBasedPolylines::clone() const {
-        return std::make_shared<IndirectBasedPolylines>(*this);
-    }
-
-    void IndirectBasedPolylines::draw(uint viewId) const {
+    void IndirectBasedPolylines::draw(uint32_t viewId) const {
         mSettings.bindUniformPolylines();
 
         float indirectData[] = {static_cast<float>(mPoints.size() - 1), 0, 0, 0};

@@ -1,11 +1,10 @@
-#include <vclib/bgfx/context/load_program.h>
 #include <polylines/instancing_based_polylines.hpp>
 #include <cmath>
 
 namespace lines {
     InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<LinesVertex> &points) :
         Polylines("polylines/instancing_based_polylines/vs_instancing_based_segments", "polylines/instancing_based_polylines/fs_instancing_based_polylines"),
-        mJoinesPH(vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines")),
+        // mJoinesPH(vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines")),
         mPoints(points)
     {
         allocateVerticesBuffer();
@@ -13,7 +12,7 @@ namespace lines {
     }
 
     InstancingBasedPolylines::InstancingBasedPolylines(const InstancingBasedPolylines& other) : Polylines(other) {
-        mJoinesPH = vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines");
+        // mJoinesPH = vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines");
         mPoints = other.mPoints;
 
         allocateVerticesBuffer();
@@ -42,7 +41,6 @@ namespace lines {
 
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mSegmentsInstanceDB, other.mSegmentsInstanceDB);
         std::swap(mJoinsInstanceDB, other.mJoinsInstanceDB);
@@ -53,11 +51,7 @@ namespace lines {
         std::swap(mJoinesPH, other.mJoinesPH);
     }
 
-    std::shared_ptr<vcl::DrawableObject> InstancingBasedPolylines::clone() const {
-        return std::make_shared<InstancingBasedPolylines>(*this);
-    }
-
-    void InstancingBasedPolylines::draw(uint viewId) const {
+    void InstancingBasedPolylines::draw(uint32_t viewId) const {
         generateInstanceBuffer();
         mSettings.bindUniformPolylines();
 

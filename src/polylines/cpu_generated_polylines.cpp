@@ -47,7 +47,6 @@ namespace lines {
     void CPUGeneratedPolylines::swap(CPUGeneratedPolylines& other) {
         std::swap(mLinesPH, other.mLinesPH);
         std::swap(mSettings, other.mSettings);
-        std::swap(mVisible, other.mVisible);
 
         std::swap(mPointsSize, other.mPointsSize);
 
@@ -60,11 +59,7 @@ namespace lines {
         std::swap(mJoinsIndexesBH, other.mJoinsIndexesBH);
     }
 
-    std::shared_ptr<vcl::DrawableObject> CPUGeneratedPolylines::clone() const {
-        return std::make_shared<CPUGeneratedPolylines>(*this);
-    }
-
-    void CPUGeneratedPolylines::draw(uint viewId) const {
+    void CPUGeneratedPolylines::draw(uint32_t viewId) const {
         mSettings.bindUniformPolylines();
 
         uint64_t state = 0
