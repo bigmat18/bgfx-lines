@@ -23,7 +23,7 @@ endforeach()
 
 add_library(bgfx-lines ${SOURCES_FILES})
 target_include_directories(bgfx-lines PUBLIC include)
-target_link_libraries(bgfx-lines PUBLIC bgfx)
+target_link_libraries(bgfx-lines PUBLIC bgfx example-common)
 target_add_bgfx_shaders(
     bgfx-lines
     ${RELATIVE_SHADERS_FILES}
@@ -36,7 +36,7 @@ foreach(EXAMPLE_DIR ${EXAMPLE_DIRS})
     if (EXISTS "${EXAMPLE_MAIN}")
         add_executable(${EXAMPLE_DIR} "${EXAMPLE_MAIN}")
         target_include_directories(${EXAMPLE_DIR} PUBLIC ${EXAMPLES_DIR}/${EXAMPLE_DIR})
-        target_link_libraries(${EXAMPLE_DIR} PUBLIC bgfx-lines example-common)
+        target_link_libraries(${EXAMPLE_DIR} PUBLIC bgfx-lines)
     endif()
 endforeach()
 

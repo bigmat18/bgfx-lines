@@ -6,8 +6,8 @@ namespace lines {
         Lines("lines/indirect_based_lines/vs_indirect_based_lines", "lines/indirect_based_lines/fs_indirect_based_lines"),
         mPoints(points),
         mIndirectBH(bgfx::createIndirectBuffer(1)),
-        mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
-        // mComputeIndirectPH(bgfx::createProgram(vcl::loadShader("lines/indirect_based_lines/cs_compute_indirect"), true))
+        mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4)),
+        mComputeIndirectPH(bgfx::createProgram(LoadShader("lines/indirect_based_lines/cs_compute_indirect"), true))
     {
         allocateVerticesBuffer();
         allocateIndexesBuffer();
@@ -20,7 +20,7 @@ namespace lines {
     IndirectBasedLines::IndirectBasedLines(const IndirectBasedLines& other) : Lines(other) {
         mPoints = other.mPoints;
         mIndirectBH = bgfx::createIndirectBuffer(1);
-        // mComputeIndirectPH = bgfx::createProgram(vcl::loadShader("lines/indirect_based_lines/cs_compute_indirect"), true);
+        mComputeIndirectPH = bgfx::createProgram(LoadShader("lines/indirect_based_lines/cs_compute_indirect"), true);
         mIndirectDataUH = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
 
         allocateVerticesBuffer();

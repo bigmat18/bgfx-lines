@@ -59,6 +59,7 @@ namespace lines {
     Lines::Lines(const std::string& vs_name,  const std::string& fs_name) : 
         vs_name(vs_name), fs_name(fs_name)
     {
+        mLinesPH = LoadProgram(vs_name, fs_name);
         assert(bgfx::isValid(mLinesPH));
     }
 
@@ -67,6 +68,8 @@ namespace lines {
         fs_name = other.fs_name;
 
         mSettings = other.mSettings;
+
+        mLinesPH = LoadProgram(vs_name, fs_name);
         assert(bgfx::isValid(mLinesPH));
     }
 
@@ -75,6 +78,8 @@ namespace lines {
         fs_name = other.fs_name;
 
         mSettings = other.mSettings;
+
+        mLinesPH = LoadProgram(vs_name, fs_name);
         assert(bgfx::isValid(mLinesPH));
     }
 

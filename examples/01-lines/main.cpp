@@ -1,6 +1,9 @@
 #define ENTRY_CONFIG_IMPLEMENT_MAIN 1
-#include "bgfx_utils.h"
-#include "common.h"
+#include <bgfx_utils.h>
+#include <common.h>
+#include <lines.hpp>
+
+#include "../common/generator.h"
 namespace
 {
     class ExampleLines : public entry::AppI
@@ -19,11 +22,10 @@ namespace
             m_reset = BGFX_RESET_VSYNC;
 
             bgfx::Init init;
-            init.type = args.m_type;
-            init.vendorId = args.m_pciId;
+            init.type = bgfx::RendererType::Vulkan;
+            init.vendorId = 0;
             init.platformData.nwh = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
             init.platformData.ndt = entry::getNativeDisplayHandle();
-            init.platformData.type = entry::getNativeWindowHandleType();
             init.resolution.width = m_width;
             init.resolution.height = m_height;
             init.resolution.reset = m_reset;
@@ -31,6 +33,11 @@ namespace
 
             bgfx::setDebug(m_debug);
             bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xFFFFFFFF, 1.0f, 0);
+
+            std::vector<lines::LinesVertex> points;
+            generatePointsInCube(points, 3, 1000);
+
+            line = lines::Lines::create(points, lines::LinesTypes::TEXTURE_BASED);
         }
 
         virtual int shutdown() override
@@ -46,6 +53,8 @@ namespace
                 bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                 bgfx::touch(0);
 
+                line->draw(0);
+
                 bgfx::frame();
 
                 return true;
@@ -60,6 +69,7 @@ namespace
         uint32_t m_height;
         uint32_t m_debug;
         uint32_t m_reset;
+        std::unique_ptr<lines::Lines> line;
     };
 }
 

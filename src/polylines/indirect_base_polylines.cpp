@@ -6,9 +6,9 @@ namespace lines {
         mPoints(points),
         mJoinesIndirectBH(bgfx::createIndirectBuffer(1)),
         mSegmentsIndirectBH(bgfx::createIndirectBuffer(1)),
-        mComputeIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
-        // mComputeIndirectPH(bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true)),
-        // mJoinesPH(vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines"))
+        mComputeIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4)),
+        mComputeIndirectPH(bgfx::createProgram(LoadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true)),
+        mJoinesPH(LoadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines"))
     {
         allocateIndexesBuffers();
         allocateVerticesBuffer();
@@ -23,8 +23,8 @@ namespace lines {
         mJoinesIndirectBH = bgfx::createIndirectBuffer(1);
         mSegmentsIndirectBH = bgfx::createIndirectBuffer(1);
         mComputeIndirectDataUH = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
-        // mComputeIndirectPH = bgfx::createProgram(vcl::loadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true);
-        // mJoinesPH = vcl::loadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines");
+        mComputeIndirectPH = bgfx::createProgram(LoadShader("polylines/indirect_based_polylines/cs_compute_indirect"), true);
+        mJoinesPH = LoadProgram("polylines/indirect_based_polylines/vs_indirect_based_joins", "polylines/indirect_based_polylines/fs_indirect_based_polylines");
 
         allocateIndexesBuffers();
         allocateVerticesBuffer();

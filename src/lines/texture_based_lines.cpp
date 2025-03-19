@@ -7,8 +7,8 @@ namespace lines {
         mMaxTextureSize(maxTextureSize),
         mPoints(points),
         mIndirectBH(bgfx::createIndirectBuffer(1)),
-        mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
-        // mComputeTexturePH(bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_texture"), true))
+        mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4)),
+        mComputeTexturePH(bgfx::createProgram(LoadShader("lines/texture_based_lines/cs_compute_texture"), true))
     {
         allocateIndexesBuffer();
         allocateVerticesBuffer();
@@ -24,7 +24,7 @@ namespace lines {
         mMaxTextureSize = other.mMaxTextureSize;
         mIndirectBH = bgfx::createIndirectBuffer(1);
         mIndirectDataUH = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
-        // mComputeTexturePH = bgfx::createProgram(vcl::loadShader("lines/texture_based_lines/cs_compute_texture"), true);
+        mComputeTexturePH = bgfx::createProgram(LoadShader("lines/texture_based_lines/cs_compute_texture"), true);
 
         allocateIndexesBuffer();
         allocateVerticesBuffer();

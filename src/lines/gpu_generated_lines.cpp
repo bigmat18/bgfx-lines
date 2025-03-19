@@ -3,8 +3,8 @@
 namespace lines {
     GPUGeneratedLines::GPUGeneratedLines(const std::vector<LinesVertex> &points) : 
         Lines("lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines"),
-        mPoints(points)
-        // mComputeVerticesPH(bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true))
+        mPoints(points),
+        mComputeVerticesPH(bgfx::createProgram(LoadShader("lines/gpu_generated_lines/cs_compute_buffers"), true)) 
     {
         allocateVertexBuffer();
         allocateIndexBuffer();
@@ -16,7 +16,7 @@ namespace lines {
 
     GPUGeneratedLines::GPUGeneratedLines(const GPUGeneratedLines& other) : Lines(other) {
         mPoints = other.mPoints;
-        // mComputeVerticesPH = bgfx::createProgram(vcl::loadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
+        mComputeVerticesPH = bgfx::createProgram(LoadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
 
         allocateIndexBuffer();
         allocateVertexBuffer();

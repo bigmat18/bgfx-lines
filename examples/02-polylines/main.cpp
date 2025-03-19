@@ -1,6 +1,9 @@
 #define ENTRY_CONFIG_IMPLEMENT_MAIN 1
-#include "bgfx_utils.h"
-#include "common.h"
+#include <bgfx_utils.h>
+#include <common.h>
+#include <polylines.hpp>
+
+#include "../common/generator.h"
 namespace
 {
     class ExamplePolylines : public entry::AppI
@@ -30,7 +33,12 @@ namespace
             bgfx::init(init);
 
             bgfx::setDebug(m_debug);
-            bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+            bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xFFFFFFFF, 1.0f, 0);
+
+            std::vector<lines::LinesVertex> points;
+            generatePointsInCube(points, 3, 100);
+
+            line = lines::Polylines::create(points, lines::LinesTypes::CPU_GENERATED);
         }
 
         virtual int shutdown() override
@@ -46,6 +54,8 @@ namespace
                 bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                 bgfx::touch(0);
 
+                line->draw(0);
+
                 bgfx::frame();
 
                 return true;
@@ -60,6 +70,8 @@ namespace
         uint32_t m_height;
         uint32_t m_debug;
         uint32_t m_reset;
+
+        std::unique_ptr<lines::Polylines> line;
     };
 }
 

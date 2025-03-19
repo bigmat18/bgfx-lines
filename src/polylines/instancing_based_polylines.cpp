@@ -4,7 +4,7 @@
 namespace lines {
     InstancingBasedPolylines::InstancingBasedPolylines(const std::vector<LinesVertex> &points) :
         Polylines("polylines/instancing_based_polylines/vs_instancing_based_segments", "polylines/instancing_based_polylines/fs_instancing_based_polylines"),
-        // mJoinesPH(vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines")),
+        mJoinesPH(LoadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines")),
         mPoints(points)
     {
         allocateVerticesBuffer();
@@ -12,7 +12,7 @@ namespace lines {
     }
 
     InstancingBasedPolylines::InstancingBasedPolylines(const InstancingBasedPolylines& other) : Polylines(other) {
-        // mJoinesPH = vcl::loadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines");
+        mJoinesPH = LoadProgram("polylines/instancing_based_polylines/vs_instancing_based_joins", "polylines/instancing_based_polylines/fs_instancing_based_polylines");
         mPoints = other.mPoints;
 
         allocateVerticesBuffer();
