@@ -43,7 +43,10 @@ namespace lines
 
     void CPUGeneratedLines::swap(CPUGeneratedLines &other)
     {
-        std::swap(mSettings, other.mSettings);
+        using std::swap;
+
+        GenericLines::swap(other);
+        
         std::swap(mPointsSize, other.mPointsSize);
         std::swap(mIndexesBH, other.mIndexesBH);
         std::swap(mVerticesBH, other.mVerticesBH);
@@ -141,13 +144,13 @@ namespace lines
 
         mVerticesBH = bgfx::createDynamicVertexBuffer(
             (mPointsSize / 2) * 4, layout,
-            BGFX_BUFFER_ALLOW_RESIZE);
+            BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_COMPUTE_READ);
     }
 
     void CPUGeneratedLines::allocateIndexBuffer()
     {
         mIndexesBH = bgfx::createDynamicIndexBuffer(
             (mPointsSize / 2) * 6,
-            BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32);
+            BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32 | BGFX_BUFFER_COMPUTE_READ);
     }
 }

@@ -2,22 +2,21 @@
 
 namespace lines {
     InstancingBasedLines::InstancingBasedLines(const std::vector<LinesVertex> &points) :
-        Lines("lines/instancing_based_lines/vs_instancing_based_lines", "lines/instancing_based_lines/fs_instancing_based_lines"),
         mPoints(points)
     {
         allocateVerticesBuffer();
         allocateIndexesBuffer();
-        // generateInstanceDataBuffer();
     }
 
-    InstancingBasedLines::InstancingBasedLines(const InstancingBasedLines& other) : Lines(other) {
-        mPoints = other.mPoints;
+    InstancingBasedLines::InstancingBasedLines(const InstancingBasedLines& other) :
+        mPoints(other.mPoints)
+    {
         allocateVerticesBuffer();
         allocateIndexesBuffer();
-        // generateInstanceDataBuffer();
     }
 
-    InstancingBasedLines::InstancingBasedLines(InstancingBasedLines&& other) : Lines(other) {
+    InstancingBasedLines::InstancingBasedLines(InstancingBasedLines&& other)
+    {
         swap(other);
     }
 
@@ -27,6 +26,9 @@ namespace lines {
 
         if(bgfx::isValid(mIndexesBH))
             bgfx::destroy(mIndexesBH);
+
+        if(bgfx::isValid(mPointsPH))
+            bgfx::destroy(mPointsPH);
     }
 
     InstancingBasedLines& InstancingBasedLines::operator=(InstancingBasedLines other) {
@@ -35,8 +37,8 @@ namespace lines {
     }
 
     void InstancingBasedLines::swap(InstancingBasedLines& other) {
-        std::swap(mLinesPH, other.mLinesPH);
-        std::swap(mSettings, other.mSettings);
+        using std::swap;
+        GenericLines::swap(other);
 
         std::swap(mPoints, other.mPoints);
 
@@ -46,23 +48,16 @@ namespace lines {
     }
 
     void InstancingBasedLines::draw(uint32_t viewId) const {
-        generateInstanceDataBuffer();
-        mSettings.bindUniformLines();
-
-        uint64_t state = 0
-            | BGFX_STATE_WRITE_RGB
-            | BGFX_STATE_WRITE_A
-            | BGFX_STATE_WRITE_Z
-            | BGFX_STATE_DEPTH_TEST_LESS
-            | UINT64_C(0)
-            | BGFX_STATE_BLEND_ALPHA;
-
-        bgfx::setVertexBuffer(0, mVerticesBH);
-        bgfx::setIndexBuffer(mIndexesBH);
-        bgfx::setInstanceDataBuffer(&mInstanceDB);
-        
-        bgfx::setState(state);
-        bgfx::submit(viewId, mLinesPH);
+        if (mPoints.size() > 1) {
+            generateInstanceDataBuffer();
+            bindSettingsUniform();
+    
+            bgfx::setVertexBuffer(0, mVerticesBH);
+            bgfx::setIndexBuffer(mIndexesBH);
+            bgfx::setInstanceDataBuffer(&mInstanceDB);
+            bgfx::setState(drawState());
+            bgfx::submit(viewId, mLinesPH);
+        }
     }
 
     void InstancingBasedLines::update(const std::vector<LinesVertex> &points) {

@@ -3,11 +3,11 @@
 
 namespace lines
 {
-    class GPUGeneratedLines : public Lines
+    class GPUGeneratedLines : public GenericLines
     {
 
         static bgfx::ProgramHandle mLinesPH = LoadProgram("lines/cpu_generated_lines/vs_cpu_generated_lines", 
-                                                          "lines/cpu_generated_lines/fs_cpu_generated_lines")
+                                                          "lines/cpu_generated_lines/fs_cpu_generated_lines");
         static bgfx::ProgramHandle mComputeVerticesPH = bgfx::createProgram(
                 LoadShader("lines/gpu_generated_lines/cs_compute_buffers"), true)
         
@@ -29,6 +29,8 @@ namespace lines
         GPUGeneratedLines &operator=(GPUGeneratedLines other);
 
         void swap(GPUGeneratedLines &other);
+
+        friend void swap(GPUGeneratedLines& a, GPUGeneratedLines& b) { a.swap(b); }
 
         void draw(uint32_t viewId) const override;
 

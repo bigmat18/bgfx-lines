@@ -29,6 +29,8 @@ namespace lines
 
         void swap(CPUGeneratedLines &other);
 
+        friend void swap(CPUGeneratedLines& a, CPUGeneratedLines& b) { a.swap(b); }
+
         void draw(uint32_t viewId) const override;
 
         void update(const std::vector<LinesVertex> &points) override;

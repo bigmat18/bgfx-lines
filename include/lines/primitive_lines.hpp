@@ -1,29 +1,36 @@
-#pragma once 
-#include <lines.hpp>
+#pragma once
+#include "../generic_lines.hpp"
 
-namespace lines {
+namespace lines
+{
 
-    class PrimitiveLines : public Lines {
+    class PrimitiveLines : public GenericLines
+    {
 
-        std::vector<LinesVertex>            mPoints;
-        bgfx::VertexBufferHandle            mVerticesBH     = BGFX_INVALID_HANDLE;
+        static bgfx::ProgramHandle mLinesPH = LoadProgram("base/vs_base", "base/fs_base");
+        std::vector<LinesVertex> mPoints;
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
 
-        public:
-            PrimitiveLines(const std::vector<LinesVertex> &points);
+    public:
+        PrimitiveLines(const std::vector<LinesVertex> &points);
 
-            PrimitiveLines(const PrimitiveLines& other);
+        PrimitiveLines(const PrimitiveLines &other);
 
-            PrimitiveLines(PrimitiveLines&& other);
+        PrimitiveLines(PrimitiveLines &&other);
 
-            ~PrimitiveLines();
+        ~PrimitiveLines();
 
-            PrimitiveLines& operator=(PrimitiveLines other);
+        PrimitiveLines &operator=(PrimitiveLines other);
 
-            void swap(PrimitiveLines& other);
+        void swap(PrimitiveLines &other);
 
-            void draw(uint32_t viewId) const override;
+        friend void swap(PrimitiveLines &a, PrimitiveLines &b) { a.swap(b); }
 
-            void update(const std::vector<LinesVertex> &points) override {};
+        void draw(uint32_t viewId) const override;
 
+        void update(const std::vector<LinesVertex> &points) override {};
+
+    private:
+        inline void allocateVertexBuffer();
     };
 }

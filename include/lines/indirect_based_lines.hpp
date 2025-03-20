@@ -1,47 +1,55 @@
 #pragma once
-#include "../lines.hpp"
+#include "../generic_lines.hpp"
 
-namespace lines {
-    class IndirectBasedLines : public Lines {
+namespace lines
+{
+    class IndirectBasedLines : public GenericLines
+    {
 
-        static const inline std::vector<float>       mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
-        static const inline std::vector<uint32_t>    mIndexes = {0, 1, 2, 1, 3, 2};
-        
-        std::vector<LinesVertex>                    mPoints;
+        static bgfx::ProgramHandle mComputeIndirectPH = bgfx::createProgram(
+            LoadShader("lines/indirect_based_lines/cs_compute_indirect"), true);
+        static bgfx::ProgramHandle mLinesPH = LoadProgram("lines/indirect_based_lines/vs_indirect_based_lines", 
+                                                          "lines/indirect_based_lines/fs_indirect_based_lines");
 
-        bgfx::VertexBufferHandle                    mVerticesBH             = BGFX_INVALID_HANDLE;
-        bgfx::IndexBufferHandle                     mIndexesBH              = BGFX_INVALID_HANDLE;
-        bgfx::DynamicVertexBufferHandle             mPointsBH               = BGFX_INVALID_HANDLE;
 
-        bgfx::IndirectBufferHandle                  mIndirectBH             = BGFX_INVALID_HANDLE;
-        bgfx::ProgramHandle                         mComputeIndirectPH      = BGFX_INVALID_HANDLE;            
-        bgfx::UniformHandle                         mIndirectDataUH         = BGFX_INVALID_HANDLE;
+        static const inline std::vector<float> mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
+        static const inline std::vector<uint32_t> mIndexes = {0, 1, 2, 1, 3, 2};
 
-        public:
-            IndirectBasedLines(const std::vector<LinesVertex> &points);
+        std::vector<LinesVertex> mPoints;
 
-            IndirectBasedLines(const IndirectBasedLines& other);
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicVertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
 
-            IndirectBasedLines(IndirectBasedLines&& other);
+        bgfx::IndirectBufferHandle mIndirectBH = BGFX_INVALID_HANDLE;
+        bgfx::UniformHandle mIndirectDataUH = BGFX_INVALID_HANDLE;
 
-            ~IndirectBasedLines();
+    public:
+        IndirectBasedLines(const std::vector<LinesVertex> &points);
 
-            IndirectBasedLines& operator=(IndirectBasedLines other);
+        IndirectBasedLines(const IndirectBasedLines &other);
 
-            void swap(IndirectBasedLines& other);
+        IndirectBasedLines(IndirectBasedLines &&other);
 
-            void draw(uint32_t viewId) const override;
+        ~IndirectBasedLines();
 
-            void update(const std::vector<LinesVertex> &points) override;
+        IndirectBasedLines &operator=(IndirectBasedLines other);
 
-        private:
+        void swap(IndirectBasedLines &other);
 
-            void allocatePointsBuffer();
+        friend void swap(IndirectBasedLines &a, IndirectBasedLines &b) { a.swap(b); }
 
-            void allocateVerticesBuffer();
+        void draw(uint32_t viewId) const override;
 
-            void allocateIndexesBuffer();
+        void update(const std::vector<LinesVertex> &points) override;
 
-            void generateIndirectBuffer();
-    };  
+    private:
+        void allocatePointsBuffer();
+
+        void allocateVerticesBuffer();
+
+        void allocateIndexesBuffer();
+
+        void generateIndirectBuffer();
+    };
 }

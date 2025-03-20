@@ -2,9 +2,7 @@
 
 namespace lines {
     GPUGeneratedLines::GPUGeneratedLines(const std::vector<LinesVertex> &points) : 
-        Lines(),
-        mPoints(points),
-        mComputeVerticesPH() 
+        mPoints(points)
     {
         allocateVertexBuffer();
         allocateIndexBuffer();
@@ -14,10 +12,9 @@ namespace lines {
         generateBuffers();
     }
 
-    GPUGeneratedLines::GPUGeneratedLines(const GPUGeneratedLines& other) : Lines(other) {
-        mPoints = other.mPoints;
-        mComputeVerticesPH = bgfx::createProgram(LoadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
-
+    GPUGeneratedLines::GPUGeneratedLines(const GPUGeneratedLines& other) :
+        mPointsBH(other.mPointsBH)
+    {
         allocateIndexBuffer();
         allocateVertexBuffer();
         allocatePointsBuffer();
@@ -26,7 +23,8 @@ namespace lines {
         generateBuffers();
     }
 
-    GPUGeneratedLines::GPUGeneratedLines(GPUGeneratedLines&& other) : Lines(other) {
+    GPUGeneratedLines::GPUGeneratedLines(GPUGeneratedLines&& other)
+    {
         swap(other);
     }
 
@@ -39,6 +37,9 @@ namespace lines {
 
         if(bgfx::isValid(mPointsBH))
             bgfx::destroy(mPointsBH);
+
+        if(bgfx::isValid(mLinesPH))
+            bgfx::destroy(mComputeVerticesPH);
     }
 
     GPUGeneratedLines& GPUGeneratedLines::operator=(GPUGeneratedLines other) {
@@ -47,30 +48,26 @@ namespace lines {
     }
 
     void GPUGeneratedLines::swap(GPUGeneratedLines& other) {
+        using std::swap;
+
+        GenericLines::swap(other);
+
         std::swap(mLinesPH, other.mLinesPH);
-        std::swap(mSettings, other.mSettings);
+        std::swap(mComputeVerticesPH, other.mComputeVerticesPH);
 
         std::swap(mIndexesBH, other.mIndexesBH);
         std::swap(mVerticesBH, other.mVerticesBH);
-        std::swap(mPoints, other.mPoints);
         std::swap(mPointsBH, other.mPointsBH);
-        std::swap(mComputeVerticesPH, other.mComputeVerticesPH);
+        
+        std::swap(mPoints, other.mPoints);
     }
 
     void GPUGeneratedLines::draw(uint32_t viewId) const {
-        mSettings.bindUniformLines();
-
-        uint64_t state = 0
-            | BGFX_STATE_WRITE_RGB
-            | BGFX_STATE_WRITE_A
-            | BGFX_STATE_WRITE_Z
-            | BGFX_STATE_DEPTH_TEST_LESS
-            | UINT64_C(0)
-            | BGFX_STATE_BLEND_ALPHA;
+        bindSettingsUniform();
 
         bgfx::setVertexBuffer(0, mVerticesBH);
         bgfx::setIndexBuffer(mIndexesBH);
-        bgfx::setState(state);
+        bgfx::setState(drawState());
         bgfx::submit(viewId, mLinesPH);
     }
 

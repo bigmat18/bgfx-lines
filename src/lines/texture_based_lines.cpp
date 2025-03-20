@@ -3,12 +3,12 @@
 
 namespace lines {
     TextureBasedLines::TextureBasedLines(const std::vector<LinesVertex> &points, const uint32_t maxTextureSize) :
-        Lines("lines/texture_based_lines/vs_texture_based_lines", "lines/texture_based_lines/fs_texture_based_lines"),
+        Lines(),
         mMaxTextureSize(maxTextureSize),
         mPoints(points),
         mIndirectBH(bgfx::createIndirectBuffer(1)),
         mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4)),
-        mComputeTexturePH(bgfx::createProgram(LoadShader("lines/texture_based_lines/cs_compute_texture"), true))
+        mComputeTexturePH()
     {
         allocateIndexesBuffer();
         allocateVerticesBuffer();

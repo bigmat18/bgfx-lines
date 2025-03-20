@@ -1,53 +1,56 @@
 #pragma once
-#include "../lines.hpp"
+#include "../generic_lines.hpp"
 
-namespace lines {
-    class TextureBasedLines : public Lines {
+namespace lines
+{
+    class TextureBasedLines : public GenericLines
+    {
+        static bgfx::ProgramHandle mComputeTexturePH = bgfx::createProgram(
+            LoadShader("lines/texture_based_lines/cs_compute_texture"), true);
+        static bgfx::ProgramHandle mLinesPH = LoadProgram("lines/texture_based_lines/vs_texture_based_lines", 
+                                                          "lines/texture_based_lines/fs_texture_based_lines")
 
-        static const inline std::vector<float>     mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
-        static const inline std::vector<uint32_t>  mIndexes = {0, 1, 2, 1, 3, 2};
-        
-        uint32_t                                    mMaxTextureSize;
-        std::vector<LinesVertex>                    mPoints;
+        static const inline std::vector<float> mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
+        static const inline std::vector<uint32_t> mIndexes = {0, 1, 2, 1, 3, 2};
 
-        bgfx::TextureHandle                         mTextureBH              = BGFX_INVALID_HANDLE;
-        bgfx::DynamicVertexBufferHandle             mPointsBH               = BGFX_INVALID_HANDLE;
-        bgfx::ProgramHandle                         mComputeTexturePH       = BGFX_INVALID_HANDLE;
+        uint32_t mMaxTextureSize;
+        std::vector<LinesVertex> mPoints;
 
-        bgfx::IndirectBufferHandle                  mIndirectBH             = BGFX_INVALID_HANDLE;      
-        bgfx::UniformHandle                         mIndirectDataUH         = BGFX_INVALID_HANDLE;
+        bgfx::TextureHandle mTextureBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicVertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
 
-        bgfx::VertexBufferHandle                    mVerticesBH             = BGFX_INVALID_HANDLE;
-        bgfx::IndexBufferHandle                     mIndexesBH              = BGFX_INVALID_HANDLE;
+        bgfx::IndirectBufferHandle mIndirectBH = BGFX_INVALID_HANDLE;
+        bgfx::UniformHandle mIndirectDataUH = BGFX_INVALID_HANDLE;
 
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
 
-        public:
-            TextureBasedLines(const std::vector<LinesVertex> &points, const uint32_t maxTextureSize);
+    public:
+        TextureBasedLines(const std::vector<LinesVertex> &points, const uint32_t maxTextureSize);
 
-            TextureBasedLines(const TextureBasedLines& other);
+        TextureBasedLines(const TextureBasedLines &other);
 
-            TextureBasedLines(TextureBasedLines&& other);
+        TextureBasedLines(TextureBasedLines &&other);
 
-            ~TextureBasedLines();
+        ~TextureBasedLines();
 
-            TextureBasedLines& operator=(TextureBasedLines other);
+        TextureBasedLines &operator=(TextureBasedLines other);
 
-            void swap(TextureBasedLines& other);
+        void swap(TextureBasedLines &other);
 
-            void draw(uint32_t viewId) const override;
+        void draw(uint32_t viewId) const override;
 
-            void update(const std::vector<LinesVertex> &points) override;
+        void update(const std::vector<LinesVertex> &points) override;
 
-        private:
+    private:
+        void generateTextureBuffer();
 
-            void generateTextureBuffer();
+        void allocateTextureBuffer();
 
-            void allocateTextureBuffer();
+        void allocatePointsBuffer();
 
-            void allocatePointsBuffer();
-            
-            void allocateVerticesBuffer();
+        void allocateVerticesBuffer();
 
-            void allocateIndexesBuffer();
+        void allocateIndexesBuffer();
     };
 }
