@@ -2,35 +2,76 @@
 #include <bgfx/bgfx.h>
 #include <memory>
 #include <vector>
+
+#include "lines/cpu_generated_lines.hpp"
+#include "lines/gpu_generated_lines.hpp"
+#include "lines/instancing_based_lines.hpp"
+#include "lines/indirect_based_lines.hpp"
+#include "lines/texture_based_lines.hpp"
+
 #include "lines_settings.hpp"
 #include "utils.hpp"
 
-namespace lines {
-    class Lines {
+namespace lines
+{
+    template <typename LinesImplementation = CPUGeneratedLines>
+    class Lines
+    {
 
-        public:
+        bool                        mVisible = true;
+        std::vector<LinesVertex>    mPoints;
+        LinesImplementation         mLines;
 
-            static std::unique_ptr<Lines> create(const std::vector<LinesVertex> &points, LinesTypes type = LinesTypes::CPU_GENERATED);
+    public:
+        Lines() = default;
 
-            Lines(const std::string& vs_name, const std::string& fs_name);
+        Lines(const std::vector<LinesVertex> &points) : mPoints(points), mLines(points) {}
 
-            Lines(const Lines& other);
+        Lines(const Lines &other) : mPoints(other.mPoints),
+                                    mLines(other.mPoints),
+                                    mVisible(other.mVisible)
+        {
+            mLines.settings() = other.settings();
+        }
 
-            Lines(Lines&& other);
+        Lines(Lines &&other) { swap(other); }
 
-            virtual ~Lines();
+        ~Lines() = default;
 
-            LinesSettings& getSettings() { return mSettings; }
+        Lines &operator=(Lines other)
+        {
+            swap(other);
+            return *this;
+        }
 
-            virtual void draw(uint32_t viewId) const = 0;
+        void swap(Lines &other)
+        {
+            using std::swap;
+            swap(mPoints, other.mPoints);
+            swap(mLines, other.mLines);
+            swap(mVisible, other.mVisible);
+        }
 
-            virtual void update(const std::vector<LinesVertex> &points) = 0;
+        friend void swap(Lines &first, Lines &second)
+        {
+            first.swap(second);
+        }
 
-        protected: 
-            std::string vs_name;
-            std::string fs_name;
+        const LineSettings& settings() const { return mLines.settings(); }
 
-            bgfx::ProgramHandle         mLinesPH;
-            LinesSettings               mSettings;
+        LineSettings& settings() { return mLines.settings(); }
+
+        void draw(uint32_t viewId) const { mLines.draw(viewId); }
+
+        virtual void update(const std::vector<LinesVertex> &points) 
+        {
+            mLines.update(points);
+        }
     };
+
+    using CPULines         = Lines<CPUGeneratedLines>;
+    using GPULines         = Lines<GPUGeneratedLines>;
+    using IndirectLines    = Lines<IndirectBasedLines>;
+    using InstancingLines  = Lines<InstancingBasedLines>;
+    using TextureLines     = Lines<TextureBasedLines>;
 }

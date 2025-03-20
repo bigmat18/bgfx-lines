@@ -5,31 +5,71 @@
 #include "lines_settings.hpp"
 #include "utils.hpp"
 
+#include "polylines/cpu_generated_polylines.hpp"
+#include "polylines/gpu_generated_polylines.hpp"
+#include "polylines/instancing_based_polylines.hpp"
+#include "polylines/indirect_based_polylines.hpp"
+#include "polylines/texture_based_polylines.hpp"
+
 namespace lines {
-    class Polylines {
+    template <typename PolylinesImplementation = CPUGeneratedPolylines>
+    class Polylines
+    {
 
-        public:
-            static std::unique_ptr<Polylines> create(const std::vector<LinesVertex> &points, LinesTypes type = LinesTypes::CPU_GENERATED);
+        bool                        mVisible = true;
+        std::vector<LinesVertex>    mPoints;
+        PolylinesImplementation     mLines;
 
-            Polylines(const std::string& vs_name, const std::string& fs_name);
+    public:
+        Polylines() = default;
 
-            Polylines(const Polylines& other);
+        Polylines(const std::vector<LinesVertex> &points) : mPoints(points), mLines(points) {}
 
-            Polylines(Polylines&& other);
+        Polylines(const Polylines &other) : mPoints(other.mPoints),
+                                    mLines(other.mPoints),
+                                    mVisible(other.mVisible)
+        {
+            mLines.settings() = other.settings();
+        }
 
-            virtual ~Polylines();
+        Polylines(Polylines &&other) { swap(other); }
 
-            LinesSettings& getSettings() { return mSettings; }
+        ~Polylines() = default;
 
-            virtual void draw(uint32_t viewId) const = 0;
+        Polylines &operator=(Polylines other)
+        {
+            swap(other);
+            return *this;
+        }
 
-            virtual void update(const std::vector<LinesVertex> &points) = 0;
+        void swap(Polylines &other)
+        {
+            using std::swap;
+            swap(mPoints, other.mPoints);
+            swap(mLines, other.mLines);
+            swap(mVisible, other.mVisible);
+        }
 
-        protected: 
-            std::string vs_name;
-            std::string fs_name;
-            
-            bgfx::ProgramHandle         mLinesPH;
-            LinesSettings               mSettings;
+        friend void swap(Polylines &first, Polylines &second)
+        {
+            first.swap(second);
+        }
+
+        const LineSettings& settings() const { return mLines.settings(); }
+
+        LineSettings& settings() { return mLines.settings(); }
+
+        void draw(uint32_t viewId) const { mLines.draw(viewId); }
+
+        virtual void update(const std::vector<LinesVertex> &points) 
+        {
+            mLines.update(points);
+        }
     };
+
+    using CPUPolylines         = Polylines<CPUGeneratedPolylines>;
+    using GPUPolylines         = Polylines<GPUGeneratedPolylines>;
+    using IndirectPolylines    = Polylines<IndirectBasedPolylines>;
+    using InstancingPolylines  = Polylines<InstancingBasedPolylines>;
+    using TexturePolylines     = Polylines<TextureBasedPolylines>;
 }

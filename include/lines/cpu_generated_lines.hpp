@@ -1,41 +1,43 @@
-#pragma once 
-#include <lines.hpp>
+#pragma once
+#include "../generic_lines.hpp"
 
-namespace lines {
+namespace lines
+{
 
-    class CPUGeneratedLines : public Lines {
+    class CPUGeneratedLines : public GenericLines<LinesSettings>
+    {
 
+        static bgfx::ProgramHandle mLinesPH = LoadProgram("lines/cpu_generated_lines/vs_cpu_generated_lines",
+                                                          "lines/cpu_generated_lines/fs_cpu_generated_lines");
         uint32_t mPointsSize;
 
-        std::vector<float>                  mVertices;
-        std::vector<uint32_t>               mIndexes;
+        bgfx::DynamicVertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicIndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
 
-        bgfx::DynamicVertexBufferHandle     mVerticesBH     = BGFX_INVALID_HANDLE;
-        bgfx::DynamicIndexBufferHandle      mIndexesBH      = BGFX_INVALID_HANDLE;
+    public:
+        CPUGeneratedLines() = default;
 
-        public:
-            CPUGeneratedLines(const std::vector<LinesVertex> &points);
+        CPUGeneratedLines(const std::vector<LinesVertex> &points);
 
-            CPUGeneratedLines(const CPUGeneratedLines& other);
+        CPUGeneratedLines(const CPUGeneratedLines &other);
 
-            CPUGeneratedLines(CPUGeneratedLines&& other);
+        CPUGeneratedLines(CPUGeneratedLines &&other);
 
-            ~CPUGeneratedLines();
+        ~CPUGeneratedLines();
 
-            CPUGeneratedLines& operator=(CPUGeneratedLines other);
+        CPUGeneratedLines &operator=(CPUGeneratedLines other);
 
-            void swap(CPUGeneratedLines& other);
+        void swap(CPUGeneratedLines &other);
 
-            void draw(uint32_t viewId) const override;
+        void draw(uint32_t viewId) const override;
 
-            void update(const std::vector<LinesVertex> &points) override;
+        void update(const std::vector<LinesVertex> &points) override;
 
-        private:
-            void generateBuffers(const std::vector<LinesVertex> points);
+    private:
+        void generateBuffers(const std::vector<LinesVertex> &points);
 
-            void allocateVertexBuffer();
+        void allocateVertexBuffer();
 
-            void allocateIndexBuffer();
-
+        void allocateIndexBuffer();
     };
 }

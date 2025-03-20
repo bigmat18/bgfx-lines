@@ -6,164 +6,71 @@
 
 namespace lines {
 
-    enum Caps {
-        BUTT_CAP            = 0x00000000, // No extra space on caps
-        SQUARE_CAP          = 0x00000001, // Extra space with square shape
-        ROUND_CAP           = 0x00000002, // Extra space with round shape
-        TRIANGLE_CAP        = 0x00000003  // Extra space with triangle
+    enum class LineCap {
+        BUTT_CAP     = 0x00000000, // No extra space on caps
+        SQUARE_CAP   = 0x00000001, // Extra space with square shape
+        ROUND_CAP    = 0x00000002, // Extra space with round shape
+        TRIANGLE_CAP = 0x00000003  // Extra space with triangle
     };
-
-    enum Joins {
-        ROUND_JOIN          = 0x00000000, // Join with round shape
-        BEVEL_JOIN          = 0x00000001, // Join with square shape
-        MITER_JOIN          = 0x00000002, // Join with a miter
+    
+    enum class LineColorToUse {
+        PER_VERTEX_COLOR = 0x00000000, // Select color form vertex color
+        PER_EDGE_COLOR   = 0x00000001, // Select color from edge buffer color
+        GENERAL_COLOR    = 0x00000002  // Use general color in uniform data
     };
+    
+    class LinesSettings
+    {
+    protected:
+        uint8_t  mThickness = 5;
+        uint8_t  mAntialias = 0;
+        uint8_t  mBorder = 0;
+        uint32_t mBorderColor = LinesVertex::COLOR(0, 0, 0, 1);
+        uint32_t mGeneralColor = LinesVertex::COLOR(0, 0, 0, 1);
+    
+        LineCap        mLeftCap    = LineCap::ROUND_CAP;
+        LineCap        mRigthCap   = LineCap::ROUND_CAP;
+        LineColorToUse mColorToUse = LineColorToUse::PER_VERTEX_COLOR;
+    
+        bgfx::UniformHandle mDataUH = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
+    
+    public:
+        LinesSettings() = default;
+    
+        void setThickness(uint8_t thickness) { mThickness = thickness; }
+    
+        void setAntialias(uint8_t antialias) { mAntialias = antialias; }
+    
+        void setBorder(uint8_t border) { mBorder = border; }
+    
+        void setBorderColor(uint32_t borderColor) { mBorderColor = borderColor; }
+    
+        void setGeneralColor(uint32_t generalColor)
+        {
+            mGeneralColor = generalColor;
+        }
+    
+        void setLeftCap(LineCap cap) { mLeftCap = cap; }
+    
+        void setRigthCap(LineCap cap) { mRigthCap = cap; }
+    
+        void setColorToUse(LineColorToUse colorToUse) { mColorToUse = colorToUse; }
+    
+        void bindUniform() const
+        {
+            uint32_t thickness_antialias_border_caps_color =
+                (0 | mThickness << 24 | mAntialias << 16 | mBorder << 8 |
+                 static_cast<uint8_t>(mLeftCap) << 4 |
+                 static_cast<uint8_t>(mRigthCap) << 2 |
+                 static_cast<uint8_t>(mColorToUse));
 
-    enum ColorToUse {
-        PER_VERTEX_COLOR    = 0x00000000, // Select color form vertex color
-        PER_EDGE_COLOR      = 0x00000001, // Select color from edge buffer color
-        GENERAL_COLOR       = 0x00000002  // Use general color in uniform data
-    };
-
-    class LinesSettings {
-        private:
-            uint8_t mThickness;
-            uint8_t mAntialias;
-            uint8_t mBorder;
-            uint32_t mBorderColor;
-            uint32_t mGeneralColor;
-            uint8_t mMiterLimit;
-
-            Caps mLeftCap;
-            Caps mRigthCap;
-            Joins mJoin;
-            ColorToUse mColorToUse;
-
-            bgfx::UniformHandle mDataUH;
-
-        public:
-
-            LinesSettings() : 
-                mThickness(5),
-                mAntialias(0),
-                mBorder(0),
-                mBorderColor(LinesVertex::COLOR(0, 0, 0, 1)),
-                mGeneralColor(LinesVertex::COLOR(0, 0, 0, 1)),
-                mMiterLimit(mThickness * 2),
-                mLeftCap(Caps::ROUND_CAP),
-                mRigthCap(Caps::ROUND_CAP),
-                mJoin(Joins::ROUND_JOIN),
-                mColorToUse(ColorToUse::PER_VERTEX_COLOR)
-            {
-                mDataUH = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
-            }
-
-            LinesSettings(const LinesSettings& other) : 
-                mThickness(other.mThickness),
-                mAntialias(other.mAntialias),
-                mBorder(other.mBorder),
-                mBorderColor(other.mBorderColor),
-                mGeneralColor(other.mGeneralColor),
-                mMiterLimit(other.mMiterLimit),
-                mLeftCap(other.mLeftCap),
-                mRigthCap(other.mRigthCap),
-                mJoin(other.mJoin),
-                mColorToUse(other.mColorToUse)
-            {
-                mDataUH = bgfx::createUniform("u_data", bgfx::UniformType::Vec4);
-            }
-
-            LinesSettings(LinesSettings&& other) {
-                swap(other);
-            }
-
-            ~LinesSettings() {
-                if(bgfx::isValid(mDataUH))
-                    bgfx::destroy(mDataUH);
-            }
-
-            LinesSettings& operator=(LinesSettings other) {
-                swap(other);
-                return *this;
-            }
-
-            void swap(LinesSettings& other){
-                std::swap(mThickness, other.mThickness);
-                std::swap(mAntialias, other.mAntialias);
-                std::swap(mBorder, other.mBorder);
-
-                std::swap(mBorderColor, other.mBorderColor);
-                std::swap(mGeneralColor, other.mGeneralColor);
-
-                std::swap(mMiterLimit, other.mMiterLimit);
-                std::swap(mLeftCap, other.mLeftCap);
-                std::swap(mRigthCap, other.mRigthCap);
-                std::swap(mJoin, other.mJoin);
-
-                std::swap(mColorToUse, other.mColorToUse);
-                std::swap(mDataUH, other.mDataUH);
-            }
-
-            Joins getJoin() const { return mJoin; }
-
-            void setThickness(uint8_t thickness) { mThickness = thickness; }
-
-            void setAntialias(uint8_t antialias) { mAntialias = antialias; }
-
-            void setBorder(uint8_t border) { mBorder = border; }
-
-            void setBorderColor(uint32_t borderColor) { mBorderColor = borderColor; }
-
-            void setGeneralColor(uint32_t generalColor) { mGeneralColor = generalColor; }
-
-            void setMiterLimit(uint8_t miterLimit) {
-                if(miterLimit < mThickness)
-                    assert((void("Miter limit must be greatest then thickness * 2"), false));
-                mMiterLimit = miterLimit;
-            }
-
-            void setLeftCap(Caps cap) { mLeftCap = cap; }
-
-            void setRigthCap(Caps cap) { mRigthCap = cap; }
-
-            void setJoin(Joins join) { mJoin = join; }
-
-            void setColorToUse(ColorToUse colorToUse) { mColorToUse = colorToUse; }
-
-        public:
-            void bindUniformLines() const {
-                uint32_t thickness_antialias_border_caps_color = ( 
-                    0                                             |
-                    mThickness                             << 24 |
-                    mAntialias                             << 16 |
-                    mBorder                                << 8  |
-                    static_cast<uint8_t>(mLeftCap)         << 4  |
-                    static_cast<uint8_t>(mRigthCap)        << 2  |
-                    static_cast<uint8_t>(mColorToUse)  
-                );
-                uint32_t data[] = {mGeneralColor, thickness_antialias_border_caps_color, mBorderColor, 0};
-                bgfx::setUniform(mDataUH, data);
-            }
-
-            void bindUniformPolylines() const {
-                uint32_t thickness_antialias_border_miterlimit = ( 
-                    0                                       |
-                    mThickness                       << 24 |
-                    mAntialias                       << 16 |
-                    mBorder                          << 8  |
-                    mMiterLimit 
-                );
-
-                uint32_t caps_join_color = (                  
-                   0                                          |
-                   static_cast<uint8_t>(mLeftCap)       << 6 |
-                   static_cast<uint8_t>(mRigthCap)      << 4 |
-                   static_cast<uint8_t>(mJoin)          << 2 |
-                   static_cast<uint8_t>(mColorToUse)
-                );
-
-                uint32_t data[] = {mGeneralColor, thickness_antialias_border_miterlimit, mBorderColor, caps_join_color};
-                bgfx::setUniform(mDataUH, data);
-            }
+            uint32_t data[] = {
+                mGeneralColor,
+                thickness_antialias_border_caps_color,
+                mBorderColor,
+                0
+            };
+            bgfx::setUniform(mDataUH, data);
+        }
     };
 }

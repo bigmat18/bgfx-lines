@@ -1,41 +1,46 @@
 #pragma once
-#include "../lines.hpp"
+#include "../generic_lines.hpp"
 
-namespace lines {
-    
-    class GPUGeneratedLines : public Lines {
+namespace lines
+{
+    class GPUGeneratedLines : public Lines
+    {
 
-        std::vector<LinesVertex>            mPoints;
+        static bgfx::ProgramHandle mLinesPH = LoadProgram("lines/cpu_generated_lines/vs_cpu_generated_lines", 
+                                                          "lines/cpu_generated_lines/fs_cpu_generated_lines")
+        static bgfx::ProgramHandle mComputeVerticesPH = bgfx::createProgram(
+                LoadShader("lines/gpu_generated_lines/cs_compute_buffers"), true)
+        
+        std::vector<LinesVertex> mPoints;
 
-        bgfx::DynamicIndexBufferHandle      mIndexesBH              = BGFX_INVALID_HANDLE;
-        bgfx::DynamicVertexBufferHandle     mVerticesBH             = BGFX_INVALID_HANDLE;
-        bgfx::DynamicVertexBufferHandle     mPointsBH               = BGFX_INVALID_HANDLE;  
-        bgfx::ProgramHandle                 mComputeVerticesPH      = BGFX_INVALID_HANDLE;
+        bgfx::DynamicVertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicIndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicVertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
 
-        public:
-            GPUGeneratedLines(const std::vector<LinesVertex> &points);
+    public: 
+        GPUGeneratedLines(const std::vector<LinesVertex> &points);
 
-            GPUGeneratedLines(const GPUGeneratedLines& other);
+        GPUGeneratedLines(const GPUGeneratedLines &other);
 
-            GPUGeneratedLines(GPUGeneratedLines&& other);
-            
-            ~GPUGeneratedLines();
+        GPUGeneratedLines(GPUGeneratedLines &&other);
 
-            GPUGeneratedLines& operator=(GPUGeneratedLines other);
+        ~GPUGeneratedLines();
 
-            void swap(GPUGeneratedLines& other);
+        GPUGeneratedLines &operator=(GPUGeneratedLines other);
 
-            void draw(uint32_t viewId) const override;
+        void swap(GPUGeneratedLines &other);
 
-            void update(const std::vector<LinesVertex> &points) override;
+        void draw(uint32_t viewId) const override;
 
-        private:
-            void generateBuffers();
+        void update(const std::vector<LinesVertex> &points) override;
 
-            void allocateVertexBuffer();
+    private:
+        void generateBuffers();
 
-            void allocateIndexBuffer();
+        void allocateVertexBuffer();
 
-            void allocatePointsBuffer();
+        void allocateIndexBuffer();
+
+        void allocatePointsBuffer();
     };
 }
