@@ -3,14 +3,11 @@
 
 namespace lines
 {
-    class IndirectBasedLines : public GenericLines
+    class IndirectBasedLines : public GenericLines<LinesSettings>
     {
 
-        static bgfx::ProgramHandle mComputeIndirectPH = bgfx::createProgram(
-            LoadShader("lines/indirect_based_lines/cs_compute_indirect"), true);
-        static bgfx::ProgramHandle mLinesPH = LoadProgram("lines/indirect_based_lines/vs_indirect_based_lines", 
-                                                          "lines/indirect_based_lines/fs_indirect_based_lines");
-
+        static bgfx::ProgramHandle mComputeIndirectPH;
+        static bgfx::ProgramHandle mLinesPH;
 
         static const inline std::vector<float> mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
         static const inline std::vector<uint32_t> mIndexes = {0, 1, 2, 1, 3, 2};

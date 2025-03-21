@@ -3,14 +3,11 @@
 
 namespace lines
 {
-    class GPUGeneratedLines : public GenericLines
+    class GPUGeneratedLines : public GenericLines<LinesSettings>
     {
 
-        static bgfx::ProgramHandle mLinesPH = LoadProgram("lines/cpu_generated_lines/vs_cpu_generated_lines", 
-                                                          "lines/cpu_generated_lines/fs_cpu_generated_lines");
-        static bgfx::ProgramHandle mComputeVerticesPH = bgfx::createProgram(
-                LoadShader("lines/gpu_generated_lines/cs_compute_buffers"), true)
-        
+        static bgfx::ProgramHandle mLinesPH;
+        static bgfx::ProgramHandle mComputeVerticesPH;
         std::vector<LinesVertex> mPoints;
 
         bgfx::DynamicVertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;

@@ -1,6 +1,8 @@
 #include <lines/primitive_lines.hpp>
 
 namespace lines {
+    bgfx::ProgramHandle PrimitiveLines::mLinesPH = LoadProgram("base/vs_base", "base/fs_base");
+
     PrimitiveLines::PrimitiveLines(const std::vector<LinesVertex> &points) :
         mPoints(points)
     {

@@ -3,10 +3,9 @@
 
 namespace lines
 {
-    class InstancingBasedLines : public GenericLines
+    class InstancingBasedLines : public GenericLines<LinesSettings>
     {
-        static bgfx::ProgramHandle mPointsPH = LoadProgram("lines/instancing_based_lines/vs_instancing_based_lines", 
-                                                           "lines/instancing_based_lines/fs_instancing_based_lines")
+        static bgfx::ProgramHandle mLinesPH;
         static const inline std::vector<float> mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
         static const inline std::vector<uint32_t> mIndexes = {0, 1, 2, 1, 3, 2};
 
@@ -29,7 +28,7 @@ namespace lines
 
         void swap(InstancingBasedLines &other);
 
-        friend void swap(IndirectBasedLines& a, IndirectBasedLines& b) { a.swap(b); }
+        friend void swap(InstancingBasedLines& a, InstancingBasedLines& b) { a.swap(b); }
 
         void draw(uint32_t viewId) const override;
 

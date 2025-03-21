@@ -10,7 +10,6 @@
 #include "lines/texture_based_lines.hpp"
 
 #include "lines_settings.hpp"
-#include "utils.hpp"
 
 namespace lines
 {
@@ -57,9 +56,9 @@ namespace lines
             first.swap(second);
         }
 
-        const LineSettings& settings() const { return mLines.settings(); }
+        const LinesSettings& settings() const { return mLines.settings(); }
 
-        LineSettings& settings() { return mLines.settings(); }
+        LinesSettings& settings() { return mLines.settings(); }
 
         void draw(uint32_t viewId) const { mLines.draw(viewId); }
 

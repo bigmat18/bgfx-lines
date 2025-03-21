@@ -3,12 +3,10 @@
 
 namespace lines
 {
-    class TextureBasedLines : public GenericLines
+    class TextureBasedLines : public GenericLines<LinesSettings>
     {
-        static bgfx::ProgramHandle mComputeTexturePH = bgfx::createProgram(
-            LoadShader("lines/texture_based_lines/cs_compute_texture"), true);
-        static bgfx::ProgramHandle mLinesPH = LoadProgram("lines/texture_based_lines/vs_texture_based_lines", 
-                                                          "lines/texture_based_lines/fs_texture_based_lines")
+        static bgfx::ProgramHandle mComputeTexturePH;
+        static bgfx::ProgramHandle mLinesPH;
 
         static const inline std::vector<float> mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
         static const inline std::vector<uint32_t> mIndexes = {0, 1, 2, 1, 3, 2};
@@ -26,7 +24,7 @@ namespace lines
         bgfx::IndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
 
     public:
-        TextureBasedLines(const std::vector<LinesVertex> &points, const uint32_t maxTextureSize);
+        TextureBasedLines(const std::vector<LinesVertex> &points);
 
         TextureBasedLines(const TextureBasedLines &other);
 

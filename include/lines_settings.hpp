@@ -2,7 +2,7 @@
 #include <iostream>
 #include <assert.h>
 #include <bgfx/bgfx.h>
-#include "utils.hpp"
+#include "lines_utils.hpp"
 
 namespace lines {
 

@@ -4,10 +4,10 @@
 namespace lines
 {
 
-    class PrimitiveLines : public GenericLines
+    class PrimitiveLines : public GenericLines<LinesSettings>
     {
 
-        static bgfx::ProgramHandle mLinesPH = LoadProgram("base/vs_base", "base/fs_base");
+        static bgfx::ProgramHandle mLinesPH;
         std::vector<LinesVertex> mPoints;
         bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
 
