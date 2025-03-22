@@ -1,41 +1,42 @@
 #pragma once
-#include "../polylines.hpp"
+#include "../generic_lines.hpp"
+#include "../polylines_settings.hpp"
 
-namespace lines {
-    class CPUGeneratedPolylines : public Polylines {
+namespace lines
+{
+    class CPUGeneratedPolylines : public GenericLines<PolylinesSettings>
+    {
+        static const bgfx::ProgramHandle mLinesPH;
+        std::vector<LinesVertex> mPoints;
 
-        uint32_t                            mPointsSize;
-        std::vector<float>                  mVertices;
-        std::vector<uint32_t>               mSegmentsIndexes;
-        std::vector<uint32_t>               mJoinsIndexes;
+        bgfx::DynamicVertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicIndexBufferHandle mSegmentsIndexesBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicIndexBufferHandle mJoinsIndexesBH = BGFX_INVALID_HANDLE;
 
-        bgfx::DynamicVertexBufferHandle    mVerticesBH              = BGFX_INVALID_HANDLE;
-        bgfx::DynamicIndexBufferHandle     mSegmentsIndexesBH       = BGFX_INVALID_HANDLE;
-        bgfx::DynamicIndexBufferHandle     mJoinsIndexesBH          = BGFX_INVALID_HANDLE;
+    public:
+        CPUGeneratedPolylines(const std::vector<LinesVertex> &points);
 
-        public:
-            CPUGeneratedPolylines(const std::vector<LinesVertex> &points);
+        CPUGeneratedPolylines(const CPUGeneratedPolylines &other);
 
-            CPUGeneratedPolylines(const CPUGeneratedPolylines& other);
+        CPUGeneratedPolylines(CPUGeneratedPolylines &&other);
 
-            CPUGeneratedPolylines(CPUGeneratedPolylines&& other);
+        ~CPUGeneratedPolylines();
 
-            ~CPUGeneratedPolylines();
+        CPUGeneratedPolylines &operator=(CPUGeneratedPolylines other);
 
-            CPUGeneratedPolylines& operator=(CPUGeneratedPolylines other);
+        void swap(CPUGeneratedPolylines &other);
 
-            void swap(CPUGeneratedPolylines& other);
+        friend void swap(CPUGeneratedPolylines& a, CPUGeneratedPolylines& b) { a.swap(b); }
 
-            void draw(uint32_t viewId) const override;
+        void draw(uint32_t viewId) const override;
 
-            void update(const std::vector<LinesVertex> &points) override;
+        void update(const std::vector<LinesVertex> &points) override;
 
-        private:
+    private:
+        void generateBuffers();
 
-            void generateBuffers(const std::vector<LinesVertex> points);
+        void allocateVertexBuffer();
 
-            void allocateVertexBuffer();
-
-            void allocateIndexesBuffer();
+        void allocateIndexesBuffer();
     };
 }

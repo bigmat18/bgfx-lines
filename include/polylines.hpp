@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include "lines_settings.hpp"
-#include "utils.hpp"
+#include "lines_utils.hpp"
 
 #include "polylines/cpu_generated_polylines.hpp"
 #include "polylines/gpu_generated_polylines.hpp"
@@ -55,9 +55,9 @@ namespace lines {
             first.swap(second);
         }
 
-        const LineSettings& settings() const { return mLines.settings(); }
+        const LinesSettings& settings() const { return mLines.settings(); }
 
-        LineSettings& settings() { return mLines.settings(); }
+        LinesSettings& settings() { return mLines.settings(); }
 
         void draw(uint32_t viewId) const { mLines.draw(viewId); }
 

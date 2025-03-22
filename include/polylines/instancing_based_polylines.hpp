@@ -1,43 +1,49 @@
 #pragma once
-#include "../polylines.hpp"
+#include "../generic_lines.hpp"
+#include "../polylines_settings.hpp"
 
-namespace lines {
-    class InstancingBasedPolylines : public Polylines {
+namespace lines
+{
+    class InstancingBasedPolylines : public GenericLines<PolylinesSettings>
+    {
+        static const bgfx::ProgramHandle mJointPH;
+        static const bgfx::ProgramHandle mLinesPH;
 
-        static const inline std::vector<float>        mVertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
-        static const inline std::vector<uint32_t>     mIndexes = {0, 3, 1, 0, 2, 3};
+        static const inline std::vector<float> mVertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+        static const inline std::vector<uint32_t> mIndices = {0, 3, 1, 0, 2, 3};
 
-        std::vector<LinesVertex>                      mPoints;
+        std::vector<LinesVertex> mPoints;
 
-        mutable bgfx::InstanceDataBuffer              mSegmentsInstanceDB;
-        mutable bgfx::InstanceDataBuffer              mJoinsInstanceDB;
+        mutable bgfx::InstanceDataBuffer mSegmentsInstanceDB;
+        mutable bgfx::InstanceDataBuffer mJointInstanceDB;
 
-        bgfx::VertexBufferHandle                      mVerticesBH           = BGFX_INVALID_HANDLE;
-        bgfx::IndexBufferHandle                       mIndexesBH            = BGFX_INVALID_HANDLE;
-        bgfx::ProgramHandle                           mJoinesPH             = BGFX_INVALID_HANDLE;
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mIndicesBH = BGFX_INVALID_HANDLE;
 
-        public:
-            InstancingBasedPolylines(const std::vector<LinesVertex> &points);
+    public:
+        InstancingBasedPolylines(const std::vector<LinesVertex> &points);
 
-            InstancingBasedPolylines(const InstancingBasedPolylines& other);
+        InstancingBasedPolylines(const InstancingBasedPolylines &other);
 
-            InstancingBasedPolylines(InstancingBasedPolylines&& other);
+        InstancingBasedPolylines(InstancingBasedPolylines &&other);
 
-            ~InstancingBasedPolylines();
+        ~InstancingBasedPolylines();
 
-            InstancingBasedPolylines& operator=(InstancingBasedPolylines other);
+        InstancingBasedPolylines &operator=(InstancingBasedPolylines other);
 
-            void swap(InstancingBasedPolylines& other);
+        void swap(InstancingBasedPolylines &other);
 
-            void draw(uint32_t viewId) const override;
+        friend void swap(InstancingBasedPolylines& a, InstancingBasedPolylines& b) { a.swap(b); }
 
-            void update(const std::vector<LinesVertex> &points) override;
+        void draw(uint32_t viewId) const override;
 
-        private:
-            void generateInstanceBuffer() const;
+        void update(const std::vector<LinesVertex> &points) override;
 
-            void allocateVerticesBuffer();
+    private:
+        void generateInstanceBuffer() const;
 
-            void allocateIndexesBuffer();
+        void allocateVerticesBuffer();
+
+        void allocateIndexesBuffer();
     };
 }

@@ -11,7 +11,7 @@ namespace lines
         static const inline std::vector<float> mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
         static const inline std::vector<uint32_t> mIndexes = {0, 1, 2, 1, 3, 2};
 
-        uint32_t mMaxTextureSize;
+        const uint32_t mMaxTextureSize = bgfx::getCaps()->limits.maxTextureSize;
         std::vector<LinesVertex> mPoints;
 
         bgfx::TextureHandle mTextureBH = BGFX_INVALID_HANDLE;

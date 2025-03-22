@@ -41,8 +41,6 @@ namespace
 
             std::vector<lines::LinesVertex> points;
             generatePointsInCube(points, 3, 100);
-
-            line = lines::Polylines::create(points, lines::LinesTypes::CPU_GENERATED);
         }
 
         virtual int shutdown() override
@@ -67,8 +65,6 @@ namespace
 
                 bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                 bgfx::touch(0);
-
-                line->draw(0);
 
                 bgfx::frame();
 
@@ -106,8 +102,6 @@ namespace
         float top = 10.0f;
         float nearPlane = -10.0f;
         float farPlane = 10.0f;
-
-        std::unique_ptr<lines::Polylines> line;
     };
 }
 

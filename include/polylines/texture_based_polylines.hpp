@@ -1,57 +1,61 @@
 #pragma once
-#include "../polylines.hpp"
+#include "../generic_lines.hpp"
+#include "../polylines_settings.hpp"
 
-namespace lines {
-    class TextureBasedPolylines : public Polylines {
+namespace lines
+{
+    class TextureBasedPolylines : public GenericLines<PolylinesSettings>
+    {
+        static const bgfx::ProgramHandle mLinesPH;
+        static const bgfx::ProgramHandle mJointsPH;
+        static const bgfx::ProgramHandle mComputeTexturePH;
 
-        uint32_t mMaxTextureSize;
-        
-        static const inline std::vector<float>        mVertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
-        static const inline std::vector<uint32_t>     mIndexes = {0, 3, 1, 0, 2, 3};
+        const uint32_t mMaxTextureSize = bgfx::getCaps()->limits.maxTextureSize;
+        static const inline std::vector<float> mVertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+        static const inline std::vector<uint32_t> mIndices = {0, 3, 1, 0, 2, 3};
 
-        std::vector<LinesVertex>            mPoints;
+        std::vector<LinesVertex> mPoints;
 
-        bgfx::VertexBufferHandle            mVerticesBH             = BGFX_INVALID_HANDLE;
-        bgfx::IndexBufferHandle             mIndexesBH              = BGFX_INVALID_HANDLE;
-        bgfx::DynamicVertexBufferHandle     mPointsBH               = BGFX_INVALID_HANDLE;
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mIndicesBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicVertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
 
-        bgfx::IndirectBufferHandle          mSegmentsIndirectBH     = BGFX_INVALID_HANDLE;
-        bgfx::IndirectBufferHandle          mJoinesIndirectBH       = BGFX_INVALID_HANDLE;
+        bgfx::IndirectBufferHandle mSegmentsIndirectBH = BGFX_INVALID_HANDLE;
+        bgfx::IndirectBufferHandle mJointsIndirectBH = BGFX_INVALID_HANDLE;
 
-        bgfx::TextureHandle                 mSegmentsTextureBH      = BGFX_INVALID_HANDLE;
-        bgfx::TextureHandle                 mJoinesTextureBH        = BGFX_INVALID_HANDLE;
-            
-        bgfx::ProgramHandle                 mJoinesPH               = BGFX_INVALID_HANDLE;      
-        bgfx::ProgramHandle                 mComputeTexturePH       = BGFX_INVALID_HANDLE; 
-        bgfx::UniformHandle                 mComputeDataUH          = BGFX_INVALID_HANDLE;        
+        bgfx::TextureHandle mSegmentsTextureBH = BGFX_INVALID_HANDLE;
+        bgfx::TextureHandle mJointsTextureBH = BGFX_INVALID_HANDLE;
 
-        public:
-            TextureBasedPolylines(const std::vector<LinesVertex> &points, const uint32_t maxTextureSize);
+        bgfx::UniformHandle mComputeDataUH = BGFX_INVALID_HANDLE;
 
-            TextureBasedPolylines(const TextureBasedPolylines& other);
+    public:
+        TextureBasedPolylines(const std::vector<LinesVertex> &points);
 
-            TextureBasedPolylines(TextureBasedPolylines&& other);
+        TextureBasedPolylines(const TextureBasedPolylines &other);
 
-            ~TextureBasedPolylines();
+        TextureBasedPolylines(TextureBasedPolylines &&other);
 
-            TextureBasedPolylines& operator=(TextureBasedPolylines other);
+        ~TextureBasedPolylines();
 
-            void swap(TextureBasedPolylines& other);
+        TextureBasedPolylines &operator=(TextureBasedPolylines other);
 
-            void draw(uint32_t viewId) const override;
+        void swap(TextureBasedPolylines &other);
 
-            void update(const std::vector<LinesVertex> &points) override;
+        friend void swap(TextureBasedPolylines &a, TextureBasedPolylines& b) { a.swap(b); }
 
-        private:
+        void draw(uint32_t viewId) const override;
 
-            void generateTextureBuffer();
+        void update(const std::vector<LinesVertex> &points) override;
 
-            void allocateTextureBuffer();
+    private:
+        void generateTextureBuffer();
 
-            void allocatePointsBuffer();
+        void allocateTextureBuffer();
 
-            void allocateVerticesBuffer();
+        void allocatePointsBuffer();
 
-            void allocateIndexesBuffer();
+        void allocateVerticesBuffer();
+
+        void allocateIndexesBuffer();
     };
 }

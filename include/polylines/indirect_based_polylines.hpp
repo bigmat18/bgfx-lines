@@ -1,49 +1,53 @@
 #pragma once
-#include "../polylines.hpp"
+#include "../generic_lines.hpp"
+#include "../polylines_settings.hpp"
 
-namespace lines {
-    class IndirectBasedPolylines : public Polylines {
+namespace lines
+{
+    class IndirectBasedPolylines : public GenericLines<PolylinesSettings>
+    {
+        static const bgfx::ProgramHandle mLinesPH;
+        static const bgfx::ProgramHandle mJointPH;
+        static const bgfx::ProgramHandle mComputeIndirectPH;
 
-        static const inline std::vector<float>       mVertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
-        static const inline std::vector<uint32_t>    mIndexes = {0, 3, 1, 0, 2, 3};
-        
-        std::vector<LinesVertex>                    mPoints;
+        static const inline std::vector<float> mVertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+        static const inline std::vector<uint32_t> mIndices = {0, 3, 1, 0, 2, 3};
 
-        bgfx::VertexBufferHandle                    mVerticesBH             = BGFX_INVALID_HANDLE;
-        bgfx::IndexBufferHandle                     mIndexesBH              = BGFX_INVALID_HANDLE;
-        bgfx::DynamicVertexBufferHandle             mPointsBH               = BGFX_INVALID_HANDLE;
-        bgfx::IndirectBufferHandle                  mSegmentsIndirectBH     = BGFX_INVALID_HANDLE;
-        bgfx::IndirectBufferHandle                  mJoinesIndirectBH       = BGFX_INVALID_HANDLE;
+        std::vector<LinesVertex> mPoints;
 
-        bgfx::ProgramHandle                         mJoinesPH               = BGFX_INVALID_HANDLE;
-        bgfx::ProgramHandle                         mComputeIndirectPH      = BGFX_INVALID_HANDLE;            
-        bgfx::UniformHandle                         mComputeIndirectDataUH  = BGFX_INVALID_HANDLE;
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mIndicesBH = BGFX_INVALID_HANDLE;
+        bgfx::DynamicVertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
+        bgfx::IndirectBufferHandle mSegmentsIndirectBH = BGFX_INVALID_HANDLE;
+        bgfx::IndirectBufferHandle mJointIndirectBH = BGFX_INVALID_HANDLE;
+        bgfx::UniformHandle mComputeIndirectDataUH = BGFX_INVALID_HANDLE;
 
-        public:
-            IndirectBasedPolylines(const std::vector<LinesVertex> &points);
+    public:
+        IndirectBasedPolylines(const std::vector<LinesVertex> &points);
 
-            IndirectBasedPolylines(const IndirectBasedPolylines& other);
+        IndirectBasedPolylines(const IndirectBasedPolylines &other);
 
-            IndirectBasedPolylines(IndirectBasedPolylines&& other);
+        IndirectBasedPolylines(IndirectBasedPolylines &&other);
 
-            ~IndirectBasedPolylines();
+        ~IndirectBasedPolylines();
 
-            IndirectBasedPolylines& operator=(IndirectBasedPolylines other);
+        IndirectBasedPolylines &operator=(IndirectBasedPolylines other);
 
-            void swap(IndirectBasedPolylines& other);
+        void swap(IndirectBasedPolylines &other);
 
-            void draw(uint32_t viewId) const override;
+        friend void swap(IndirectBasedPolylines &a, IndirectBasedPolylines& b) { a.swap(b); }
 
-            void update(const std::vector<LinesVertex> &points) override;
+        void draw(uint32_t viewId) const override;
 
-        private:
+        void update(const std::vector<LinesVertex> &points) override;
 
-            void generateIndirectBuffers();
+    private:
+        void generateIndirectBuffers();
 
-            void allocatePointsBuffer();
+        void allocatePointsBuffer();
 
-            void allocateVerticesBuffer();
+        void allocateVerticesBuffer();
 
-            void allocateIndexesBuffers();
+        void allocateIndexBuffers();
     };
 }

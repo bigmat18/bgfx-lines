@@ -77,7 +77,6 @@ namespace lines
 
         GenericLines::swap(other);
 
-        std::swap(mMaxTextureSize, other.mMaxTextureSize);
         std::swap(mPoints, other.mPoints);
 
         std::swap(mTextureBH, other.mTextureBH);
