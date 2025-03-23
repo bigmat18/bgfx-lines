@@ -15,12 +15,12 @@ namespace lines {
         TEXTURE_BASED,
     };
 
-    inline bgfx::ProgramHandle LoadProgram(const std::string& vs_name, const std::string& fs_name) {
-        return loadProgram(vs_name.c_str(), fs_name.c_str());
+    inline bgfx::ProgramHandle LoadProgram(const char* vs_name, const char* fs_name) {
+        return loadProgram(vs_name, fs_name);
     }
 
-    inline bgfx::ShaderHandle LoadShader(const std::string& name) {
-        return loadShader(name.c_str());
+    inline bgfx::ShaderHandle LoadShader(const char* name) {
+        return loadShader(name);
     }
 
     struct LinesVertex {
