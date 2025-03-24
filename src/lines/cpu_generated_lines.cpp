@@ -2,12 +2,12 @@
 
 namespace lines
 {
-    bgfx::ProgramHandle CPUGeneratedLines::mLinesPH = LoadProgram(
-        "lines/cpu_generated_lines/vs_cpu_generated_lines", "lines/cpu_generated_lines/fs_cpu_generated_lines");
-
     CPUGeneratedLines::CPUGeneratedLines(const std::vector<LinesVertex> &points) : 
         mPoints(points)
     {
+        mLinesPH = LoadProgram(
+            "lines/cpu_generated_lines/vs_cpu_generated_lines", 
+            "lines/cpu_generated_lines/fs_cpu_generated_lines");
         allocateVertexBuffer();
         allocateIndexBuffer();
         generateBuffers();
@@ -47,9 +47,9 @@ namespace lines
 
         GenericLines::swap(other);
         
-        std::swap(mPoints, other.mPoints);
-        std::swap(mIndexesBH, other.mIndexesBH);
-        std::swap(mVerticesBH, other.mVerticesBH);
+        swap(mPoints, other.mPoints);
+        swap(mIndexesBH, other.mIndexesBH);
+        swap(mVerticesBH, other.mVerticesBH);
     }
 
     void CPUGeneratedLines::update(const std::vector<LinesVertex> &points)

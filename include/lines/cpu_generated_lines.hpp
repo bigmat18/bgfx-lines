@@ -7,7 +7,7 @@ namespace lines
     class CPUGeneratedLines : public GenericLines<LinesSettings>
     {
 
-        static bgfx::ProgramHandle mLinesPH;
+        bgfx::ProgramHandle mLinesPH;
         std::vector<lines::LinesVertex> mPoints;
 
         bgfx::DynamicVertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;

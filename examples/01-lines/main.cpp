@@ -39,9 +39,9 @@ namespace
             cameraSetPosition({0.0f, 0.0f, -5.0f});
 
             std::vector<lines::LinesVertex> points;
-            generatePointsInCube(points, 3, 1000);
+            generatePointsInCube(points, 1, 1000);
 
-            line = lines::CPULines(points);
+            line = std::make_unique<lines::CPULines>(points);
         }
 
         virtual int shutdown() override
@@ -66,7 +66,7 @@ namespace
 
                 bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                 bgfx::touch(0);
-                line.draw(0);
+                line->draw(0);
                 bgfx::frame();
 
                 return true;
@@ -104,7 +104,7 @@ namespace
         float nearPlane = -10.0f;
         float farPlane = 10.0f;
 
-        lines::CPULines line;
+        std::unique_ptr<lines::CPULines> line;
     };
 }
 

@@ -36,6 +36,22 @@ namespace lines {
     
     public:
         LinesSettings() = default;
+
+        void swap(LinesSettings& other) 
+        {
+            using std::swap;
+            swap(mThickness, other.mThickness);
+            swap(mBorder, other.mBorder);
+            swap(mAntialias, other.mAntialias);
+            swap(mBorderColor, other.mBorderColor);
+            swap(mGeneralColor, other.mGeneralColor);
+            swap(mLeftCap, other.mLeftCap);
+            swap(mRigthCap, other.mRigthCap);
+            swap(mColorToUse, other.mColorToUse);
+            swap(mDataUH, other.mDataUH);
+        }
+
+        friend void swap(LinesSettings& a, LinesSettings& b) { a.swap(b); }
     
         void setThickness(uint8_t thickness) { mThickness = thickness; }
     
