@@ -1,4 +1,4 @@
-$input v_color, v_uv, v_length, v_normal
+$input v_color, v_length, v_uv, v_normal
 #include <bgfx_shader.sh>
 
 #include "../../lines.sh"

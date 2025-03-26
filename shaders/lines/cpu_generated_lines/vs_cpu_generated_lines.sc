@@ -1,5 +1,5 @@
 $input a_position, a_texcoord0, a_color0, a_normal, a_texcoord1
-$output v_color, v_uv, v_length, v_normal
+$output v_color, v_length, v_uv, v_normal
 
 #include <bgfx_shader.sh>
 #include "../../lines.sh"

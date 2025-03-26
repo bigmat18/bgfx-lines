@@ -93,29 +93,29 @@ namespace lines
     void CPUGeneratedPolylines::generateBuffers()
     {
         if (mPoints.size() > 1) {
-            uint bufferVertsSize = (mPoints.size() - 1) * 4 * 15;
-            uint bufferSegmetIndicesSize = (mPoints.size() - 1) * 6;
-            uint bufferJointsIndicesSize = (mPoints.size() - 2) * 6;
+            uint32_t bufferVertsSize = (mPoints.size() - 1) * 4 * 15;
+            uint32_t bufferSegmetIndicesSize = (mPoints.size() - 1) * 6;
+            uint32_t bufferJointsIndicesSize = (mPoints.size() - 2) * 6;
     
             auto [vertices, vReleaseFn] =
                 getAllocatedBufferAndReleaseFn<float>(bufferVertsSize);
     
             auto [segmIndices, siReleaseFn] =
-                getAllocatedBufferAndReleaseFn<uint>(bufferSegmetIndicesSize);
+                getAllocatedBufferAndReleaseFn<uint32_t>(bufferSegmetIndicesSize);
     
             auto [jointIndices, jiReleaseFn] =
-                getAllocatedBufferAndReleaseFn<uint>(bufferJointsIndicesSize);
+                getAllocatedBufferAndReleaseFn<uint32_t>(bufferJointsIndicesSize);
     
-            uint vi = 0;
-            uint si = 0;
-            uint ji = 0;
+            uint32_t vi = 0;
+            uint32_t si = 0;
+            uint32_t ji = 0;
     
-            for (uint i = 0; i < mPoints.size() - 1; i++) {
-                for (uint k = 0; k < 2; k++) {
-                    for (uint j = 0; j < 2; j++) {
-                        uint curr_index = i + k;
-                        uint prev_index = curr_index - (curr_index == 0 ? 0 : 1);
-                        uint next_index =
+            for (uint32_t i = 0; i < mPoints.size() - 1; i++) {
+                for (uint32_t k = 0; k < 2; k++) {
+                    for (uint32_t j = 0; j < 2; j++) {
+                        uint32_t curr_index = i + k;
+                        uint32_t prev_index = curr_index - (curr_index == 0 ? 0 : 1);
+                        uint32_t next_index =
                             curr_index + (curr_index == mPoints.size() - 1 ? 0 : 1);
     
                         vertices[vi++] = mPoints[prev_index].X;

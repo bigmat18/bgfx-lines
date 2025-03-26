@@ -41,7 +41,7 @@ namespace lines {
     
         template<typename T>
         static std::pair<T*, bgfx::ReleaseFn> getAllocatedBufferAndReleaseFn(
-            uint size)
+            uint32_t size)
         {
             T* buffer = new T[size];
     

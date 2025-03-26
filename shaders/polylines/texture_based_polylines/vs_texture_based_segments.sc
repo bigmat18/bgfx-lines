@@ -1,5 +1,5 @@
 $input a_position
-$output v_color, v_uv, v_length, v_normal, v_is_start_end
+$output v_color, v_length, v_is_start_end, v_uv, v_normal
 
 #include <bgfx_compute.sh>
 #include "../../polylines.sh"

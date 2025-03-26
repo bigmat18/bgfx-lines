@@ -1,5 +1,5 @@
 $input a_position
-$output v_color, v_uv, v_length, v_is_start_end, v_normal
+$output v_color, v_length, v_is_start_end, v_uv, v_normal
 
 #include <bgfx_compute.sh>
 #include "../../polylines.sh"
@@ -54,7 +54,7 @@ void main() {
     vec4 next_px = calculatePointWithMVP(next, u_screenWidth, u_screenHeigth);
 
     v_color = (((color0 * (1 - a_uv.x)) + (color1 * a_uv.x)) * (1 - sign(u_color_to_use))) + (u_general_color * sign(u_color_to_use));
-    v_normal = (normal0 * (1 - a_uv.x)) + (normal1 * a_uv.x);
+    v_normal = vec3(((normal0 * (1 - a_uv.x)) + (normal1 * a_uv.x)).xyz);
     v_length = length(((next_px - curr_px) * (1 - a_uv.x)) + ((curr_px - prev_px) * (a_uv.x)));
 
     v_uv = calculatePolylinesUV(prev, curr, next, a_uv, u_thickness, v_length, u_leftCap, u_rigthCap, u_join);

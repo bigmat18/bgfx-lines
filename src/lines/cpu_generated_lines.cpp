@@ -79,22 +79,22 @@ namespace lines
 
     void CPUGeneratedLines::generateBuffers()
     {
-        uint bufferVertsSize = mPoints.size() * 4 * 12;
-        uint bufferIndsSize = (mPoints.size() / 2) * 6;
+        uint32_t bufferVertsSize = mPoints.size() * 4 * 12;
+        uint32_t bufferIndsSize = (mPoints.size() / 2) * 6;
 
         auto [vertices, vReleaseFn] =
             getAllocatedBufferAndReleaseFn<float>(bufferVertsSize);
 
         auto [indices, iReleaseFn] =
-            getAllocatedBufferAndReleaseFn<uint>(bufferIndsSize);
+            getAllocatedBufferAndReleaseFn<uint32_t>(bufferIndsSize);
 
-        uint vi = 0;
-        uint ii = 0;
-        for (uint i = 1; i < mPoints.size(); i += 2)
+        uint32_t vi = 0;
+        uint32_t ii = 0;
+        for (uint32_t i = 1; i < mPoints.size(); i += 2)
         {
-            for (uint k = 0; k < 2; k++)
+            for (uint32_t k = 0; k < 2; k++)
             {
-                for (uint j = 0; j < 2; j++)
+                for (uint32_t j = 0; j < 2; j++)
                 {
                     vertices[vi++] = mPoints[i - 1].X;
                     vertices[vi++] = mPoints[i - 1].Y;
@@ -116,7 +116,7 @@ namespace lines
                 }
             }
 
-            uint index = (4 * (i / 2));
+            uint32_t index = (4 * (i / 2));
             indices[ii++] = index;
             indices[ii++] = index + 3;
             indices[ii++] = index + 1;

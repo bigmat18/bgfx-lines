@@ -101,7 +101,7 @@ vec4 calculatePolylinesColor(vec2 uv, float thickness, float totalLength, float 
         d = width_px - abs(uv.y);
 
 	  if(d < 0)
-		    return vec4(0);
+		    return vec4(0, 0, 0, 0);
 	  else
 		    return finalColor;
 }
