@@ -28,12 +28,20 @@ namespace lines {
         float color;
         float xN, yN, zN;
 
-        LinesVertex(float x, float y, float z, 
-                    uint32_t color = COLOR(1, 1, 1, 1), 
-                    float xn = 0, float yn = 0, float zn = 0) :
-            X(x), Y(y), Z(z),
-            color(std::bit_cast<float>(color)),
-            xN(xn), yN(yn), zN(zn) {}
+        LinesVertex() = default;
+
+        LinesVertex(
+            float    x,
+            float    y,
+            float    z,
+            uint32_t color = COLOR(1, 0, 0, 1),
+            float    xn    = 0,
+            float    yn    = 0,
+            float    zn    = 0) :
+                X(x), Y(y), Z(z), color(std::bit_cast<float>(color)), xN(xn),
+                yN(yn), zN(zn)
+        {
+        }
 
         uint32_t getRGBAColor() const { return std::bit_cast<uint32_t>(color); }
 

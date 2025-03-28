@@ -38,9 +38,6 @@ namespace
 
             cameraCreate();
             cameraSetPosition({0.0f, 0.0f, -5.0f});
-
-            std::vector<lines::LinesVertex> points;
-            generatePointsInCube(points, 3, 100);
         }
 
         virtual int shutdown() override

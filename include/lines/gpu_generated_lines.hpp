@@ -6,18 +6,25 @@ namespace lines
     class GPUGeneratedLines : public GenericLines<LinesSettings>
     {
 
-        static bgfx::ProgramHandle mLinesPH;
-        static bgfx::ProgramHandle mComputeVerticesPH;
-        std::vector<LinesVertex> mPoints;
+        bgfx::ProgramHandle mLinesPH  = LoadProgram(
+            "lines/cpu_generated_lines/vs_cpu_generated_lines",
+            "lines/cpu_generated_lines/fs_cpu_generated_lines");
+            
+        bgfx::ProgramHandle mComputeVerticesPH = bgfx::createProgram(
+            LoadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
 
-        bgfx::DynamicVertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
-        bgfx::DynamicIndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
-        bgfx::DynamicVertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+
+        uint32_t mPointsSize;
+        bgfx::VertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mIndicesBH = BGFX_INVALID_HANDLE;
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
 
     public: 
+        GPUGeneratedLines() { checkCaps(); };
+
         GPUGeneratedLines(const std::vector<LinesVertex> &points);
 
-        GPUGeneratedLines(const GPUGeneratedLines &other);
+        GPUGeneratedLines(const GPUGeneratedLines &other) = delete;
 
         GPUGeneratedLines(GPUGeneratedLines &&other);
 
@@ -34,12 +41,21 @@ namespace lines
         void update(const std::vector<LinesVertex> &points) override;
 
     private:
-        void generateBuffers();
+        void checkCaps() const
+        {
+            const bgfx::Caps* caps = bgfx::getCaps();
+            const bool computeSupported = bool(caps->supported & BGFX_CAPS_COMPUTE);
+            if (!computeSupported) {
+                throw std::runtime_error("GPU compute not supported");
+            }
+        }
+
+        void allocateAndSetPointsBuffer(const std::vector<LinesVertex>& points);
 
         void allocateVertexBuffer();
 
         void allocateIndexBuffer();
 
-        void allocatePointsBuffer();
+        void generateVerticesAndIndicesBuffers();
     };
 }

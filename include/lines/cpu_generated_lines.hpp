@@ -7,18 +7,20 @@ namespace lines
     class CPUGeneratedLines : public GenericLines<LinesSettings>
     {
 
-        bgfx::ProgramHandle mLinesPH;
-        std::vector<lines::LinesVertex> mPoints;
+        bgfx::ProgramHandle mLinesPH = LoadProgram(
+            "lines/cpu_generated_lines/vs_cpu_generated_lines", 
+            "lines/cpu_generated_lines/fs_cpu_generated_lines");
 
-        bgfx::DynamicVertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
-        bgfx::DynamicIndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
+        std::vector<lines::LinesVertex> mPoints;
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
 
     public:
         CPUGeneratedLines() = default;
 
         CPUGeneratedLines(const std::vector<LinesVertex> &points);
 
-        CPUGeneratedLines(const CPUGeneratedLines &other);
+        CPUGeneratedLines(const CPUGeneratedLines &other) = delete;
 
         CPUGeneratedLines(CPUGeneratedLines &&other);
 
@@ -35,10 +37,6 @@ namespace lines
         void update(const std::vector<LinesVertex> &points) override;
 
     private:
-        void generateBuffers();
-
-        void allocateVertexBuffer();
-
-        void allocateIndexBuffer();
+        void generateVerticesAndIndicesBuffers(const std::vector<LinesVertex> &points);
     };
 }

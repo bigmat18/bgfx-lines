@@ -24,14 +24,10 @@ namespace lines
     public:
         Lines() = default;
 
-        Lines(const std::vector<LinesVertex> &points) : mPoints(points), mLines(points) {}
+        Lines(const std::vector<LinesVertex> &points) : 
+            mPoints(points), mLines(points) {}
 
-        Lines(const Lines &other) : mPoints(other.mPoints),
-                                    mLines(other.mPoints),
-                                    mVisible(other.mVisible)
-        {
-            mLines.settings() = other.settings();
-        }
+        Lines(const Lines &other) = delete;
 
         Lines(Lines &&other) { swap(other); }
 
