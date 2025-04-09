@@ -13,11 +13,6 @@ namespace lines
         generateVerticesAndIndicesBuffers();
     }
 
-    GPUGeneratedLines::GPUGeneratedLines(GPUGeneratedLines &&other)
-    {
-        swap(other);
-    }
-
     GPUGeneratedLines::~GPUGeneratedLines()
     {
         if (bgfx::isValid(mIndicesBH))
@@ -34,12 +29,6 @@ namespace lines
 
         if (bgfx::isValid(mComputeVerticesPH))
             bgfx::destroy(mComputeVerticesPH);
-    }
-
-    GPUGeneratedLines &GPUGeneratedLines::operator=(GPUGeneratedLines other)
-    {
-        swap(other);
-        return *this;
     }
 
     void GPUGeneratedLines::swap(GPUGeneratedLines &other)

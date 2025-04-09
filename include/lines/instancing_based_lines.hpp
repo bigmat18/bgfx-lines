@@ -13,7 +13,7 @@ namespace lines
         bgfx::ProgramHandle mLinesPH = LoadProgram(
             "lines/instancing_based_lines/vs_instancing_based_lines",
             "lines/instancing_based_lines/fs_instancing_based_lines");
-            
+
         std::vector<LinesVertex> mPoints;       
 
         bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
@@ -22,15 +22,17 @@ namespace lines
         mutable bgfx::InstanceDataBuffer mInstanceDB;
 
     public:
+        InstancingBasedLines() { checkCaps(); };
+
         InstancingBasedLines(const std::vector<LinesVertex> &points);
 
         InstancingBasedLines(const InstancingBasedLines &other) = delete;
 
-        InstancingBasedLines(InstancingBasedLines &&other);
+        InstancingBasedLines(InstancingBasedLines &&other) = delete;
 
+        InstancingBasedLines &operator=(InstancingBasedLines other) = delete;
+        
         ~InstancingBasedLines();
-
-        InstancingBasedLines &operator=(InstancingBasedLines other);
 
         void swap(InstancingBasedLines &other);
 

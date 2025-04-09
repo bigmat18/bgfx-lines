@@ -27,15 +27,17 @@ namespace lines
         bgfx::UniformHandle mIndirectDataUH = bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4);
 
     public:
+        IndirectBasedLines() { checkCaps(); };
+
         IndirectBasedLines(const std::vector<LinesVertex> &points);
 
         IndirectBasedLines(const IndirectBasedLines &other) = delete;
 
-        IndirectBasedLines(IndirectBasedLines &&other);
+        IndirectBasedLines(IndirectBasedLines &&other) = delete;
 
+        IndirectBasedLines &operator=(IndirectBasedLines other) = delete;
+        
         ~IndirectBasedLines();
-
-        IndirectBasedLines &operator=(IndirectBasedLines other);
 
         void swap(IndirectBasedLines &other);
 

@@ -8,11 +8,6 @@ namespace lines
         allocateVerticesAndIndicesBuffers();
     }
 
-    InstancingBasedLines::InstancingBasedLines(InstancingBasedLines &&other)
-    {
-        swap(other);
-    }
-
     InstancingBasedLines::~InstancingBasedLines()
     {
         if (bgfx::isValid(mVerticesBH))
@@ -23,12 +18,6 @@ namespace lines
 
         if (bgfx::isValid(mLinesPH))
             bgfx::destroy(mLinesPH);
-    }
-
-    InstancingBasedLines &InstancingBasedLines::operator=(InstancingBasedLines other)
-    {
-        swap(other);
-        return *this;
     }
 
     void InstancingBasedLines::swap(InstancingBasedLines &other)

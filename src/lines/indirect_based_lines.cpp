@@ -12,11 +12,6 @@ namespace lines
         allocateAndSetPointsBuffer();
     }
 
-    IndirectBasedLines::IndirectBasedLines(IndirectBasedLines &&other)
-    {
-        swap(other);
-    }
-
     IndirectBasedLines::~IndirectBasedLines()
     {
         if (bgfx::isValid(mVerticesBH))
@@ -39,12 +34,6 @@ namespace lines
 
         if (bgfx::isValid(mComputeIndirectPH))
             bgfx::destroy(mComputeIndirectPH);
-    }
-
-    IndirectBasedLines &IndirectBasedLines::operator=(IndirectBasedLines other)
-    {
-        swap(other);
-        return *this;
     }
 
     void IndirectBasedLines::swap(IndirectBasedLines &other)

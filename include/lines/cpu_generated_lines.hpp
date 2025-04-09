@@ -22,11 +22,11 @@ namespace lines
 
         CPUGeneratedLines(const CPUGeneratedLines &other) = delete;
 
-        CPUGeneratedLines(CPUGeneratedLines &&other);
+        CPUGeneratedLines(CPUGeneratedLines &&other) = delete;
+        
+        CPUGeneratedLines &operator=(CPUGeneratedLines other) = delete;
 
         ~CPUGeneratedLines();
-
-        CPUGeneratedLines &operator=(CPUGeneratedLines other);
 
         void swap(CPUGeneratedLines &other);
 

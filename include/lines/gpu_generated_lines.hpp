@@ -25,11 +25,11 @@ namespace lines
 
         GPUGeneratedLines(const GPUGeneratedLines &other) = delete;
 
-        GPUGeneratedLines(GPUGeneratedLines &&other);
-
+        GPUGeneratedLines(GPUGeneratedLines &&other) = delete;
+        
+        GPUGeneratedLines &operator=(GPUGeneratedLines other) = delete;
+        
         ~GPUGeneratedLines();
-
-        GPUGeneratedLines &operator=(GPUGeneratedLines other);
 
         void swap(GPUGeneratedLines &other);
 

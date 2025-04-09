@@ -8,6 +8,7 @@
 #include "lines/instancing_based_lines.hpp"
 #include "lines/indirect_based_lines.hpp"
 #include "lines/texture_based_lines.hpp"
+#include "lines/primitive_based_lines.hpp"
 
 #include "lines_settings.hpp"
 
@@ -69,4 +70,5 @@ namespace lines
     using IndirectLines    = Lines<IndirectBasedLines>;
     using InstancingLines  = Lines<InstancingBasedLines>;
     using TextureLines     = Lines<TextureBasedLines>;
+    using PrimitiveLines   = Lines<PrimitiveBasedLines>;
 }

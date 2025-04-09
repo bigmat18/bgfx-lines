@@ -7,11 +7,6 @@ namespace lines
         generateVerticesAndIndicesBuffers(points);
     }
 
-    CPUGeneratedLines::CPUGeneratedLines(CPUGeneratedLines &&other)
-    {
-        swap(other);
-    }
-
     CPUGeneratedLines::~CPUGeneratedLines()
     {
         if (bgfx::isValid(mVerticesBH))
@@ -22,12 +17,6 @@ namespace lines
 
         if (bgfx::isValid(mLinesPH))
             bgfx::destroy(mLinesPH);
-    }
-
-    CPUGeneratedLines &CPUGeneratedLines::operator=(CPUGeneratedLines other)
-    {
-        swap(other);
-        return *this;
     }
 
     void CPUGeneratedLines::swap(CPUGeneratedLines &other)
