@@ -23,7 +23,7 @@ namespace
             m_reset = BGFX_RESET_VSYNC;
 
             bgfx::Init init;
-            init.type     = args.m_type;
+            init.type     = bgfx::RendererType::Vulkan;
             init.vendorId = args.m_pciId;
             init.platformData.nwh = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
             init.platformData.ndt = entry::getNativeDisplayHandle();
@@ -38,15 +38,15 @@ namespace
             cameraCreate();
             cameraSetPosition({0.0f, 0.0f, -5.0f});
 
-            std::vector<lines::LinesVertex> points = {
-                lines::LinesVertex(1, 0, 0),
-                lines::LinesVertex(0, 1, 0),
-                lines::LinesVertex(0.5, -0.2, 0),
-                lines::LinesVertex(1, 2.3, 0),
-                lines::LinesVertex(0.1, -3, 0),
-                lines::LinesVertex(0, 2, 0)
-            };
-            line = std::make_unique<lines::GPULines>(points);
+            std::vector<lines::LinesVertex> points;
+            generatePointsInCube(points, 3, 100);
+            line = std::make_unique<lines::IndirectLines>(points);
+            line->settings().setThickness(5);
+            line->settings().setBorder(2);
+            line->settings().setAntialias(0);
+            line->settings().setLeftCap(lines::LineCap::TRIANGLE_CAP);
+            line->settings().setRigthCap(lines::LineCap::ROUND_CAP);
+            line->settings().setGeneralColor(lines::LinesVertex::COLOR(1, 0, 1, 1));
         }
 
         virtual int shutdown() override
@@ -109,7 +109,7 @@ namespace
         float nearPlane = -10.0f;
         float farPlane = 10.0f;
 
-        std::unique_ptr<lines::GPULines> line;
+        std::unique_ptr<lines::IndirectLines> line;
     };
 }
 

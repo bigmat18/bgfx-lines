@@ -2,34 +2,14 @@
 
 namespace lines
 {
-    bgfx::ProgramHandle IndirectBasedLines::mLinesPH = LoadProgram(
-        "lines/indirect_based_lines/vs_indirect_based_lines",
-        "lines/indirect_based_lines/fs_indirect_based_lines");
 
-    bgfx::ProgramHandle IndirectBasedLines::mComputeIndirectPH = bgfx::createProgram(
-        LoadShader("lines/indirect_based_lines/cs_compute_indirect"), true);
-
-    IndirectBasedLines::IndirectBasedLines(const std::vector<LinesVertex> &points) : mIndirectBH(bgfx::createIndirectBuffer(1)),
-                                                                                     mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
+    IndirectBasedLines::IndirectBasedLines(const std::vector<LinesVertex> &points) :
+        mPoints(points)
     {
-        allocateVerticesBuffer();
-        allocateIndexesBuffer();
-
+        checkCaps();
+        allocateVerticesAndIndicesBuffers();
         generateIndirectBuffer();
-        allocatePointsBuffer();
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
-    }
-
-    IndirectBasedLines::IndirectBasedLines(const IndirectBasedLines &other) : mPoints(other.mPoints),
-                                                                              mIndirectBH(bgfx::createIndirectBuffer(1)),
-                                                                              mIndirectDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
-    {
-        allocateVerticesBuffer();
-        allocateIndexesBuffer();
-        allocatePointsBuffer();
-        generateIndirectBuffer();
-
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
+        allocateAndSetPointsBuffer();
     }
 
     IndirectBasedLines::IndirectBasedLines(IndirectBasedLines &&other)
@@ -50,6 +30,15 @@ namespace lines
 
         if (bgfx::isValid(mIndirectBH))
             bgfx::destroy(mIndirectBH);
+
+        if (bgfx::isValid(mIndirectDataUH))
+            bgfx::destroy(mIndirectDataUH);
+
+        if (bgfx::isValid(mLinesPH))
+            bgfx::destroy(mLinesPH);
+
+        if (bgfx::isValid(mComputeIndirectPH))
+            bgfx::destroy(mComputeIndirectPH);
     }
 
     IndirectBasedLines &IndirectBasedLines::operator=(IndirectBasedLines other)
@@ -64,28 +53,37 @@ namespace lines
 
         GenericLines::swap(other);
 
-        std::swap(mVerticesBH, other.mVerticesBH);
-        std::swap(mIndexesBH, other.mIndexesBH);
-        std::swap(mPointsBH, other.mPointsBH);
-        std::swap(mIndirectBH, other.mIndirectBH);
-        std::swap(mIndirectDataUH, other.mIndirectDataUH);
+        swap(mVerticesBH, other.mVerticesBH);
+        swap(mIndexesBH, other.mIndexesBH);
+        swap(mPointsBH, other.mPointsBH);
+        swap(mIndirectBH, other.mIndirectBH);
+        swap(mIndirectDataUH, other.mIndirectDataUH);
+
+        swap(mLinesPH, other.mLinesPH);
+        swap(mComputeIndirectPH, other.mComputeIndirectPH);
     }
 
-    void IndirectBasedLines::allocatePointsBuffer()
+    void IndirectBasedLines::allocateAndSetPointsBuffer()
     {
+
         bgfx::VertexLayout layout;
-        layout
-            .begin()
+        layout.begin()
             .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
             .add(bgfx::Attrib::Normal, 3, bgfx::AttribType::Float)
             .end();
 
-        mPointsBH = bgfx::createDynamicVertexBuffer(mPoints.size(), layout,
-                                                    BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE);
+        auto [buffer, releaseFn] =
+            getAllocatedBufferAndReleaseFn<LinesVertex>(mPoints.size());
+
+        std::copy(mPoints.begin(), mPoints.end(), buffer);
+
+        mPointsBH = bgfx::createVertexBuffer(
+            bgfx::makeRef(buffer, sizeof(LinesVertex) * mPoints.size(), releaseFn),
+            layout, BGFX_BUFFER_COMPUTE_READ);
     }
 
-    void IndirectBasedLines::allocateVerticesBuffer()
+    void IndirectBasedLines::allocateVerticesAndIndicesBuffers()
     {
         bgfx::VertexLayout layout;
         layout
@@ -94,14 +92,11 @@ namespace lines
             .end();
 
         mVerticesBH = bgfx::createVertexBuffer(
-            bgfx::makeRef(&mVertices[0], sizeof(float) * mVertices.size()),
+            bgfx::makeRef(&VERTICES[0], sizeof(float) * VERTICES.size()),
             layout);
-    }
 
-    void IndirectBasedLines::allocateIndexesBuffer()
-    {
         mIndexesBH = bgfx::createIndexBuffer(
-            bgfx::makeRef(&mIndexes[0], sizeof(uint32_t) * mIndexes.size()),
+            bgfx::makeRef(&INDICES[0], sizeof(uint32_t) * INDICES.size()),
             BGFX_BUFFER_INDEX32);
     }
 
@@ -115,6 +110,8 @@ namespace lines
 
     void IndirectBasedLines::draw(uint32_t viewId) const
     {
+        bindSettingsUniform();
+        
         bgfx::setVertexBuffer(0, mVerticesBH);
         bgfx::setIndexBuffer(mIndexesBH);
 
@@ -129,10 +126,8 @@ namespace lines
         mPoints = points;
 
         if (oldSize != mPoints.size())
-        {
             generateIndirectBuffer();
-        }
 
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
+        allocateAndSetPointsBuffer();
     }
 }

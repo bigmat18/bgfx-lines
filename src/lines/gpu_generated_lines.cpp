@@ -28,6 +28,12 @@ namespace lines
 
         if (bgfx::isValid(mPointsBH))
             bgfx::destroy(mPointsBH);
+
+        if (bgfx::isValid(mLinesPH))
+            bgfx::destroy(mLinesPH);
+
+        if (bgfx::isValid(mComputeVerticesPH))
+            bgfx::destroy(mComputeVerticesPH);
     }
 
     GPUGeneratedLines &GPUGeneratedLines::operator=(GPUGeneratedLines other)
@@ -45,6 +51,9 @@ namespace lines
         swap(mIndicesBH, other.mIndicesBH);
         swap(mVerticesBH, other.mVerticesBH);
         swap(mPointsBH, other.mPointsBH);
+
+        swap(mLinesPH, other.mLinesPH);
+        swap(mComputeVerticesPH, other.mComputeVerticesPH);
     }
 
     void GPUGeneratedLines::draw(uint32_t viewId) const

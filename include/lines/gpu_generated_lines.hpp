@@ -13,7 +13,6 @@ namespace lines
         bgfx::ProgramHandle mComputeVerticesPH = bgfx::createProgram(
             LoadShader("lines/gpu_generated_lines/cs_compute_buffers"), true);
 
-
         uint32_t mPointsSize;
         bgfx::VertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
         bgfx::IndexBufferHandle mIndicesBH = BGFX_INVALID_HANDLE;
