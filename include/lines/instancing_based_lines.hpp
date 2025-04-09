@@ -5,20 +5,26 @@ namespace lines
 {
     class InstancingBasedLines : public GenericLines<LinesSettings>
     {
-        static bgfx::ProgramHandle mLinesPH;
-        static const inline std::vector<float> mVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
-        static const inline std::vector<uint32_t> mIndexes = {0, 1, 2, 1, 3, 2};
-
-        std::vector<LinesVertex> mPoints;
-        mutable bgfx::InstanceDataBuffer mInstanceDB;
+        static inline const std::vector<float> VERTICES =
+            {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
+        static inline const std::vector<uint32_t> INDICES = 
+            {0, 1, 2, 1, 3, 2};
+        
+        bgfx::ProgramHandle mLinesPH = LoadProgram(
+            "lines/instancing_based_lines/vs_instancing_based_lines",
+            "lines/instancing_based_lines/fs_instancing_based_lines");
+            
+        std::vector<LinesVertex> mPoints;       
 
         bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
         bgfx::IndexBufferHandle mIndexesBH = BGFX_INVALID_HANDLE;
+        
+        mutable bgfx::InstanceDataBuffer mInstanceDB;
 
     public:
         InstancingBasedLines(const std::vector<LinesVertex> &points);
 
-        InstancingBasedLines(const InstancingBasedLines &other);
+        InstancingBasedLines(const InstancingBasedLines &other) = delete;
 
         InstancingBasedLines(InstancingBasedLines &&other);
 
@@ -35,10 +41,20 @@ namespace lines
         void update(const std::vector<LinesVertex> &points) override;
 
     private:
+        void checkCaps() const
+        {
+            const bgfx::Caps* caps = bgfx::getCaps();
+            const bool instancingSupported =
+                bool(caps->supported & BGFX_CAPS_INSTANCING);
+
+            if (!instancingSupported) {
+                throw std::runtime_error("Instancing or compute are not supported");
+            }
+        }
+
         void generateInstanceDataBuffer() const;
 
-        void allocateVerticesBuffer();
+        void allocateVerticesAndIndicesBuffers();
 
-        void allocateIndexesBuffer();
     };
 }

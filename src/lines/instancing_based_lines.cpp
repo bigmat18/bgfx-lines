@@ -2,20 +2,10 @@
 
 namespace lines
 {
-    bgfx::ProgramHandle InstancingBasedLines::mLinesPH = LoadProgram(
-        "lines/instancing_based_lines/vs_instancing_based_lines",
-        "lines/instancing_based_lines/fs_instancing_based_lines");
-
     InstancingBasedLines::InstancingBasedLines(const std::vector<LinesVertex> &points) : mPoints(points)
     {
-        allocateVerticesBuffer();
-        allocateIndexesBuffer();
-    }
-
-    InstancingBasedLines::InstancingBasedLines(const InstancingBasedLines &other) : mPoints(other.mPoints)
-    {
-        allocateVerticesBuffer();
-        allocateIndexesBuffer();
+        checkCaps();
+        allocateVerticesAndIndicesBuffers();
     }
 
     InstancingBasedLines::InstancingBasedLines(InstancingBasedLines &&other)
@@ -30,6 +20,9 @@ namespace lines
 
         if (bgfx::isValid(mIndexesBH))
             bgfx::destroy(mIndexesBH);
+
+        if (bgfx::isValid(mLinesPH))
+            bgfx::destroy(mLinesPH);
     }
 
     InstancingBasedLines &InstancingBasedLines::operator=(InstancingBasedLines other)
@@ -43,11 +36,13 @@ namespace lines
         using std::swap;
         GenericLines::swap(other);
 
-        std::swap(mPoints, other.mPoints);
+        swap(mPoints, other.mPoints);
 
-        std::swap(mVerticesBH, other.mVerticesBH);
-        std::swap(mIndexesBH, other.mIndexesBH);
-        std::swap(mInstanceDB, other.mInstanceDB);
+        swap(mVerticesBH, other.mVerticesBH);
+        swap(mIndexesBH, other.mIndexesBH);
+        swap(mInstanceDB, other.mInstanceDB);
+
+        swap(mLinesPH, other.mLinesPH);
     }
 
     void InstancingBasedLines::draw(uint32_t viewId) const
@@ -81,40 +76,39 @@ namespace lines
         uint8_t *data = mInstanceDB.data;
         for (uint32_t i = 1; i < linesNum * 2; i += 2)
         {
-
-            float *p0 = reinterpret_cast<float *>(data);
-            p0[0] = mPoints[i - 1].X;
-            p0[1] = mPoints[i - 1].Y;
-            p0[2] = mPoints[i - 1].Z;
-
-            uint32_t *color0 = (uint32_t *)&data[12];
-            color0[0] = mPoints[i - 1].getABGRColor();
-
-            float *p1 = (float *)&data[16];
-            p1[0] = mPoints[i].X;
-            p1[1] = mPoints[i].Y;
-            p1[2] = mPoints[i].Z;
-
-            uint32_t *color1 = (uint32_t *)&data[28];
-            color1[0] = mPoints[i].getABGRColor();
-
-            float *n0 = (float *)&data[32];
-            n0[0] = mPoints[i - 1].xN;
-            n0[1] = mPoints[i - 1].yN;
-            n0[2] = mPoints[i - 1].zN;
-            n0[3] = 0;
-
-            float *n1 = (float *)&data[48];
-            n1[0] = mPoints[i].xN;
-            n1[1] = mPoints[i].yN;
-            n1[2] = mPoints[i].zN;
-            n1[3] = 0;
-
+            float* p0 = reinterpret_cast<float*>(data);
+            p0[0]     = mPoints[i - 1].X;
+            p0[1]     = mPoints[i - 1].Y;
+            p0[2]     = mPoints[i - 1].Z;
+    
+            uint32_t* color0 = reinterpret_cast<uint32_t*>(&data[12]);
+            color0[0]    = mPoints[i - 1].getRGBAColor();
+    
+            float* p1 = reinterpret_cast<float*>(&data[16]);
+            p1[0]     = mPoints[i].X;
+            p1[1]     = mPoints[i].Y;
+            p1[2]     = mPoints[i].Z;
+    
+            uint32_t* color1 = reinterpret_cast<uint32_t*>(&data[28]);
+            color1[0]    = mPoints[i].getRGBAColor();
+    
+            float* n0 = reinterpret_cast<float*>(&data[32]);
+            n0[0]     = mPoints[i - 1].xN;
+            n0[1]     = mPoints[i - 1].yN;
+            n0[2]     = mPoints[i - 1].zN;
+            n0[3]     = 0;
+    
+            float* n1 = reinterpret_cast<float*>(&data[48]);
+            n1[0]     = mPoints[i].xN;
+            n1[1]     = mPoints[i].yN;
+            n1[2]     = mPoints[i].zN;
+            n1[3]     = 0;
+    
             data += stride;
         }
     }
 
-    void InstancingBasedLines::allocateVerticesBuffer()
+    void InstancingBasedLines::allocateVerticesAndIndicesBuffers()
     {
         bgfx::VertexLayout layout;
         layout
@@ -123,14 +117,11 @@ namespace lines
             .end();
 
         mVerticesBH = bgfx::createVertexBuffer(
-            bgfx::makeRef(&mVertices[0], sizeof(float) * mVertices.size()),
+            bgfx::makeRef(&VERTICES[0], sizeof(float) * VERTICES.size()),
             layout);
-    }
 
-    void InstancingBasedLines::allocateIndexesBuffer()
-    {
         mIndexesBH = bgfx::createIndexBuffer(
-            bgfx::makeRef(&mIndexes[0], sizeof(uint32_t) * mIndexes.size()),
+            bgfx::makeRef(&INDICES[0], sizeof(uint32_t) * INDICES.size()),
             BGFX_BUFFER_INDEX32);
     }
 }
