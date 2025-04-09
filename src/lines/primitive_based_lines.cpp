@@ -22,8 +22,8 @@ namespace lines
         using std::swap;
         GenericLines::swap(other);
 
-        std::swap(mLinesPH, other.mLinesPH);
-        std::swap(mVerticesBH, other.mVerticesBH);
+        swap(mLinesPH, other.mLinesPH);
+        swap(mVerticesBH, other.mVerticesBH);
     }
 
     void PrimitiveBasedLines::draw(uint32_t viewId) const
