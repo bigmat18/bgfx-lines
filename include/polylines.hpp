@@ -2,7 +2,7 @@
 #include <bgfx/bgfx.h>
 #include <memory>
 #include <vector>
-#include "lines_settings.hpp"
+#include "polylines_settings.hpp"
 #include "lines_utils.hpp"
 
 #include "polylines/cpu_generated_polylines.hpp"

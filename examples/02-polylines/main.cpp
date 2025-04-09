@@ -38,6 +38,17 @@ namespace
 
             cameraCreate();
             cameraSetPosition({0.0f, 0.0f, -5.0f});
+
+            std::vector<lines::LinesVertex> points;
+            generatePointsInCube(points, 3, 100);
+            polyline = std::make_unique<lines::GPUPolylines>(points);
+            polyline->settings().setThickness(5);
+            polyline->settings().setBorder(2);
+            polyline->settings().setAntialias(0);
+            polyline->settings().setLeftCap(lines::LineCap::TRIANGLE_CAP);
+            polyline->settings().setRigthCap(lines::LineCap::ROUND_CAP);
+            // polyline->settings().setJo(lines::PolyLineJoint::BEVEL_JOINT);
+            polyline->settings().setGeneralColor(lines::LinesVertex::COLOR(1, 0, 1, 1));
         }
 
         virtual int shutdown() override
@@ -62,7 +73,7 @@ namespace
 
                 bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
                 bgfx::touch(0);
-
+                polyline->draw(0);
                 bgfx::frame();
 
                 return true;
@@ -99,6 +110,8 @@ namespace
         float top = 10.0f;
         float nearPlane = -10.0f;
         float farPlane = 10.0f;
+
+        std::unique_ptr<lines::GPUPolylines> polyline;
     };
 }
 

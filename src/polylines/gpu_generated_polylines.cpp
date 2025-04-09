@@ -2,50 +2,29 @@
 
 namespace lines
 {
-    const bgfx::ProgramHandle GPUGeneratedPolylines::mLinesPH = LoadProgram(
-        "polylines/cpu_generated_polylines/vs_cpu_generated_polylines",
-        "polylines/cpu_generated_polylines/fs_cpu_generated_polylines");
-
-    const bgfx::ProgramHandle GPUGeneratedPolylines::mComputeVertexPH = bgfx::createProgram(
-        LoadShader("polylines/gpu_generated_polylines/cs_compute_buffers"), true);
-
 
     GPUGeneratedPolylines::GPUGeneratedPolylines(const std::vector<LinesVertex> &points) : 
-        mPoints(points),
-        mComputeDataUH(bgfx::createUniform("u_numWorksGroups", bgfx::UniformType::Vec4))
+        mPoints(points)
     {
-        allocatePointsBuffer();
-        allocateVertexBuffer();
-        allocateIndexBuffer();
-
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
-        generateBuffers();
-    }
-
-    GPUGeneratedPolylines::GPUGeneratedPolylines(const GPUGeneratedPolylines &other) : 
-        mPoints(other.mPoints),
-        mComputeDataUH(bgfx::createUniform("u_numWorksGroups", bgfx::UniformType::Vec4))
-    {
-        allocatePointsBuffer();
-        allocateVertexBuffer();
-        allocateIndexBuffer();
-
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
-        generateBuffers();
-    }
-
-    GPUGeneratedPolylines::GPUGeneratedPolylines(GPUGeneratedPolylines &&other)
-    {
-        swap(other);
+        checkCaps();
+        
+        if (points.size() > 1) {
+            allocateAndSetPointsBuffer();
+            allocateVertexBuffer();
+            allocateIndexBuffer();
+            generateVerticesAndIndicesBuffers();
+        } else {
+            throw std::runtime_error("Points.size() must be > 1");
+        }
     }
 
     GPUGeneratedPolylines::~GPUGeneratedPolylines()
     {
-        if (bgfx::isValid(mVertexBH))
-            bgfx::destroy(mVertexBH);
+        if (bgfx::isValid(mVerticesBH))
+            bgfx::destroy(mVerticesBH);
 
-        if (bgfx::isValid(mSegmentsIndicesBH))
-            bgfx::destroy(mSegmentsIndicesBH);
+        if (bgfx::isValid(mSegmentIndicesBH))
+            bgfx::destroy(mSegmentIndicesBH);
 
         if (bgfx::isValid(mJointIndicesBH))
             bgfx::destroy(mJointIndicesBH);
@@ -55,12 +34,12 @@ namespace lines
 
         if (bgfx::isValid(mComputeDataUH))
             bgfx::destroy(mComputeDataUH);
-    }
 
-    GPUGeneratedPolylines &GPUGeneratedPolylines::operator=(GPUGeneratedPolylines other)
-    {
-        swap(other);
-        return *this;
+        if (bgfx::isValid(mLinesPH))
+            bgfx::destroy(mLinesPH);
+
+        if (bgfx::isValid(mComputeVertexPH))
+            bgfx::destroy(mComputeVertexPH);
     }
 
     void GPUGeneratedPolylines::swap(GPUGeneratedPolylines &other)
@@ -68,29 +47,32 @@ namespace lines
         using std::swap;
         GenericLines::swap(other);
 
-        std::swap(mPoints, other.mPoints);
+        swap(mPoints, other.mPoints);
 
-        std::swap(mPointsBH, other.mPointsBH);
-        std::swap(mVertexBH, other.mVertexBH);
+        swap(mPointsBH, other.mPointsBH);
+        swap(mVerticesBH, other.mVerticesBH);
 
-        std::swap(mSegmentsIndicesBH, other.mSegmentsIndicesBH);
-        std::swap(mJointIndicesBH, other.mJointIndicesBH);
+        swap(mSegmentIndicesBH, other.mSegmentIndicesBH);
+        swap(mJointIndicesBH, other.mJointIndicesBH);
 
-        std::swap(mComputeDataUH, other.mComputeDataUH);
+        swap(mComputeDataUH, other.mComputeDataUH);
+
+        swap(mLinesPH, other.mLinesPH);
+        swap(mComputeVertexPH, other.mComputeVertexPH);
     }
 
     void GPUGeneratedPolylines::draw(uint32_t viewId) const
     {
         bindSettingsUniform();
 
-        bgfx::setVertexBuffer(0, mVertexBH);
-        bgfx::setIndexBuffer(mSegmentsIndicesBH);
+        bgfx::setVertexBuffer(0, mVerticesBH);
+        bgfx::setIndexBuffer(mSegmentIndicesBH);
         bgfx::setState(drawState());
         bgfx::submit(viewId, mLinesPH);
 
         if (bgfx::isValid(mJointIndicesBH) && settings().getJoint() != PolyLineJoint::ROUND_JOINT)
         {
-            bgfx::setVertexBuffer(0, mVertexBH);
+            bgfx::setVertexBuffer(0, mVerticesBH);
             bgfx::setIndexBuffer(mJointIndicesBH);
             bgfx::setState(drawState());
             bgfx::submit(viewId, mLinesPH);
@@ -99,40 +81,29 @@ namespace lines
 
     void GPUGeneratedPolylines::update(const std::vector<LinesVertex> &points)
     {
-        int oldSize = mPoints.size();
         mPoints = points;
+        bgfx::destroy(mVerticesBH);
+        bgfx::destroy(mSegmentIndicesBH);
+        bgfx::destroy(mJointIndicesBH);
 
-        if (oldSize != mPoints.size())
-        {
-            bgfx::destroy(mSegmentsIndicesBH);
-            bgfx::destroy(mJointIndicesBH);
-            allocateIndexBuffer();
-        }
-
-        if (oldSize < mPoints.size())
-        {
-            bgfx::destroy(mVertexBH);
+        if (points.size() > 1) {
+            allocateAndSetPointsBuffer();
             allocateVertexBuffer();
+            allocateIndexBuffer();
+            generateVerticesAndIndicesBuffers();
+        } else {
+            throw std::runtime_error("Points.size() must be > 1");
         }
-
-        if (oldSize > mPoints.size())
-        {
-            bgfx::destroy(mPointsBH);
-            allocatePointsBuffer();
-        }
-
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
-        generateBuffers();
     }
 
-    void GPUGeneratedPolylines::generateBuffers()
+    void GPUGeneratedPolylines::generateVerticesAndIndicesBuffers()
     {
         float data[] = {static_cast<float>(mPoints.size() - 1), 0, 0, 0};
         bgfx::setUniform(mComputeDataUH, data);
 
         bgfx::setBuffer(0, mPointsBH, bgfx::Access::Read);
-        bgfx::setBuffer(1, mVertexBH, bgfx::Access::Write);
-        bgfx::setBuffer(2, mSegmentsIndicesBH, bgfx::Access::Write);
+        bgfx::setBuffer(1, mVerticesBH, bgfx::Access::Write);
+        bgfx::setBuffer(2, mSegmentIndicesBH, bgfx::Access::Write);
         bgfx::setBuffer(3, mJointIndicesBH, bgfx::Access::Write);
         bgfx::dispatch(0, mComputeVertexPH, mPoints.size() - 1, 1, 1);
     }
@@ -141,8 +112,7 @@ namespace lines
     {
 
         bgfx::VertexLayout layout;
-        layout
-            .begin()
+        layout.begin()
             .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord0, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float)
@@ -150,34 +120,45 @@ namespace lines
             .add(bgfx::Attrib::Normal, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
             .end();
-
-        mVertexBH = bgfx::createDynamicVertexBuffer(
-            (mPoints.size() - 1) * 4, layout,
-            BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE);
+    
+        const uint32_t sz = (mPoints.size() - 1) * 4 * 15;
+    
+        mVerticesBH = bgfx::createVertexBuffer(
+            bgfx::makeRef(nullptr, sizeof(float) * sz),
+            layout, BGFX_BUFFER_COMPUTE_WRITE);
     }
 
     void GPUGeneratedPolylines::allocateIndexBuffer()
     {
-        mSegmentsIndicesBH = bgfx::createDynamicIndexBuffer(
-            ((mPoints.size() - 1) * 6),
-            BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32);
-
-        mJointIndicesBH = bgfx::createDynamicIndexBuffer(
-            ((mPoints.size() - 2) * 6),
-            BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_ALLOW_RESIZE | BGFX_BUFFER_INDEX32);
+        const uint32_t szSeg   = (mPoints.size() - 1) * 6;
+        const uint32_t szJoint = (mPoints.size() - 2) * 6;
+    
+        mSegmentIndicesBH = bgfx::createIndexBuffer(
+            bgfx::makeRef(nullptr, sizeof(uint32_t) * szSeg),
+            BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_INDEX32);
+    
+        if (mPoints.size() > 2) {
+            mJointIndicesBH = bgfx::createIndexBuffer(
+                bgfx::makeRef(nullptr, sizeof(uint32_t) * szJoint),
+                BGFX_BUFFER_COMPUTE_WRITE | BGFX_BUFFER_INDEX32);
+        }
     }
 
-    void GPUGeneratedPolylines::allocatePointsBuffer()
+    void GPUGeneratedPolylines::allocateAndSetPointsBuffer()
     {
         bgfx::VertexLayout layout;
-        layout
-            .begin()
+        layout.begin()
             .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
             .end();
-
-        mPointsBH = bgfx::createDynamicVertexBuffer(
-            mPoints.size(), layout,
-            BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE);
+    
+        auto [buffer, releaseFn] =
+            getAllocatedBufferAndReleaseFn<LinesVertex>(mPoints.size());
+    
+        std::copy(mPoints.begin(), mPoints.end(), buffer);
+    
+        mPointsBH = bgfx::createVertexBuffer(
+            bgfx::makeRef(buffer, sizeof(LinesVertex) * mPoints.size(), releaseFn),
+            layout, BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE);
     }
 }

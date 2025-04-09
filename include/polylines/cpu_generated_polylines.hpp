@@ -6,23 +6,26 @@ namespace lines
 {
     class CPUGeneratedPolylines : public GenericLines<PolylinesSettings>
     {
-        static const bgfx::ProgramHandle mLinesPH;
-        std::vector<LinesVertex> mPoints;
+        bgfx::ProgramHandle mLinesPH = LoadProgram(
+            "polylines/cpu_generated_polylines/vs_cpu_generated_polylines",
+            "polylines/cpu_generated_polylines/fs_cpu_generated_polylines");
 
-        bgfx::DynamicVertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
-        bgfx::DynamicIndexBufferHandle mSegmentsIndexesBH = BGFX_INVALID_HANDLE;
-        bgfx::DynamicIndexBufferHandle mJoinsIndexesBH = BGFX_INVALID_HANDLE;
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mSegmentIndicesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mJointIndicesBH = BGFX_INVALID_HANDLE;
 
     public:
+        CPUGeneratedPolylines() = default;
+
         CPUGeneratedPolylines(const std::vector<LinesVertex> &points);
 
-        CPUGeneratedPolylines(const CPUGeneratedPolylines &other);
+        CPUGeneratedPolylines(const CPUGeneratedPolylines &other) = delete;
 
-        CPUGeneratedPolylines(CPUGeneratedPolylines &&other);
+        CPUGeneratedPolylines(CPUGeneratedPolylines &&other) = delete;
+
+        CPUGeneratedPolylines &operator=(CPUGeneratedPolylines other) = delete;
 
         ~CPUGeneratedPolylines();
-
-        CPUGeneratedPolylines &operator=(CPUGeneratedPolylines other);
 
         void swap(CPUGeneratedPolylines &other);
 
@@ -33,10 +36,6 @@ namespace lines
         void update(const std::vector<LinesVertex> &points) override;
 
     private:
-        void generateBuffers();
-
-        void allocateVertexBuffer();
-
-        void allocateIndexesBuffer();
+        void generateVerticesAndIndicesBuffers(const std::vector<LinesVertex> &points);
     };
 }

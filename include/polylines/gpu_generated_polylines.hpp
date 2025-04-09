@@ -6,29 +6,35 @@ namespace lines
 {
     class GPUGeneratedPolylines : public GenericLines<PolylinesSettings>
     {
-        static const bgfx::ProgramHandle mComputeVertexPH;
-        static const bgfx::ProgramHandle mLinesPH;
+        bgfx::ProgramHandle mComputeVertexPH = bgfx::createProgram(
+            LoadShader("polylines/gpu_generated_polylines/cs_compute_buffers"), true);
+
+        bgfx::ProgramHandle mLinesPH = LoadProgram(
+            "polylines/cpu_generated_polylines/vs_cpu_generated_polylines",
+            "polylines/cpu_generated_polylines/fs_cpu_generated_polylines");
 
         std::vector<LinesVertex> mPoints;
 
-        bgfx::DynamicVertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
-        bgfx::DynamicVertexBufferHandle mVertexBH = BGFX_INVALID_HANDLE;
+        bgfx::VertexBufferHandle mPointsBH = BGFX_INVALID_HANDLE;
+        bgfx::VertexBufferHandle mVerticesBH = BGFX_INVALID_HANDLE;
 
-        bgfx::DynamicIndexBufferHandle mSegmentsIndicesBH = BGFX_INVALID_HANDLE;
-        bgfx::DynamicIndexBufferHandle mJointIndicesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mSegmentIndicesBH = BGFX_INVALID_HANDLE;
+        bgfx::IndexBufferHandle mJointIndicesBH = BGFX_INVALID_HANDLE;
 
-        bgfx::UniformHandle mComputeDataUH = BGFX_INVALID_HANDLE;
+        bgfx::UniformHandle mComputeDataUH = bgfx::createUniform("u_numWorksGroups", bgfx::UniformType::Vec4);
 
     public:
+        GPUGeneratedPolylines() { checkCaps(); }
+
         GPUGeneratedPolylines(const std::vector<LinesVertex> &points);
 
-        GPUGeneratedPolylines(const GPUGeneratedPolylines &other);
+        GPUGeneratedPolylines(const GPUGeneratedPolylines &other) = delete;
 
-        GPUGeneratedPolylines(GPUGeneratedPolylines &&other);
+        GPUGeneratedPolylines(GPUGeneratedPolylines &&other) = delete;
 
+        GPUGeneratedPolylines &operator=(GPUGeneratedPolylines other) = delete;
+        
         ~GPUGeneratedPolylines();
-
-        GPUGeneratedPolylines &operator=(GPUGeneratedPolylines other);
 
         void swap(GPUGeneratedPolylines &other);
 
@@ -39,12 +45,21 @@ namespace lines
         void update(const std::vector<LinesVertex> &points) override;
 
     private:
-        void generateBuffers();
+        void checkCaps() const
+        {
+            const bgfx::Caps* caps = bgfx::getCaps();
+            const bool computeSupported = bool(caps->supported & BGFX_CAPS_COMPUTE);
+            if (!computeSupported) {
+                throw std::runtime_error("GPU compute not supported");
+            }
+        }
+
+        void allocateAndSetPointsBuffer();
 
         void allocateVertexBuffer();
-
+    
         void allocateIndexBuffer();
-
-        void allocatePointsBuffer();
+    
+        void generateVerticesAndIndicesBuffers();
     };
 }
