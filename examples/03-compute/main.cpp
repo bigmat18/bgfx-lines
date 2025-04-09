@@ -10,7 +10,7 @@ namespace
 
     static const float s_quadVertices[] =
     {
-        -0.5f,  -0.5f,
+        -0.25f,  -0.5f,
         -0.5f,  0.5f,
         0.5f, -0.5f,
         0.5f, 0.5f,
@@ -56,19 +56,22 @@ namespace
 
             m_VBO = bgfx::createVertexBuffer(
                 bgfx::makeRef(nullptr, sizeof(s_quadVertices)), layout,
-                BGFX_BUFFER_COMPUTE_READ_WRITE
+                BGFX_BUFFER_COMPUTE_WRITE
             );
 
             m_Buffer = bgfx::createVertexBuffer(
                 bgfx::makeRef(s_quadVertices, sizeof(s_quadVertices)), layout,
-                BGFX_BUFFER_COMPUTE_READ_WRITE
+                BGFX_BUFFER_COMPUTE_READ
             );
 
             m_IBO = bgfx::createIndexBuffer(
-                bgfx::makeRef(s_quadIndices, sizeof(s_quadIndices)));
+                bgfx::makeRef(nullptr, sizeof(s_quadIndices)),
+                BGFX_BUFFER_COMPUTE_WRITE
+            );
 
             bgfx::setBuffer(0, m_VBO, bgfx::Access::Write);
-            bgfx::setBuffer(1, m_Buffer, bgfx::Access::Read);
+            bgfx::setBuffer(1, m_IBO, bgfx::Access::Write);
+            bgfx::setBuffer(2, m_Buffer, bgfx::Access::Read);
             bgfx::dispatch(0, m_Compute, 1, 1, 1);
         }
 

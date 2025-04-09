@@ -23,7 +23,7 @@ namespace
             m_reset = BGFX_RESET_VSYNC;
 
             bgfx::Init init;
-            init.type     = bgfx::RendererType::Vulkan;
+            init.type     = args.m_type;
             init.vendorId = args.m_pciId;
             init.platformData.nwh = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
             init.platformData.ndt = entry::getNativeDisplayHandle();
@@ -40,7 +40,7 @@ namespace
 
             std::vector<lines::LinesVertex> points;
             generatePointsInCube(points, 3, 100);
-            line = std::make_unique<lines::TextureLines>(points);
+            line = std::make_unique<lines::CPULines>(points);
             line->settings().setThickness(5);
             line->settings().setBorder(2);
             line->settings().setAntialias(0);
@@ -109,7 +109,7 @@ namespace
         float nearPlane = -10.0f;
         float farPlane = 10.0f;
 
-        std::unique_ptr<lines::TextureLines> line;
+        std::unique_ptr<lines::CPULines> line;
     };
 }
 
