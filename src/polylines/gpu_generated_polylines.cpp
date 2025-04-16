@@ -118,10 +118,10 @@ namespace lines
             .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
             .add(bgfx::Attrib::Normal, 3, bgfx::AttribType::Float)
-            .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
+            .add(bgfx::Attrib::TexCoord2, 3, bgfx::AttribType::Float)
             .end();
     
-        const uint32_t sz = (mPoints.size() - 1) * 4 * 15;
+        const uint32_t sz = (mPoints.size() - 1) * 4 * 16;
     
         mVerticesBH = bgfx::createVertexBuffer(
             bgfx::makeRef(nullptr, sizeof(float) * sz),
@@ -159,6 +159,6 @@ namespace lines
     
         mPointsBH = bgfx::createVertexBuffer(
             bgfx::makeRef(buffer, sizeof(LinesVertex) * mPoints.size(), releaseFn),
-            layout, BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE);
+            layout, BGFX_BUFFER_COMPUTE_READ);
     }
 }

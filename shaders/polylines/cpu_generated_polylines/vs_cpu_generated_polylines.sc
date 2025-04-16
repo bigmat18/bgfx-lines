@@ -8,7 +8,7 @@ uniform vec4 u_data;
 #define a_prev                  a_position
 #define a_curr                  a_texcoord0
 #define a_next                  a_texcoord1
-#define a_uv                    a_texcoord2
+#define a_uv                    vec2(a_texcoord2.x, a_texcoord2.y)
 
 void main() { 
     vec4 u_general_color = uintToVec4FloatColor(floatBitsToUint(u_data.x));

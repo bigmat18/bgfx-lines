@@ -1,7 +1,7 @@
 #include "bgfx_compute.sh"
 #include "../../utils.sh"
 
-BUFFER_RO(pointsBuffer,   float,    0);
+BUFFER_RO(pointsBuffer,   vec4,    0);
 IMAGE2D_WO(textureBuffer, rgba32f,  1);
 BUFFER_RW(indirectBuffer, uvec4,    2);
 
@@ -10,9 +10,11 @@ uniform vec4 u_IndirectData;
 #define maxTextureSize          u_IndirectData.x
 #define instancingNum           u_IndirectData.y
 
-#define p(pos)        vec3(pointsBuffer[((pos) * 7) + 0], pointsBuffer[((pos) * 7) + 1], pointsBuffer[((pos) * 7) + 2])
-#define color(pos)    pointsBuffer[((pos) * 7) + 3]
-#define normal(pos)   vec3(pointsBuffer[((pos) * 7) + 4], pointsBuffer[((pos) * 7) + 5], pointsBuffer[((pos) * 7) + 6])   
+#define get_float_value(pos) pointsBuffer[uint(pos) / 4][uint(pos) % 4]
+
+#define p(pos)        vec3(get_float_value(((pos) * 7) + 0), get_float_value(((pos) * 7) + 1), get_float_value(((pos) * 7) + 2))
+#define color(pos)    get_float_value(((pos) * 7) + 3)
+#define normal(pos)   vec3(get_float_value(((pos) * 7) + 4), get_float_value(((pos) * 7) + 5), get_float_value(((pos) * 7) + 6))   
 
 NUM_THREADS(1, 1, 1)
 void main() {

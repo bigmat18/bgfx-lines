@@ -58,7 +58,7 @@ namespace lines
     void CPUGeneratedPolylines::generateVerticesAndIndicesBuffers(const std::vector<LinesVertex>& points)
     {
         if (points.size() > 1) {
-            uint32_t bufferVertsSize = (points.size() - 1) * 4 * 15;
+            uint32_t bufferVertsSize = (points.size() - 1) * 4 * 16;
             uint32_t bufferSegmetIndicesSize = (points.size() - 1) * 6;
             uint32_t bufferJointsIndicesSize = (points.size() - 2) * 6;
     
@@ -104,6 +104,7 @@ namespace lines
     
                         vertices[vi++] = static_cast<float>(k);
                         vertices[vi++] = static_cast<float>(j);
+                        vertices[vi++] = 0;
                     }
                 }
     
@@ -132,7 +133,7 @@ namespace lines
                 .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float)
                 .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
                 .add(bgfx::Attrib::Normal, 3, bgfx::AttribType::Float)
-                .add(bgfx::Attrib::TexCoord2, 2, bgfx::AttribType::Float)
+                .add(bgfx::Attrib::TexCoord2, 3, bgfx::AttribType::Float)
                 .end();
     
             mVerticesBH = bgfx::createVertexBuffer(
