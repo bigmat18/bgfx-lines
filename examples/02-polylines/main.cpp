@@ -23,7 +23,7 @@ namespace
             m_reset = BGFX_RESET_VSYNC;
 
             bgfx::Init init;
-            init.type = args.m_type;
+            init.type = bgfx::RendererType::Direct3D11;
             init.vendorId = args.m_type;
             init.platformData.nwh = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
             init.platformData.ndt = entry::getNativeDisplayHandle();
@@ -41,7 +41,7 @@ namespace
 
             std::vector<lines::LinesVertex> points;
             generatePointsInCube(points, 3, 100);
-            polyline = std::make_unique<lines::GPUPolylines>(points);
+            polyline = std::make_unique<lines::IndirectPolylines>(points);
             polyline->settings().setThickness(5);
             polyline->settings().setBorder(2);
             polyline->settings().setAntialias(0);
@@ -111,7 +111,7 @@ namespace
         float nearPlane = -10.0f;
         float farPlane = 10.0f;
 
-        std::unique_ptr<lines::GPUPolylines> polyline;
+        std::unique_ptr<lines::IndirectPolylines> polyline;
     };
 }
 
