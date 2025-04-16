@@ -34,7 +34,7 @@ namespace lines {
             float    x,
             float    y,
             float    z,
-            uint32_t color = COLOR(1, 0, 0, 1),
+            uint32_t color = COLOR(0, 0, 0, 1),
             float    xn    = 0,
             float    yn    = 0,
             float    zn    = 0) :

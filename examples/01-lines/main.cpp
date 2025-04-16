@@ -40,12 +40,13 @@ namespace
 
             std::vector<lines::LinesVertex> points;
             generatePointsInCube(points, 3, 100);
-            line = std::make_unique<lines::CPULines>(points);
+            line = std::make_unique<lines::GPULines>(points);
             line->settings().setThickness(5);
             line->settings().setBorder(2);
             line->settings().setAntialias(0);
             line->settings().setLeftCap(lines::LineCap::TRIANGLE_CAP);
             line->settings().setRigthCap(lines::LineCap::ROUND_CAP);
+            line->settings().setColorToUse(lines::LineColorToUse::PER_VERTEX_COLOR);
             line->settings().setGeneralColor(lines::LinesVertex::COLOR(1, 0, 1, 1));
         }
 
@@ -109,7 +110,7 @@ namespace
         float nearPlane = -10.0f;
         float farPlane = 10.0f;
 
-        std::unique_ptr<lines::CPULines> line;
+        std::unique_ptr<lines::GPULines> line;
     };
 }
 

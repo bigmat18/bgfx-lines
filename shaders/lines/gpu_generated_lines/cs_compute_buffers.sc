@@ -5,13 +5,17 @@ BUFFER_RO(pointsBuffer,      vec4,  0);
 BUFFER_WO(vertexBuffer,      vec4,  1);
 BUFFER_WO(indexBuffer,       uint,   2);
 
-#define p(pos)        vec3(pointsBuffer[((pos) * 7) + 0], pointsBuffer[((pos) * 7) + 1], pointsBuffer[((pos) * 7) + 2])
-#define color(pos)    pointsBuffer[((pos) * 7) + 3]
-#define normal(pos)   vec3(pointsBuffer[((pos) * 7) + 4], pointsBuffer[((pos) * 7) + 5], pointsBuffer[((pos) * 7) + 6])     
+
+#define get_float_value(pos) pointsBuffer[uint(pos) / 4][uint(pos) % 4]
+
+
+#define p(pos)        vec3(get_float_value(((pos) * 7) + 0), get_float_value(((pos) * 7) + 1), get_float_value(((pos) * 7) + 2))
+#define color(pos)    get_float_value(((pos) * 7) + 3)
+#define normal(pos)   vec3(get_float_value(((pos) * 7) + 4), get_float_value(((pos) * 7) + 5), get_float_value(((pos) * 7) + 6))   
 
 NUM_THREADS(2, 2, 1)
 void main() {
-    uint baseIndex = (gl_WorkGroupID.x * 48) + ((gl_LocalInvocationID.y + (gl_LocalInvocationID.x * 2)) * 12);
+    uint baseIndex = (gl_WorkGroupID.x * 12) + ((gl_LocalInvocationID.y + (gl_LocalInvocationID.x * 2)) * 3);
 
     vec3 p0        = p((gl_WorkGroupID.x * 2));
     vec3 p1        = p((gl_WorkGroupID.x * 2) + 1);
@@ -31,5 +35,4 @@ void main() {
         indexBuffer[(6 * gl_WorkGroupID.x) + 4] = (gl_WorkGroupID.x * 4) + 2;
         indexBuffer[(6 * gl_WorkGroupID.x) + 5] = (gl_WorkGroupID.x * 4) + 3;
     }
-
 }
