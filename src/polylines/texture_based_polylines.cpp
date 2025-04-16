@@ -3,50 +3,15 @@
 namespace lines
 {
 
-    const bgfx::ProgramHandle TextureBasedPolylines::mLinesPH = LoadProgram(
-        "polylines/texture_based_polylines/vs_texture_based_segments",
-        "polylines/texture_based_polylines/fs_texture_based_polylines");
-        
-    const bgfx::ProgramHandle TextureBasedPolylines::mJointsPH = LoadProgram(
-        "polylines/texture_based_polylines/vs_texture_based_joins",
-        "polylines/texture_based_polylines/fs_texture_based_polylines");
-        
-    const bgfx::ProgramHandle TextureBasedPolylines::mComputeTexturePH = bgfx::createProgram(
-        LoadShader("polylines/texture_based_polylines/cs_compute_texture"), true);
-
     TextureBasedPolylines::TextureBasedPolylines(const std::vector<LinesVertex> &points) : 
-        mPoints(points),
-        mJointsIndirectBH(bgfx::createIndirectBuffer(1)),
-        mSegmentsIndirectBH(bgfx::createIndirectBuffer(1)),
-        mComputeDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
+        mPoints(points)
     {
-        allocateVerticesBuffer();
-        allocateIndexesBuffer();
-        allocateTextureBuffer();
-        allocatePointsBuffer();
+        checkCaps();
 
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
-        generateTextureBuffer();
-    }
-
-    TextureBasedPolylines::TextureBasedPolylines(const TextureBasedPolylines &other) : 
-        mPoints(other.mPoints),
-        mJointsIndirectBH(bgfx::createIndirectBuffer(1)),
-        mSegmentsIndirectBH(bgfx::createIndirectBuffer(1)),
-        mComputeDataUH(bgfx::createUniform("u_IndirectData", bgfx::UniformType::Vec4))
-    {
-        allocateVerticesBuffer();
-        allocateIndexesBuffer();
-        allocateTextureBuffer();
-        allocatePointsBuffer();
-
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
-        generateTextureBuffer();
-    }
-
-    TextureBasedPolylines::TextureBasedPolylines(TextureBasedPolylines &&other)
-    {
-        swap(other);
+        allocateVerticesAndIndicesBuffers();
+        allocateAndSetPointsBuffer();
+        allocateTextureBuffers();
+        generateTextureBuffers();
     }
 
     TextureBasedPolylines::~TextureBasedPolylines()
@@ -74,12 +39,12 @@ namespace lines
 
         if (bgfx::isValid(mPointsBH))
             bgfx::destroy(mPointsBH);
-    }
 
-    TextureBasedPolylines &TextureBasedPolylines::operator=(TextureBasedPolylines other)
-    {
-        swap(other);
-        return *this;
+        if (bgfx::isValid(mLinesPH))
+            bgfx::destroy(mLinesPH);
+
+        if (bgfx::isValid(mComputeTexturePH))
+            bgfx::destroy(mComputeTexturePH);
     }
 
     void TextureBasedPolylines::swap(TextureBasedPolylines &other)
@@ -88,19 +53,19 @@ namespace lines
 
         GenericLines::swap(other);
 
-        std::swap(mPoints, other.mPoints);
+        swap(mPoints, other.mPoints);
 
-        std::swap(mVerticesBH, other.mVerticesBH);
-        std::swap(mIndicesBH, other.mIndicesBH);
-        std::swap(mPointsBH, other.mPointsBH);
+        swap(mVerticesBH, other.mVerticesBH);
+        swap(mIndicesBH, other.mIndicesBH);
+        swap(mPointsBH, other.mPointsBH);
 
-        std::swap(mSegmentsIndirectBH, other.mSegmentsIndirectBH);
-        std::swap(mJointsIndirectBH, other.mJointsIndirectBH);
+        swap(mSegmentsIndirectBH, other.mSegmentsIndirectBH);
+        swap(mJointsIndirectBH, other.mJointsIndirectBH);
 
-        std::swap(mSegmentsTextureBH, other.mSegmentsTextureBH);
-        std::swap(mJointsTextureBH, other.mJointsTextureBH);
+        swap(mSegmentsTextureBH, other.mSegmentsTextureBH);
+        swap(mJointsTextureBH, other.mJointsTextureBH);
 
-        std::swap(mComputeDataUH, other.mComputeDataUH);
+        swap(mComputeDataUH, other.mComputeDataUH);
     }
 
     void TextureBasedPolylines::draw(uint32_t viewId) const
@@ -131,17 +96,17 @@ namespace lines
         int oldSize = mPoints.size();
         mPoints = points;
 
-        bgfx::update(mPointsBH, 0, bgfx::makeRef(&mPoints[0], sizeof(LinesVertex) * mPoints.size()));
+        allocateAndSetPointsBuffer();
 
         if (oldSize < mPoints.size())
         {
-            allocateTextureBuffer();
+            allocateTextureBuffers();
         }
 
-        generateTextureBuffer();
+        generateTextureBuffers();
     }
 
-    void TextureBasedPolylines::generateTextureBuffer()
+    void TextureBasedPolylines::generateTextureBuffers()
     {
         float data[] = {static_cast<float>(mMaxTextureSize), static_cast<float>(mPoints.size() - 1), 0, 0};
         bgfx::setUniform(mComputeDataUH, data);
@@ -154,7 +119,7 @@ namespace lines
         bgfx::dispatch(0, mComputeTexturePH, mPoints.size() - 1, 1, 1);
     }
 
-    void TextureBasedPolylines::allocateTextureBuffer()
+    void TextureBasedPolylines::allocateTextureBuffers()
     {
         uint16_t Y_Segments = ((mPoints.size() - 1) * 5) / (mMaxTextureSize + 1);
         uint16_t X_Segments = Y_Segments == 0 ? ((mPoints.size() - 1) * 5) : mMaxTextureSize;
@@ -174,21 +139,27 @@ namespace lines
         }
     }
 
-    void TextureBasedPolylines::allocatePointsBuffer()
+    void TextureBasedPolylines::allocateAndSetPointsBuffer()
     {
+
         bgfx::VertexLayout layout;
-        layout
-            .begin()
+        layout.begin()
             .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
             .add(bgfx::Attrib::Normal, 3, bgfx::AttribType::Float)
             .end();
 
-        mPointsBH = bgfx::createDynamicVertexBuffer(mPoints.size(), layout,
-                                                    BGFX_BUFFER_COMPUTE_READ | BGFX_BUFFER_ALLOW_RESIZE);
+        auto [buffer, releaseFn] =
+            getAllocatedBufferAndReleaseFn<LinesVertex>(mPoints.size());
+
+        std::copy(mPoints.begin(), mPoints.end(), buffer);
+
+        mPointsBH = bgfx::createVertexBuffer(
+            bgfx::makeRef(buffer, sizeof(LinesVertex) * mPoints.size(), releaseFn),
+            layout, BGFX_BUFFER_COMPUTE_READ);
     }
 
-    void TextureBasedPolylines::allocateVerticesBuffer()
+    void TextureBasedPolylines::allocateVerticesAndIndicesBuffers()
     {
         bgfx::VertexLayout layout;
         layout
@@ -197,14 +168,11 @@ namespace lines
             .end();
 
         mVerticesBH = bgfx::createVertexBuffer(
-            bgfx::makeRef(&mVertices[0], sizeof(float) * mVertices.size()),
+            bgfx::makeRef(&VERTICES[0], sizeof(float) * VERTICES.size()),
             layout);
-    }
 
-    void TextureBasedPolylines::allocateIndexesBuffer()
-    {
         mIndicesBH = bgfx::createIndexBuffer(
-            bgfx::makeRef(&mIndices[0], sizeof(uint32_t) * mIndices.size()),
+            bgfx::makeRef(&INDICES[0], sizeof(uint32_t) * INDICES.size()),
             BGFX_BUFFER_INDEX32);
     }
 }

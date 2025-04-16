@@ -41,7 +41,7 @@ namespace
 
             std::vector<lines::LinesVertex> points;
             generatePointsInCube(points, 3, 100);
-            polyline = std::make_unique<lines::IndirectPolylines>(points);
+            polyline = std::make_unique<lines::TexturePolylines>(points);
             polyline->settings().setThickness(5);
             polyline->settings().setBorder(2);
             polyline->settings().setAntialias(0);
@@ -111,7 +111,7 @@ namespace
         float nearPlane = -10.0f;
         float farPlane = 10.0f;
 
-        std::unique_ptr<lines::IndirectPolylines> polyline;
+        std::unique_ptr<lines::TexturePolylines> polyline;
     };
 }
 
